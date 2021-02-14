@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  web:
+    image: whizzplayer:web
+    build:
+      context: ./web
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1 
+      PORT: 3000
+    ports:
+      - 3000:3000
+  api:
+    image: whizzplayer:api
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./api/.env
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+    ports:
+      - 4000:4000
+  back:
+    image: whizzplayer:back
+    build:
+      context: ./back
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./back/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+    volumes:
+      - "./uploads/:/uploads"
+    devices:
+      - "/dev/snd"
+    ports:
+      - 5000:5000
+  proxy:
+    image: whizzplayer:proxy
+    build:
+      context: ./proxy
+      dockerfile: ./Dockerfile
+    ports:
+      - 80:80
