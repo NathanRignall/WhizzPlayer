@@ -12,5 +12,6 @@ router.post("/register", user.register);
 router.post("/login", user.login);
 router.get("/info", auth.simple(), user.info);
 router.put("/info", auth.simple(), user.infoUpdate);
+router.post("/password", auth.simple(), user.password);
 
 module.exports = router;

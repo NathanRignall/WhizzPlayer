@@ -13,7 +13,9 @@ exports.register = function (req, res, next) {
         var Hash = bcrypt.hashSync(Password, 10);
         // check the email is and email display name is not funny
         if (validator.isEmail(Email) && checkCharacters(DisplayName)) {
+            // check if the password is strong
             if (validator.isStrongPassword(Password, { minSymbols: 0 })) {
+                // hash the password
                 var Hash = bcrypt.hashSync(Password, 10);
                 // get a user id
                 var UserID = idgen.genterateUserID();
@@ -155,7 +157,7 @@ exports.info = function (req, res, next) {
     UserID = req.session.UserID;
     // get the user info from the database
     db.query(
-        "SELECT Email, DisplayName, Access, Created, Modified FROM Users WHERE UserID = ? AND Enabled = 1",
+        "SELECT Email, DisplayName, Access, Created, Modified FROM Users WHERE UserID = ?",
         [UserID],
         function (error, results, fields) {
             // check if successful
@@ -209,7 +211,7 @@ exports.infoUpdate = function (req, res, next) {
         if (validator.isEmail(Email) && checkCharacters(DisplayName)) {
             // update the user in the database
             db.query(
-                "UPDATE Users SET Email = ?, DisplayName = ? WHERE UserID = ? AND Enabled = 1",
+                "UPDATE Users SET Email = ?, DisplayName = ? WHERE UserID = ?",
                 [
                     validator.normalizeEmail(Email),
                     validator.trim(DisplayName),
@@ -218,7 +220,7 @@ exports.infoUpdate = function (req, res, next) {
                 function (error, results, fields) {
                     // check if sucessfull
                     if (!error) {
-                        // login the user
+                        // update the session vars in case of any changes
                         req.session.UserID = UserID;
                         req.session.Email = Email;
                         req.session.DisplayName = DisplayName;
@@ -247,6 +249,61 @@ exports.infoUpdate = function (req, res, next) {
             res.locals.success = false;
             // manformed inputs
             res.locals.code = 211;
+            res.json(responseFormat(res));
+        }
+    } else {
+        // retun the correct vars
+        res.locals.success = false;
+        // missing inputs
+        res.locals.code = 210;
+        res.json(responseFormat(res));
+    }
+};
+
+exports.password = function (req, res, next) {
+    // get the user id from the existing session
+    UserID = req.session.UserID;
+    // get the info from json
+    var json = req.body;
+    // set the vars from post
+    var Password = json.Password;
+    // check the fields are present and valid
+    if (Password) {
+        // check if the password is strong
+        if (validator.isStrongPassword(Password, { minSymbols: 0 })) {
+            // hash the password
+            var Hash = bcrypt.hashSync(Password, 10);
+            // update the user password in the database
+            db.query(
+                "UPDATE Users SET Password = ? WHERE UserID = ?",
+                [Hash, UserID],
+                function (error, results, fields) {
+                    // check if sucessfull
+                    if (!error) {
+                        // retun the correct vars
+                        res.locals.success = true;
+                        // success
+                        res.locals.code = 100;
+                        res.json(responseFormat(res));
+                    } else {
+                        // push the error
+                        res.locals.errors.push({
+                            code: error.code,
+                            from: "mysql",
+                        });
+                        // retun the correct vars
+                        res.locals.success = false;
+                        // server error
+                        res.locals.code = 500;
+                        res.json(responseFormat(res));
+                    }
+                }
+            );
+        } else {
+            // retun the correct vars
+            res.locals.success = false;
+            // password not secure
+            res.locals.code = 212;
             res.json(responseFormat(res));
         }
     } else {
