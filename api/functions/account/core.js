@@ -101,7 +101,7 @@ exports.login = function (req, res, next) {
                 // check if successful
                 if (!error) {
                     // check if a user was found
-                    if (results.length) {
+                    if (results.length == 1) {
                         // check the password against database
                         if (bcrypt.compareSync(Password, results[0].Password)) {
                             // login the user
@@ -151,9 +151,109 @@ exports.login = function (req, res, next) {
 };
 
 exports.info = function (req, res, next) {
-    res.send("no");
+    // get the user id from the existing session
+    UserID = req.session.UserID;
+    // get the user info from the database
+    db.query(
+        "SELECT Email, DisplayName, Access, Created, Modified FROM Users WHERE UserID = ? AND Enabled = 1",
+        [UserID],
+        function (error, results, fields) {
+            // check if successful
+            if (!error) {
+                // check if a user was found
+                if (results.length == 1) {
+                    // update the session vars
+                    req.session.Email = results[0].Email;
+                    req.session.DisplayName = results[0].DisplayName;
+                    req.session.Access = results[0].Access;
+                    // retun the correct vars
+                    res.locals.success = true;
+                    res.locals.response = results[0];
+                    // success
+                    res.locals.code = 100;
+                    res.json(responseFormat(res));
+                } else {
+                    // retun the correct vars
+                    res.locals.success = false;
+                    // user does not exist
+                    res.locals.code = 214;
+                    res.json(responseFormat(res));
+                }
+            } else {
+                // if acually an error and push the error
+                res.locals.errors.push({
+                    code: error.code,
+                    from: "mysql",
+                });
+                // retun the correct vars
+                res.locals.success = false;
+                // server error
+                res.locals.code = 500;
+                res.json(responseFormat(res));
+            }
+        }
+    );
 };
 
 exports.infoUpdate = function (req, res, next) {
-    res.send("no");
+    // get the user id from the existing session
+    UserID = req.session.UserID;
+    // get the info from json
+    var json = req.body;
+    // set the vars from post
+    var Email = json.Email;
+    var DisplayName = json.DisplayName;
+    // check the fields are present and valid
+    if (Email && DisplayName) {
+        // check the email is and email display name is not funny
+        if (validator.isEmail(Email) && checkCharacters(DisplayName)) {
+            // update the user in the database
+            db.query(
+                "UPDATE Users SET Email = ?, DisplayName = ? WHERE UserID = ? AND Enabled = 1",
+                [
+                    validator.normalizeEmail(Email),
+                    validator.trim(DisplayName),
+                    UserID,
+                ],
+                function (error, results, fields) {
+                    // check if sucessfull
+                    if (!error) {
+                        // login the user
+                        req.session.UserID = UserID;
+                        req.session.Email = Email;
+                        req.session.DisplayName = DisplayName;
+                        req.session.Access = 1;
+                        // retun the correct vars
+                        res.locals.success = true;
+                        // success
+                        res.locals.code = 100;
+                        res.json(responseFormat(res));
+                    } else {
+                        // push the error
+                        res.locals.errors.push({
+                            code: error.code,
+                            from: "mysql",
+                        });
+                        // retun the correct vars
+                        res.locals.success = false;
+                        // server error
+                        res.locals.code = 500;
+                        res.json(responseFormat(res));
+                    }
+                }
+            );
+        } else {
+            // retun the correct vars
+            res.locals.success = false;
+            // manformed inputs
+            res.locals.code = 211;
+            res.json(responseFormat(res));
+        }
+    } else {
+        // retun the correct vars
+        res.locals.success = false;
+        // missing inputs
+        res.locals.code = 210;
+        res.json(responseFormat(res));
+    }
 };
