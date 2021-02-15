@@ -11,16 +11,24 @@ var track = require("../functions/app/track");
 // middleware
 var auth = require("../middleware/auth");
 
+// status routes
+router.get("/status", auth.simple(), status.home); // view
+router.get("/status/all", auth.simple(), status.all); // view
+
+// play routes
+router.get("/play", auth.simple(), play.temp); // view
+
+// cue routes
 router.get("/cue", auth.simple(), cue.temp); // view
 router.post("/cue", auth.edit(), cue.temp); // edit
 router.get("/cue/:cueid", auth.simple(), cue.temp); // view
 router.put("/cue/:cueid", auth.edit(), cue.temp); // edit
 router.delete("/cue/:cueid", auth.edit(), cue.temp); // edit
 
-router.get("/play", auth.simple(), play.temp); // view
-router.get("/status", auth.simple(), status.temp); // view
+// track routes
 router.get("/track", auth.simple(), track.temp); // view
 
+// test route
 router.get("/play/test", play.test); // test
 
 module.exports = router;
