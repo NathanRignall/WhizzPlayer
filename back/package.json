@@ -7,10 +7,10 @@
     "dev": "node -r dotenv/config ./bin/www --trace-uncaught"
   },
   "dependencies": {
+    "csv-stringify": "^5.6.1",
     "debug": "~2.6.9",
     "express": "~4.16.1",
-    "morgan": "~1.9.1",
-    "play-sound": "^1.1.3"
+    "morgan": "~1.9.1"
   },
   "devDependencies": {
     "dotenv": "^8.2.0"
