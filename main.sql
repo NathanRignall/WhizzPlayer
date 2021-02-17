@@ -21,7 +21,7 @@ CREATE TABLE Cues (
 CREATE TABLE Tracks (
 	TrackID BIGINT NOT NULL UNIQUE,
     TrackName varchar(255) NOT NULL,
-    SongFile varchar(255) NOT NULL,
+    SongFile varchar(5) NOT NULL,
     PRIMARY KEY (TrackID)
 );
 
