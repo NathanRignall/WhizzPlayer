@@ -54,3 +54,9 @@ exports.admin = () => {
         }
     };
 };
+
+exports.backend = () => {
+    return (req, res, next) => {
+        next();
+    };
+};

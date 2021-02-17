@@ -3,7 +3,7 @@ var router = express.Router();
 
 // sample index
 router.get("/", function (req, res, next) {
-    res.send("index");
+    res.send("whizz player API");
 });
 
 module.exports = router;

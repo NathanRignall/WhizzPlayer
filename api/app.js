@@ -36,6 +36,7 @@ var indexRouter = require("./routes/index");
 var accountRouter = require("./routes/account");
 var appRouter = require("./routes/app");
 var settingsRouter = require("./routes/settings");
+var backendRouter = require("./routes/backend");
 
 // setup the app
 var app = express();
@@ -75,6 +76,7 @@ app.use("/", indexRouter);
 app.use("/account", accountRouter);
 app.use("/app", appRouter);
 app.use("/settings", settingsRouter);
+app.use("/backend", backendRouter);
 
 // export app
 module.exports = app;
