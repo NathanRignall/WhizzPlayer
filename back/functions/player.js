@@ -1,4 +1,5 @@
 var spawn = require("child_process").spawn;
+const fs = require("fs");
 
 function Player(opts) {
     this.options = {
@@ -6,46 +7,100 @@ function Player(opts) {
     };
 
     this.status = {
-        Playing: false,
-        File: null,
+        playing: false,
+        json: {},
+        file: "",
     };
 
-    this.play = function (file) {
-        if (this.status.Playing == true)
+    this.play = function (json) {
+        // first check if a song is playing on the system
+        if (this.status.playing == true)
             return {
-                Success: false,
-                Message: "Song already playing",
+                success: false,
+                message: "Song already playing",
+                error: {
+                    location: "/backend/player.js/play-1",
+                    from: "state",
+                },
             };
-
-        if (!file)
+        // next check if json was sent
+        if (!json)
             return {
-                Success: false,
-                Message: "No song file in request",
+                success: false,
+                message: "No details in request",
+                error: {
+                    location: "/backend/player.js/play-2",
+                    from: "file",
+                },
             };
-
-        this.status.Playing = true;
-
-        var process = spawn("mpg123", [file], this.options);
-
-        if (!process) {
-            this.status.Playing = false;
+        // set the this vars
+        this.status.playing = true;
+        this.status.json = json;
+        this.status.file =
+            "/uploads/tracks/" + json.TrackID + "." + json.SongFile;
+        // log the current satus
+        console.log(
+            JSON.stringify({
+                action: "play",
+                status: this.status,
+            })
+        );
+        // check if the file exists
+        if (fs.existsSync(this.status.file)) {
+            var process = spawn("mpg123", [this.status.file], this.options);
+            // make sure the process started
+            if (!process) {
+                this.status.playing = false;
+                console.log(
+                    JSON.stringify({
+                        action: "error",
+                        message: "Error starting process",
+                        status: this.status,
+                    })
+                );
+                return {
+                    success: false,
+                    message: "Error starting process",
+                    error: {
+                        location: "/backend/player.js/play-3",
+                        from: "state",
+                    },
+                };
+            }
+            // on process close
+            process.on("close", (code) => {
+                this.status.playing = false;
+                console.log(
+                    JSON.stringify({
+                        action: "end",
+                        message: "Playback ended",
+                        status: this.status,
+                    })
+                );
+            });
+            // return to reg
             return {
-                Success: false,
-                Message: "Error starting process",
+                success: true,
+                message: "Playing track",
+            };
+        } else {
+            this.status.playing = false;
+            console.log(
+                JSON.stringify({
+                    action: "error",
+                    message: "File does not exist",
+                    status: this.status,
+                })
+            );
+            return {
+                success: false,
+                message: "File does not exist",
+                error: {
+                    location: "/backend/player.js/play-4",
+                    from: "fs",
+                },
             };
         }
-
-        process.on("close", (error) => {
-            this.status.Playing = false;
-            if (error) {
-                console.log(error);
-            }
-        });
-
-        return {
-            Success: true,
-            Message: "Playing track",
-        };
     };
 }
 

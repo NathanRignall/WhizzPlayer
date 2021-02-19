@@ -23,9 +23,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(function (req, res, next) {
-    res.locals.success = false;
     res.locals.errors = [];
-    res.locals.logID = crypto.randomBytes(20).toString("hex");
+    res.locals.reqid = crypto.randomBytes(20).toString("hex");
     next();
 });
 

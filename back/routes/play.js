@@ -1,9 +1,29 @@
 var express = require("express");
 var router = express.Router();
 
-router.get("/:track", function (req, res, next) {
-    let trackPath = "/uploads/tracks/" + req.params.track;
-    res.json(player.play(trackPath));
+var axios = require("axios");
+
+var urlTrackInfo = "http://api/backend/info/";
+
+router.post("/", async function (req, res, next) {
+    // get the info from json
+    var json = req.body;
+    // play the song
+    var track = await player.play(json);
+    // if successful return 200
+    if (track.success == true) {
+        res.status(200).json({
+            message: "okay",
+            reqid: res.locals.reqid,
+        });
+    } else {
+        res.locals.errors.push(track.error);
+        res.status(500).json({
+            message: track.message,
+            errors: res.locals.errors,
+            reqid: res.locals.reqid,
+        });
+    }
 });
 
 module.exports = router;
