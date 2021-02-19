@@ -37,53 +37,54 @@ exports.register = function (req, res, next) {
                             req.session.DisplayName = DisplayName;
                             req.session.Access = 1;
                             // retun the correct vars
-                            res.locals.success = true;
-                            // success
-                            res.locals.code = 100;
-                            res.json(responseFormat(res));
+                            res.status(200).json({
+                                message: "okay",
+                                reqid: res.locals.reqid,
+                            });
                         } else {
                             // check if the user already exists on the system
                             if (error.code == "ER_DUP_ENTRY") {
                                 // retun the correct vars
-                                res.locals.success = false;
-                                // user already exists with email
-                                res.locals.code = 213;
-                                res.json(responseFormat(res));
+                                res.status(409).json({
+                                    message: "Email already used in account",
+                                    reqid: res.locals.reqid,
+                                });
                             } else {
-                                // if acually an error and push the error
+                                // retun the correct vars
                                 res.locals.errors.push({
+                                    location: "/api/account/core.js/register-1",
                                     code: error.code,
                                     from: "mysql",
                                 });
-                                // retun the correct vars
-                                res.locals.success = false;
-                                // server error
-                                res.locals.code = 500;
-                                res.json(responseFormat(res));
+                                res.status(500).json({
+                                    message: "Server error",
+                                    errors: res.locals.errors,
+                                    reqid: res.locals.reqid,
+                                });
                             }
                         }
                     }
                 );
             } else {
                 // retun the correct vars
-                res.locals.success = false;
-                // password not secure
-                res.locals.code = 212;
-                res.json(responseFormat(res));
+                res.status(400).json({
+                    message: "Password not secure",
+                    reqid: res.locals.reqid,
+                });
             }
         } else {
             // retun the correct vars
-            res.locals.success = false;
-            // manformed inputs
-            res.locals.code = 211;
-            res.json(responseFormat(res));
+            res.status(400).json({
+                message: "Invalid email or display name",
+                reqid: res.locals.reqid,
+            });
         }
     } else {
         // retun the correct vars
-        res.locals.success = false;
-        // missing inputs
-        res.locals.code = 210;
-        res.json(responseFormat(res));
+        res.status(400).json({
+            message: "Missing input values",
+            reqid: res.locals.reqid,
+        });
     }
 };
 
@@ -112,43 +113,45 @@ exports.login = function (req, res, next) {
                             req.session.DisplayName = results[0].DisplayName;
                             req.session.Access = results[0].Access;
                             // retun the correct vars
-                            res.locals.success = true;
-                            // success
-                            res.locals.code = 100;
-                            res.json(responseFormat(res));
+                            res.status(200).json({
+                                message: "okay",
+                                reqid: res.locals.reqid,
+                            });
                         } else {
                             // retun the correct vars
-                            res.locals.success = false;
-                            // password incorrect
-                            res.locals.code = 215;
-                            res.json(responseFormat(res));
+                            res.status(401).json({
+                                message: "Incorrect Password",
+                                reqid: res.locals.reqid,
+                            });
                         }
                     } else {
                         // retun the correct vars
-                        res.locals.success = false;
-                        // user does not exist
-                        res.locals.code = 214;
-                        res.json(responseFormat(res));
+                        res.status(401).json({
+                            message: "User does not exist",
+                            reqid: res.locals.reqid,
+                        });
                     }
                 } else {
-                    // if acually an error and push the error
+                    // retun the correct vars
                     res.locals.errors.push({
+                        location: "/api/account/core.js/login-1",
                         code: error.code,
                         from: "mysql",
                     });
-                    // retun the correct vars
-                    res.locals.success = false;
-                    // server error
-                    res.locals.code = 500;
-                    res.json(responseFormat(res));
+                    res.status(500).json({
+                        message: "Server error",
+                        errors: res.locals.errors,
+                        reqid: res.locals.reqid,
+                    });
                 }
             }
         );
     } else {
-        res.locals.success = false;
-        // missing inputs
-        res.locals.code = 210;
-        res.json(responseFormat(res));
+        // retun the correct vars
+        res.status(400).json({
+            message: "Missing input values",
+            reqid: res.locals.reqid,
+        });
     }
 };
 
@@ -169,29 +172,30 @@ exports.info = function (req, res, next) {
                     req.session.DisplayName = results[0].DisplayName;
                     req.session.Access = results[0].Access;
                     // retun the correct vars
-                    res.locals.success = true;
-                    res.locals.response = results[0];
-                    // success
-                    res.locals.code = 100;
-                    res.json(responseFormat(res));
+                    res.status(200).json({
+                        payload: results[0],
+                        message: "okay",
+                        reqid: res.locals.reqid,
+                    });
                 } else {
                     // retun the correct vars
-                    res.locals.success = false;
-                    // user does not exist
-                    res.locals.code = 214;
-                    res.json(responseFormat(res));
+                    res.status(404).json({
+                        message: "User not found",
+                        reqid: res.locals.reqid,
+                    });
                 }
             } else {
-                // if acually an error and push the error
+                // retun the correct vars
                 res.locals.errors.push({
+                    location: "/api/account/core.js/info-1",
                     code: error.code,
                     from: "mysql",
                 });
-                // retun the correct vars
-                res.locals.success = false;
-                // server error
-                res.locals.code = 500;
-                res.json(responseFormat(res));
+                res.status(500).json({
+                    message: "Server error",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
             }
         }
     );
@@ -226,37 +230,38 @@ exports.infoUpdate = function (req, res, next) {
                         req.session.DisplayName = DisplayName;
                         req.session.Access = 1;
                         // retun the correct vars
-                        res.locals.success = true;
-                        // success
-                        res.locals.code = 100;
-                        res.json(responseFormat(res));
+                        res.status(200).json({
+                            message: "okay",
+                            reqid: res.locals.reqid,
+                        });
                     } else {
-                        // push the error
+                        // retun the correct vars
                         res.locals.errors.push({
+                            location: "/api/account/core.js/infoUpdate-1",
                             code: error.code,
                             from: "mysql",
                         });
-                        // retun the correct vars
-                        res.locals.success = false;
-                        // server error
-                        res.locals.code = 500;
-                        res.json(responseFormat(res));
+                        res.status(500).json({
+                            message: "Server error",
+                            errors: res.locals.errors,
+                            reqid: res.locals.reqid,
+                        });
                     }
                 }
             );
         } else {
             // retun the correct vars
-            res.locals.success = false;
-            // manformed inputs
-            res.locals.code = 211;
-            res.json(responseFormat(res));
+            res.status(400).json({
+                message: "Invalid email or display name",
+                reqid: res.locals.reqid,
+            });
         }
     } else {
         // retun the correct vars
-        res.locals.success = false;
-        // missing inputs
-        res.locals.code = 210;
-        res.json(responseFormat(res));
+        res.status(400).json({
+            message: "Missing input values",
+            reqid: res.locals.reqid,
+        });
     }
 };
 
@@ -281,36 +286,37 @@ exports.password = function (req, res, next) {
                     // check if sucessfull
                     if (!error) {
                         // retun the correct vars
-                        res.locals.success = true;
-                        // success
-                        res.locals.code = 100;
-                        res.json(responseFormat(res));
+                        res.status(200).json({
+                            message: "okay",
+                            reqid: res.locals.reqid,
+                        });
                     } else {
-                        // push the error
+                        // retun the correct vars
                         res.locals.errors.push({
+                            location: "/api/account/core.js/infoUpdate-1",
                             code: error.code,
                             from: "mysql",
                         });
-                        // retun the correct vars
-                        res.locals.success = false;
-                        // server error
-                        res.locals.code = 500;
-                        res.json(responseFormat(res));
+                        res.status(500).json({
+                            message: "Server error",
+                            errors: res.locals.errors,
+                            reqid: res.locals.reqid,
+                        });
                     }
                 }
             );
         } else {
             // retun the correct vars
-            res.locals.success = false;
-            // password not secure
-            res.locals.code = 212;
-            res.json(responseFormat(res));
+            res.status(400).json({
+                message: "Password not secure",
+                reqid: res.locals.reqid,
+            });
         }
     } else {
         // retun the correct vars
-        res.locals.success = false;
-        // missing inputs
-        res.locals.code = 210;
-        res.json(responseFormat(res));
+        res.status(400).json({
+            message: "Missing input values",
+            reqid: res.locals.reqid,
+        });
     }
 };

@@ -16,7 +16,7 @@ router.get("/status", auth.simple(), status.home); // view
 router.get("/status/all", auth.simple(), status.all); // view
 
 // play routes
-router.get("/play", auth.simple(), play.temp); // view
+router.get("/play/:trackid", auth.simple(), play.track); // view
 
 // cue routes
 router.get("/cue", auth.simple(), cue.temp); // view
@@ -27,8 +27,5 @@ router.delete("/cue/:cueid", auth.edit(), cue.temp); // edit
 
 // track routes
 router.get("/track", auth.simple(), track.temp); // view
-
-// test route
-router.get("/play/test", play.test); // test
 
 module.exports = router;

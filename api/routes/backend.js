@@ -10,6 +10,5 @@ var info = require("../functions/backend/info");
 var auth = require("../middleware/auth");
 
 router.get("/grab/:time", auth.backend(), grab.core);
-router.get("/info/:trackid", auth.backend(), info.core);
 
 module.exports = router;
