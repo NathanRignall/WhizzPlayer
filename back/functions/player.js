@@ -36,8 +36,7 @@ function Player(opts) {
         // set the this vars
         this.status.playing = true;
         this.status.json = json;
-        this.status.file =
-            "/uploads/tracks/" + json.TrackID + "." + json.SongFile;
+        this.status.file = "/uploads/save/" + json.TrackID;
         // log the current satus
         console.log(
             JSON.stringify({

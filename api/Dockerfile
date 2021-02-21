@@ -1,8 +1,12 @@
-FROM node:14.15.5
+FROM node:14.15.5-buster
 
 # env vars
 ENV PORT=4000
 ENV NODE_ENV=production
+
+# update the system and install apps
+RUN apt-get update
+RUN apt-get install lame -y
 
 # create the app dir
 WORKDIR /usr/src/app

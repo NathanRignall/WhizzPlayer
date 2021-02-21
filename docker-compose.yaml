@@ -8,7 +8,7 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
-      NEXT_TELEMETRY_DISABLED: 1 
+      NEXT_TELEMETRY_DISABLED: 1
       PORT: 3000
     ports:
       - 3000:3000
@@ -22,6 +22,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
+    volumes:
+      - "./uploads/:/uploads"
     ports:
       - 4000:4000
   back:

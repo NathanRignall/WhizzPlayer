@@ -1,12 +1,15 @@
 // depedancies
 var express = require("express");
 var router = express.Router();
+var multer = require("multer");
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
 
 // functions
 var cue = require("../functions/app/cue");
 var play = require("../functions/app/play");
 var status = require("../functions/app/status");
-var track = require("../functions/app/track");
+var tracks = require("../functions/app/tracks");
 
 // middleware
 var auth = require("../middleware/auth");
@@ -26,6 +29,10 @@ router.put("/cue/:cueid", auth.edit(), cue.temp); // edit
 router.delete("/cue/:cueid", auth.edit(), cue.temp); // edit
 
 // track routes
-router.get("/track", auth.simple(), track.temp); // view
+router.get("/tracks", auth.simple(), tracks.list); // view
+router.post("/tracks", auth.edit(), tracks.create); // edit
+router.post("/tracks/file", auth.edit(), upload.single("track"), tracks.upload); //edit
+router.put("/tracks/:trackid", auth.edit(), tracks.edit); // edit
+router.delete("/tracks/:trackid", auth.edit(), tracks.delete); // edit
 
 module.exports = router;

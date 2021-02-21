@@ -5,7 +5,7 @@ var urlPlay = "http://back:5000/play/";
 exports.track = function (req, res, next) {
     var TrackID = req.params.trackid;
     db.query(
-        "SELECT TrackID, TrackName, SongFile FROM Tracks WHERE TrackID = ?",
+        "SELECT TrackID, TrackName FROM Tracks WHERE TrackID = ?",
         [TrackID],
         function (error, results, fields) {
             // check if successful
