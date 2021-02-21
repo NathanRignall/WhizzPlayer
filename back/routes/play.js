@@ -1,8 +1,5 @@
 var express = require("express");
 var router = express.Router();
-var axios = require("axios");
-
-var urlTrackInfo = "http://api/backend/info/";
 
 router.post("/", async function (req, res, next) {
     // get the info from json
