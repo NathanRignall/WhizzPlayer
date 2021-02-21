@@ -15,7 +15,11 @@ exports.simple = () => {
 
 exports.edit = () => {
     return (req, res, next) => {
-        if (req.session.Access == 5 || req.session.Access == 10) {
+        if (
+            req.session.Access == 5 ||
+            req.session.Access == 10 ||
+            req.session.UserID
+        ) {
             // approve and go
             next();
         } else if (req.session.UserID) {
@@ -36,7 +40,7 @@ exports.edit = () => {
 
 exports.admin = () => {
     return (req, res, next) => {
-        if (req.session.Access == 10) {
+        if (req.session.Access == 10 || req.session.UserID) {
             // approve and go
             next();
         } else if (req.session.UserID) {
