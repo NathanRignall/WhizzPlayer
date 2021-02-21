@@ -1,6 +1,7 @@
 var axios = require("axios");
 
 var urlPlay = "http://back:5000/play/";
+var urlHalt = "http://back:5000/halt/";
 
 exports.track = function (req, res, next) {
     var TrackID = req.params.trackid;
@@ -90,4 +91,57 @@ exports.track = function (req, res, next) {
             }
         }
     );
+};
+
+exports.halt = function (req, res, next) {
+    axios
+        .get(urlHalt)
+        .then((response) => {
+            // retun the correct vars
+            res.status(200).json({
+                message: "okay",
+                reqid: res.locals.reqid,
+            });
+        })
+        .catch((error) => {
+            if (error.response) {
+                if (error.response.status != 500) {
+                    res.status(error.response.status).json({
+                        message: error.response.data.message,
+                        reqid: res.locals.reqid,
+                    });
+                } else {
+                    res.locals.errors.push(error.response.data.errors);
+                    res.status(500).json({
+                        message: error.response.data.message,
+                        errors: res.locals.errors,
+                        reqid: res.locals.reqid,
+                    });
+                }
+            } else if (error.request) {
+                // no response
+                res.locals.errors.push({
+                    location: "/api/app/play.js/halt-1",
+                    code: error.code,
+                    from: "axios",
+                });
+                res.status(500).json({
+                    message: "Server error",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
+            } else {
+                // actual axios error
+                res.locals.errors.push({
+                    location: "/api/app/play.js/halt-2",
+                    code: error.code,
+                    from: "axios",
+                });
+                res.status(500).json({
+                    message: "Server error",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
+            }
+        });
 };

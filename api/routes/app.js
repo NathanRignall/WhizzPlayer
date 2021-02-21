@@ -19,6 +19,7 @@ router.get("/status", auth.simple(), status.home); // view
 router.get("/status/all", auth.simple(), status.all); // view
 
 // play routes
+router.get("/play/halt", auth.simple(), play.halt); // view
 router.get("/play/:trackid", auth.simple(), play.track); // view
 
 // cue routes

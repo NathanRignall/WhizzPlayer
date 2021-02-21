@@ -12,6 +12,7 @@ global.player = player;
 // import the routes after globals
 var indexRouter = require("./routes/index");
 var playRouter = require("./routes/play");
+var haltRouter = require("./routes/halt");
 var testRouter = require("./routes/test");
 
 // setup the app
@@ -31,7 +32,7 @@ app.use(function (req, res, next) {
 // finally load the routes
 app.use("/", indexRouter);
 app.use("/play", playRouter);
-app.use("/status", playRouter);
+app.use("/halt", haltRouter);
 app.use("/test", testRouter);
 
 // export app

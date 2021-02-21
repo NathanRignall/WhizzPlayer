@@ -46,9 +46,9 @@ function Player(opts) {
         );
         // check if the file exists
         if (fs.existsSync(this.status.file)) {
-            var process = spawn("mpg123", [this.status.file], this.options);
+            this.process = spawn("mpg123", [this.status.file], this.options);
             // make sure the process started
-            if (!process) {
+            if (!this.process) {
                 this.status.playing = false;
                 console.log(
                     JSON.stringify({
@@ -67,7 +67,7 @@ function Player(opts) {
                 };
             }
             // on process close
-            process.on("close", (code) => {
+            this.process.on("close", (code) => {
                 this.status.playing = false;
                 console.log(
                     JSON.stringify({
@@ -98,6 +98,36 @@ function Player(opts) {
                     location: "/backend/player.js/play-4",
                     from: "fs",
                 },
+            };
+        }
+    };
+
+    this.halt = function () {
+        if (this.process) {
+            if (this.status.playing == true) {
+                this.process.kill();
+                this.status.playing = false;
+                console.log(
+                    JSON.stringify({
+                        action: "killed",
+                        message: "Playback ended",
+                        status: this.status,
+                    })
+                );
+                return {
+                    success: true,
+                    message: "Halted track",
+                };
+            } else {
+                return {
+                    success: false,
+                    message: "No track currently playing",
+                };
+            }
+        } else {
+            return {
+                success: false,
+                message: "No track currently playing",
             };
         }
     };
