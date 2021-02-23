@@ -6,7 +6,7 @@ var storage = multer.memoryStorage();
 var upload = multer({ storage: storage });
 
 // functions
-var cue = require("../functions/app/cue");
+var cues = require("../functions/app/cues");
 var play = require("../functions/app/play");
 var status = require("../functions/app/status");
 var tracks = require("../functions/app/tracks");
@@ -23,11 +23,11 @@ router.get("/play/halt", auth.simple(), play.halt); // view
 router.get("/play/:trackid", auth.simple(), play.track); // view
 
 // cue routes
-router.get("/cue", auth.simple(), cue.temp); // view
-router.post("/cue", auth.edit(), cue.temp); // edit
-router.get("/cue/:cueid", auth.simple(), cue.temp); // view
-router.put("/cue/:cueid", auth.edit(), cue.temp); // edit
-router.delete("/cue/:cueid", auth.edit(), cue.temp); // edit
+router.get("/cues", auth.simple(), cues.list); // view
+router.post("/cues", auth.edit(), cues.create); // edit
+router.get("/cues/:cueid", auth.simple(), cues.info); // view
+router.put("/cues/:cueid", auth.edit(), cues.edit); // edit
+router.delete("/cues/:cueid", auth.edit(), cues.delete); // edit
 
 // track routes
 router.get("/tracks", auth.simple(), tracks.list); // view

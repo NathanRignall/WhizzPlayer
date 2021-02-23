@@ -238,7 +238,7 @@ exports.edit = function (req, res, next) {
                 function (error, results, fields) {
                     // check if sucessfull
                     if (!error) {
-                        if (results.changedRows > 0) {
+                        if (results.affectedRows > 0) {
                             // retun the correct vars
                             res.status(200).json({
                                 message: "okay",
@@ -292,7 +292,7 @@ exports.delete = function (req, res, next) {
         function (error, results, fields) {
             // check if sucessfull
             if (!error) {
-                if (results.changedRows > 0) {
+                if (results.affectedRows > 0) {
                     // retun the correct vars
                     res.status(200).json({
                         message: "okay",
