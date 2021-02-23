@@ -13,6 +13,7 @@ global.player = player;
 var indexRouter = require("./routes/index");
 var playRouter = require("./routes/play");
 var haltRouter = require("./routes/halt");
+var statusRouter = require("./routes/status");
 var testRouter = require("./routes/test");
 
 // setup the app
@@ -33,6 +34,7 @@ app.use(function (req, res, next) {
 app.use("/", indexRouter);
 app.use("/play", playRouter);
 app.use("/halt", haltRouter);
+app.use("/status", statusRouter);
 app.use("/test", testRouter);
 
 // export app
