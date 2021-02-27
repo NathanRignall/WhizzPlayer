@@ -4,6 +4,7 @@ var session = require("express-session");
 var mysql = require("mysql");
 var validator = require("validator");
 var crypto = require("crypto");
+const cors = require("cors");
 var logger = require("morgan");
 var responseFormat = require("./functions/response");
 var idgen = require("./functions/idgen");
@@ -51,6 +52,24 @@ app.use(function (req, res, next) {
     res.locals.reqid = crypto.randomBytes(20).toString("hex");
     next();
 });
+
+// setup cors vars
+const whitelist = ["http://localhost:3000", "http://10.0.15.228:3000"];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else if (origin == null) {
+            callback(null, true);
+        } else {
+            console.log(origin);
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+};
+app.use(cors(corsOptions));
 
 // setup the session
 app.use(
