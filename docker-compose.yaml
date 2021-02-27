@@ -8,10 +8,8 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
-      NEXT_TELEMETRY_DISABLED: 1 
+      NEXT_TELEMETRY_DISABLED: 1
       PORT: 3000
-    ports:
-      - 3000:3000
   api:
     image: whizzplayer:api
     build:
@@ -22,8 +20,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-    ports:
-      - 4000:4000
   back:
     image: whizzplayer:back
     build:
@@ -38,8 +34,6 @@ services:
       - "./uploads/:/uploads"
     devices:
       - "/dev/snd"
-    ports:
-      - 5000:5000
   proxy:
     image: whizzplayer:proxy
     build:
