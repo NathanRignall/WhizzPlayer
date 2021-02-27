@@ -37,6 +37,7 @@ var indexRouter = require("./routes/index");
 var accountRouter = require("./routes/account");
 var appRouter = require("./routes/app");
 var settingsRouter = require("./routes/settings");
+var backendRouter = require("./routes/backend");
 
 // setup the app
 var app = express();
@@ -45,10 +46,10 @@ var app = express();
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(function (req, res, next) {
-    res.locals.success = false;
     res.locals.errors = [];
-    res.locals.logID = crypto.randomBytes(20).toString("hex");
+    res.locals.reqid = crypto.randomBytes(20).toString("hex");
     next();
 });
 
@@ -94,6 +95,7 @@ app.use("/", indexRouter);
 app.use("/account", accountRouter);
 app.use("/app", appRouter);
 app.use("/settings", settingsRouter);
+app.use("/backend", backendRouter);
 
 // export app
 module.exports = app;

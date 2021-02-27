@@ -1,23 +1,147 @@
 var axios = require("axios");
 
-var urlTestPlay = "http://back:5000/test/play/";
+var urlPlay = "http://back:5000/play/";
+var urlHalt = "http://back:5000/halt/";
 
-exports.temp = function (req, res, next) {
-    res.send("temp");
+exports.track = function (req, res, next) {
+    var TrackID = req.params.trackid;
+    db.query(
+        "SELECT TrackID, TrackName FROM Tracks WHERE TrackID = ?",
+        [TrackID],
+        function (error, results, fields) {
+            // check if successful
+            if (!error) {
+                // check if the track actually exists in the system
+                if (results.length == 1) {
+                    axios
+                        .post(urlPlay, results[0])
+                        .then((response) => {
+                            if (response.status == 200) {
+                                // retun the correct vars
+                                res.status(200).json({
+                                    message: "okay",
+                                    reqid: res.locals.reqid,
+                                });
+                            } else {
+                                // retun the correct vars
+                                res.locals.errors.push(response.data.errors);
+                                res.status(500).json({
+                                    message: response.data.message,
+                                    errors: res.locals.errors,
+                                    reqid: res.locals.reqid,
+                                });
+                            }
+                        })
+                        .catch((error) => {
+                            if (error.response) {
+                                // Catch not 200 error
+                                res.locals.errors.push(
+                                    error.response.data.errors
+                                );
+                                res.status(500).json({
+                                    message: error.response.data.message,
+                                    errors: res.locals.errors,
+                                    reqid: res.locals.reqid,
+                                });
+                            } else if (error.request) {
+                                // no response
+                                res.locals.errors.push({
+                                    location: "/api/app/play.js/track-1",
+                                    code: error.code,
+                                    from: "axios",
+                                });
+                                res.status(500).json({
+                                    message: "Server error",
+                                    errors: res.locals.errors,
+                                    reqid: res.locals.reqid,
+                                });
+                            } else {
+                                // actual axios error
+                                res.locals.errors.push({
+                                    location: "/api/app/play.js/track-2",
+                                    code: error.code,
+                                    from: "axios",
+                                });
+                                res.status(500).json({
+                                    message: "Server error",
+                                    errors: res.locals.errors,
+                                    reqid: res.locals.reqid,
+                                });
+                            }
+                        });
+                } else {
+                    // retun the correct vars
+                    res.status(404).json({
+                        message: "Track not found",
+                        reqid: res.locals.reqid,
+                    });
+                }
+            } else {
+                // retun the correct vars
+                res.locals.errors.push({
+                    location: "/api/app/play.js/track-2",
+                    code: error.code,
+                    from: "mysql",
+                });
+                res.status(500).json({
+                    message: "Server error",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
+            }
+        }
+    );
 };
 
-exports.test = function (req, res, next) {
+exports.halt = function (req, res, next) {
     axios
-        .get(urlTestPlay)
+        .get(urlHalt)
         .then((response) => {
-            res.locals.success = true;
-            res.locals.code = 100;
-            res.json(responseFormat(res));
+            // retun the correct vars
+            res.status(200).json({
+                message: "okay",
+                reqid: res.locals.reqid,
+            });
         })
         .catch((error) => {
-            res.locals.errors.push({ code: error.code, from: "axios" });
-            res.locals.success = false;
-            res.locals.code = 500;
-            res.json(responseFormat(res));
+            if (error.response) {
+                if (error.response.status != 500) {
+                    res.status(error.response.status).json({
+                        message: error.response.data.message,
+                        reqid: res.locals.reqid,
+                    });
+                } else {
+                    res.locals.errors.push(error.response.data.errors);
+                    res.status(500).json({
+                        message: error.response.data.message,
+                        errors: res.locals.errors,
+                        reqid: res.locals.reqid,
+                    });
+                }
+            } else if (error.request) {
+                // no response
+                res.locals.errors.push({
+                    location: "/api/app/play.js/halt-1",
+                    code: error.code,
+                    from: "axios",
+                });
+                res.status(500).json({
+                    message: "Server error",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
+            } else {
+                // actual axios error
+                res.locals.errors.push({
+                    location: "/api/app/play.js/halt-2",
+                    code: error.code,
+                    from: "axios",
+                });
+                res.status(500).json({
+                    message: "Server error",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
+            }
         });
 };
