@@ -10,6 +10,8 @@ services:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
       PORT: 3000
+    ports:
+      - 3000
   api:
     image: whizzplayer:api
     build:
@@ -22,6 +24,8 @@ services:
       PORT: 4000
     volumes:
       - "./uploads/:/uploads"
+    ports:
+      - 4000
   back:
     image: whizzplayer:back
     build:
@@ -36,6 +40,8 @@ services:
       - "./uploads/:/uploads"
     devices:
       - "/dev/snd"
+    ports:
+      - 5000
   proxy:
     image: whizzplayer:proxy
     build:
