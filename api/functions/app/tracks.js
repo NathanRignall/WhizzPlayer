@@ -40,6 +40,55 @@ exports.list = function (req, res, next) {
     );
 };
 
+exports.search = function (req, res, next) {
+    var query = req.query.search;
+
+    if (query) {
+        db.query(
+            "SELECT * FROM Tracks WHERE TrackName LIKE CONCAT(?,  '%') LIMIT 10",
+            [query],
+            function (error, results, fields) {
+                // check if sucessfull
+                if (!error) {
+                    if (results.length > 0) {
+                        // retun the correct vars
+                        res.status(200).json({
+                            payload: results,
+                            message: "okay",
+                            reqid: res.locals.reqid,
+                        });
+                    } else {
+                        // retun the correct vars
+                        res.status(404).json({
+                            payload: [],
+                            message: "No track found",
+                            reqid: res.locals.reqid,
+                        });
+                    }
+                } else {
+                    // retun the correct vars
+                    res.locals.errors.push({
+                        location: "/api/account/tracks.js/search-1",
+                        code: error.code,
+                        from: "mysql",
+                    });
+                    res.status(500).json({
+                        message: "Server error",
+                        errors: res.locals.errors,
+                        reqid: res.locals.reqid,
+                    });
+                }
+            }
+        );
+    } else {
+        // retun the correct vars
+        res.status(400).json({
+            message: "No search query",
+            reqid: res.locals.reqid,
+        });
+    }
+};
+
 exports.upload = async function (req, res, next) {
     var tempFileID = crypto.randomBytes(20).toString("hex");
 

@@ -35,5 +35,6 @@ router.post("/tracks", auth.edit(), tracks.create); // edit
 router.post("/tracks/file", auth.edit(), upload.single("track"), tracks.upload); //edit
 router.put("/tracks/:trackid", auth.edit(), tracks.edit); // edit
 router.delete("/tracks/:trackid", auth.edit(), tracks.delete); // edit
+router.get("/tracks/lookup", auth.simple(), tracks.search); // view
 
 module.exports = router;
