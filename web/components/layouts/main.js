@@ -8,6 +8,7 @@ const Layout = (props) => (
     <div>
         <CoreHeader title={props.title} />
         <CoreNavbar />
+        <br />
         <Container>{props.children}</Container>
         <CoreFooter />
     </div>

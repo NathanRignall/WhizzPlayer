@@ -1,16 +1,16 @@
 import Layout from "../components/layouts/main";
 
+import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
+
+import { Jumbotron, Container, Badge } from "react-bootstrap";
 
 const fetcher = async (url) => {
     const res = await fetch(url);
 
-    // If the status code is not in the range 200-299,
-    // we still try to parse and throw it.
     if (!res.ok) {
         const error = new Error("An error occurred while fetching the data.");
-        // Attach extra info to the error object.
         error.info = await res.json();
         error.status = res.status;
         throw error;
@@ -19,7 +19,29 @@ const fetcher = async (url) => {
     return res.json();
 };
 
-export default function Main() {
+function StatusHeader() {
+    return (
+        <Jumbotron>
+            <Container>
+                <h1>Whizz Player</h1>
+                <Badge className="mb-2" variant="primary">
+                    {process.env.NEXT_PUBLIC_VERSION}
+                </Badge>
+                <Badge className="ml-1 mb-2" variant="success">
+                    By Nathan Rignall
+                </Badge>
+                <p>
+                    Track scheduler system, create cues and upload audio files
+                    to schedule audio playback
+                </p>
+            </Container>
+        </Jumbotron>
+    );
+}
+
+export function StatusArea() {
+    const router = useRouter();
+
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/app/status",
         fetcher
@@ -27,7 +49,13 @@ export default function Main() {
 
     if (error) {
         console.log(error);
-        return <>errror</>;
+        if (error.status == 401) {
+            router.push("/login");
+        } else if (error.status == 403) {
+            return <>errror auth</>;
+        } else {
+            return <>errror</>;
+        }
     }
 
     if (!data) {
@@ -39,4 +67,13 @@ export default function Main() {
     } else {
         return <>WTF</>;
     }
+}
+
+export default function Main() {
+    return (
+        <Layout title="Tracks">
+            <StatusHeader />
+            <StatusArea />
+        </Layout>
+    );
 }
