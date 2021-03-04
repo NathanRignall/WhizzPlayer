@@ -54,7 +54,11 @@ app.use(function (req, res, next) {
 });
 
 // setup cors vars
-const whitelist = ["http://localhost:3000", "http://10.0.15.228:3000"];
+const whitelist = [
+    "http://localhost:3000",
+    "http://10.0.15.228:3000",
+    "http://10.0.15.228",
+];
 
 const corsOptions = {
     origin: function (origin, callback) {
