@@ -4,7 +4,9 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
 
-import { Jumbotron, Container, Badge } from "react-bootstrap";
+import { TrackSearch } from "../components/common/functions";
+
+import { Jumbotron, Container, Badge, Card } from "react-bootstrap";
 
 const fetcher = async (url) => {
     const res = await fetch(url);
@@ -74,6 +76,12 @@ export default function Main() {
         <Layout title="Tracks">
             <StatusHeader />
             <StatusArea />
+            <Card>
+                <Card.Header>Instant Play</Card.Header>
+                <Card.Body>
+                    <TrackSearch />
+                </Card.Body>
+            </Card>
         </Layout>
     );
 }

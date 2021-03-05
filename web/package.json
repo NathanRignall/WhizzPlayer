@@ -8,15 +8,15 @@
     "start": "next start"
   },
   "dependencies": {
-    "@hookform/error-message": "^0.0.5",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "formik": "^2.2.6",
     "next": "10.0.6",
     "react": "17.0.1",
     "react-bootstrap": "^1.5.0",
+    "react-bootstrap-typeahead": "^5.1.4",
+    "react-datepicker": "^3.6.0",
     "react-dom": "17.0.1",
-    "react-hook-form": "^6.15.4",
     "swr": "^0.4.2",
     "yup": "^0.32.9"
   }
