@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 
 import { fetcher } from "../components/common/functions";
+import { ErrorDisplayer } from "../components/common/errors";
+import CueCreateModal from "../components/custom/manageCues";
 
 import {
     Card,
@@ -168,41 +170,39 @@ export function CueList() {
         fetcher
     );
 
-    if (error) {
-        console.log(error);
-        if (error.status == 401) {
-            return <>errror need to login</>;
-        } else if (error.status == 403) {
-            return <>errror auth</>;
-        } else {
-            return <>errror</>;
-        }
-    }
+    if (data) {
+        const CueFormedList = data.payload.map((item) => (
+            <Cue key={item.CueID} info={item} />
+        ));
 
-    if (!data) {
         return (
-            <div className="text-center">
-                <Spinner animation="border" />
-            </div>
-        );
-    }
+            <>
+                <h1>Cue List</h1>
+                <div>
+                    <CueCreateModal />{" "}
+                    <Button variant="danger">Delete Selected Cues</Button>
+                </div>
+                <br />
 
-    if (data.payload.length > 0) {
-        return data.payload.map((item) => <Cue key={item.CueID} info={item} />);
+                <ErrorDisplayer error={error} />
+                {data.payload.length > 0 ? CueFormedList : "No cues"}
+            </>
+        );
     } else {
-        return <>No Cues need to make one</>;
+        return (
+            <>
+                <div className="text-center">
+                    <Spinner animation="border" />
+                </div>
+                <ErrorDisplayer error={error} />
+            </>
+        );
     }
 }
 
 export default function Main() {
     return (
         <Layout title="Cues">
-            <h1>Cue List</h1>
-            <div>
-                <Button variant="primary">Create A Cue</Button>{" "}
-                <Button variant="danger">Delete Selected Cues</Button>
-            </div>
-            <br />
             <CueList />
         </Layout>
     );
