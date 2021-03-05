@@ -8,6 +8,6 @@ var grab = require("../functions/backend/grab");
 // middleware
 var auth = require("../middleware/auth");
 
-router.get("/grab/:time", auth.backend(), grab.core);
+router.get("/grab", auth.backend(), grab.core);
 
 module.exports = router;

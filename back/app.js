@@ -2,8 +2,22 @@
 var express = require("express");
 var logger = require("morgan");
 var crypto = require("crypto");
+var CronJob = require("cron").CronJob;
 var responseFormat = require("./functions/response");
 var player = require("./functions/player")();
+var cronTasks = require("./functions/cron");
+
+// cron check job
+var job = new CronJob(
+    "0 * * * * *",
+    function () {
+        cronTasks.grabTrack();
+    },
+    null,
+    true,
+    "America/Los_Angeles"
+);
+job.start();
 
 // make the some modules global
 global.responseFormat = responseFormat;
