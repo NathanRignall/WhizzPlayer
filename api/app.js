@@ -21,6 +21,7 @@ var connection = mysql.createConnection({
     database: process.env.DB_DB,
     supportBigNumbers: true,
     bigNumberStrings: true,
+    dateStrings: true,
 });
 connection.connect();
 global.db = connection;
