@@ -47,7 +47,7 @@ exports.create = function (req, res, next) {
     var RepeatFriday = json.RepeatFriday ? json.RepeatFriday : false;
     var RepeatSaturday = json.RepeatSaturday ? json.RepeatSaturday : false;
     var RepeatSunday = json.RepeatSunday ? json.RepeatSunday : false;
-    var Enabled = json.Enabled ? json.Enabled : false;
+    var Enabled = json.Enabled ? json.Enabled : true;
     // check the fields are present
     if (CueName && TrackID && PlayTime) {
         // check the display name is not funny
@@ -168,7 +168,7 @@ exports.edit = function (req, res, next) {
     var RepeatFriday = json.RepeatFriday ? json.RepeatFriday : false;
     var RepeatSaturday = json.RepeatSaturday ? json.RepeatSaturday : false;
     var RepeatSunday = json.RepeatSunday ? json.RepeatSunday : false;
-    var Enabled = json.Enabled ? json.Enabled : false;
+    var Enabled = json.Enabled ? json.Enabled : true;
     // check the fields are present
     if (CueName && TrackID && PlayTime) {
         // check the display name is not funny
