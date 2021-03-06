@@ -225,12 +225,9 @@ export default function CueCreateModal(props) {
                                         placeholder="Enter CueName"
                                         value={values.CueName}
                                         onChange={handleChange}
-                                        isInvalid={errors.CueName}
                                     />
 
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.CueName}
-                                    </Form.Control.Feedback>
+                                    {errors.CueName}
                                 </Form.Group>
 
                                 <Form.Group controlId="validationFormik05">
