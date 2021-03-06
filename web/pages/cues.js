@@ -163,8 +163,6 @@ const Cue = (props) => (
 );
 
 export function CueList() {
-    const router = useRouter();
-
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/app/cues",
         fetcher

@@ -36,7 +36,7 @@ export function FormExample() {
                 headers: { "Content-Type": "application/json" },
             })
             .then((response) => {
-                router.push("/");
+                window.location.replace("/");
                 actions.setSubmitting(false);
                 handleServerResponse(false, false, response.data.message);
             })
@@ -64,6 +64,7 @@ export function FormExample() {
                     );
                     actions.setSubmitting(false);
                 } else {
+                    console.error(error);
                     handleServerResponse(
                         true,
                         true,

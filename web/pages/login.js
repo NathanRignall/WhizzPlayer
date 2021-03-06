@@ -1,10 +1,10 @@
 import Layout from "../components/layouts/base";
 
-import Jumbotron from "react-bootstrap/Jumbotron";
-import Container from "react-bootstrap/Container";
-import Badge from "react-bootstrap/Badge";
+import useSWR, { mutate } from "swr";
 
 import { FormExample } from "../components/custom/loginForm";
+
+import { Jumbotron, Container, Badge } from "react-bootstrap";
 
 export default function Main() {
     return (

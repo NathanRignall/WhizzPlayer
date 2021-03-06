@@ -4,22 +4,10 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
 
-import { TrackSearch } from "../components/common/functions";
+import { fetcher, TrackSearch } from "../components/common/functions";
+import { ErrorDisplayer } from "../components/common/errors";
 
-import { Jumbotron, Container, Badge, Card } from "react-bootstrap";
-
-const fetcher = async (url) => {
-    const res = await fetch(url);
-
-    if (!res.ok) {
-        const error = new Error("An error occurred while fetching the data.");
-        error.info = await res.json();
-        error.status = res.status;
-        throw error;
-    }
-
-    return res.json();
-};
+import { Jumbotron, Container, Badge, Card, Spinner } from "react-bootstrap";
 
 function StatusHeader() {
     return (
@@ -42,32 +30,28 @@ function StatusHeader() {
 }
 
 export function StatusArea() {
-    const router = useRouter();
-
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/app/status",
         fetcher
     );
 
-    if (error) {
-        console.log(error);
-        if (error.status == 401) {
-            router.push("/login");
-        } else if (error.status == 403) {
-            return <>errror auth</>;
-        } else {
-            return <>errror</>;
-        }
-    }
-
-    if (!data) {
-        return <>loading</>;
-    }
     if (data) {
-        console.log(data);
-        return <>data</>;
+        console.log(data.payload);
+        return (
+            <>
+                <h1>Data</h1>
+                <ErrorDisplayer error={error} />
+            </>
+        );
     } else {
-        return <>WTF</>;
+        return (
+            <>
+                <div className="text-center">
+                    <Spinner animation="border" />
+                </div>
+                <ErrorDisplayer error={error} />
+            </>
+        );
     }
 }
 

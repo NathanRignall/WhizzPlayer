@@ -45,7 +45,7 @@ export default function CoreNavbar(props) {
                 </Nav>
 
                 <Nav>
-                    <Nav.Link href="#deets">Username</Nav.Link>
+                    <Nav.Link href="#deets">{props.DisplayName}</Nav.Link>
 
                     <Nav.Link eventKey={2} href="#memes">
                         Logout
