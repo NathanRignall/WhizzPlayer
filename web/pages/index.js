@@ -6,6 +6,7 @@ import useSWR from "swr";
 
 import { fetcher, TrackSearch } from "../components/common/functions";
 import { ErrorDisplayer } from "../components/common/errors";
+import InstantPlay from "../components/custom/instantPlay";
 
 import { Jumbotron, Container, Badge, Card, Spinner } from "react-bootstrap";
 
@@ -63,7 +64,7 @@ export default function Main() {
             <Card>
                 <Card.Header>Instant Play</Card.Header>
                 <Card.Body>
-                    <TrackSearch />
+                    <InstantPlay />
                 </Card.Body>
             </Card>
         </Layout>
