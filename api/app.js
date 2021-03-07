@@ -8,10 +8,12 @@ const cors = require("cors");
 var logger = require("morgan");
 var responseFormat = require("./functions/response");
 var idgen = require("./functions/idgen");
+var auth = require("./middleware/auth");
 
 // make the some modules global
 global.responseFormat = responseFormat;
 global.idgen = idgen;
+global.auth = auth;
 
 // connect to the mysql database
 var connection = mysql.createConnection({
@@ -101,6 +103,10 @@ app.use("/account", accountRouter);
 app.use("/app", appRouter);
 app.use("/settings", settingsRouter);
 app.use("/backend", backendRouter);
+
+// last load static paths
+app.use("/uploads", auth.simple());
+app.use("/uploads", express.static("/uploads"));
 
 // export app
 module.exports = app;

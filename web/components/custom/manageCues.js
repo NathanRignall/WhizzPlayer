@@ -106,7 +106,7 @@ const DateSelector = ({ ...props }) => {
     );
 };
 
-export default function CueCreateModal(props) {
+export function CueCreateModal(props) {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -210,10 +210,7 @@ export default function CueCreateModal(props) {
                         isSubmitting,
                     }) => (
                         <Form noValidate onSubmit={handleSubmit}>
-                            <Modal.Header
-                                className="bg-success text-white"
-                                closeButton
-                            >
+                            <Modal.Header className="bg-success text-white">
                                 <Modal.Title>Create Cue</Modal.Title>
                             </Modal.Header>
 
@@ -280,6 +277,78 @@ export default function CueCreateModal(props) {
                         </Form>
                     )}
                 </Formik>
+            </Modal>
+        </>
+    );
+}
+
+export function CueEditModal(props) {
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    return (
+        <>
+            <Button variant="primary" onClick={handleShow}>
+                Edit Cue
+            </Button>
+
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Modal title</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    I will not close if you click outside me. Don't even try to
+                    press escape key.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary">Understood</Button>
+                </Modal.Footer>
+            </Modal>
+        </>
+    );
+}
+
+export function CueDeleteModal(props) {
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    return (
+        <>
+            <Button variant="danger" onClick={handleShow}>
+                Delete Cue
+            </Button>
+
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Are you sure?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    I will not close if you click outside me. Don't even try to
+                    press escape key.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary">Understood</Button>
+                </Modal.Footer>
             </Modal>
         </>
     );

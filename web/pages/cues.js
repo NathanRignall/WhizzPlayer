@@ -6,7 +6,11 @@ import useSWR from "swr";
 
 import { fetcher } from "../components/common/functions";
 import { ErrorDisplayer } from "../components/common/errors";
-import CueCreateModal from "../components/custom/manageCues";
+import {
+    CueCreateModal,
+    CueEditModal,
+    CueDeleteModal,
+} from "../components/custom/manageCues";
 
 import {
     Card,
@@ -51,78 +55,6 @@ const CueInfoItem = (props) => (
     </Card>
 );
 
-function CueDeleteModal(props) {
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-    return (
-        <>
-            <Button variant="danger" onClick={handleShow}>
-                Delete Cue
-            </Button>
-
-            <Modal
-                show={show}
-                onHide={handleClose}
-                backdrop="static"
-                keyboard={false}
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title>Modal title</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    I will not close if you click outside me. Don't even try to
-                    press escape key.
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary">Understood</Button>
-                </Modal.Footer>
-            </Modal>
-        </>
-    );
-}
-
-function CueEditModal(props) {
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-    return (
-        <>
-            <Button variant="primary" onClick={handleShow}>
-                Edit Cue
-            </Button>
-
-            <Modal
-                show={show}
-                onHide={handleClose}
-                backdrop="static"
-                keyboard={false}
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title>Modal title</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    I will not close if you click outside me. Don't even try to
-                    press escape key.
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary">Understood</Button>
-                </Modal.Footer>
-            </Modal>
-        </>
-    );
-}
-
 const Cue = (props) => (
     <>
         <Card>
@@ -146,16 +78,33 @@ const Cue = (props) => (
                         text={props.info.Repeats ? "Enabled" : "Disabled"}
                     />
                 </CardDeck>
+
                 {props.info.Repeats ? (
-                    <>
+                    <div className="text-center">
                         <br />
                         <CueRepeatGrid info={props.info} />
-                    </>
+                    </div>
                 ) : (
                     ""
                 )}
+
                 <br />
-                <CueEditModal /> <CueDeleteModal />
+
+                <div className="text-center">
+                    <audio controls>
+                        <source
+                            src={"/api/uploads/save/" + props.info.TrackID}
+                            type="audio/mpeg"
+                        />
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+
+                <br />
+
+                <div className="text-right">
+                    <CueEditModal /> <CueDeleteModal />
+                </div>
             </Card.Body>
         </Card>
         <br />
@@ -175,13 +124,6 @@ export function CueList() {
 
         return (
             <>
-                <h1>Cue List</h1>
-                <div>
-                    <CueCreateModal />{" "}
-                    <Button variant="danger">Delete Selected Cues</Button>
-                </div>
-                <br />
-
                 <ErrorDisplayer error={error} />
                 {data.payload.length > 0 ? CueFormedList : "No cues"}
             </>
@@ -189,10 +131,10 @@ export function CueList() {
     } else {
         return (
             <>
+                <ErrorDisplayer error={error} />
                 <div className="text-center">
                     <Spinner animation="border" />
                 </div>
-                <ErrorDisplayer error={error} />
             </>
         );
     }
@@ -201,6 +143,15 @@ export function CueList() {
 export default function Main() {
     return (
         <Layout title="Cues">
+            <h1>Cue List</h1>
+
+            <div>
+                <CueCreateModal />{" "}
+                <Button variant="danger">Delete Selected Cues</Button>
+            </div>
+
+            <br />
+
             <CueList />
         </Layout>
     );

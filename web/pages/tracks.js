@@ -7,7 +7,7 @@ import useSWR from "swr";
 import { fetcher } from "../components/common/functions";
 import { ErrorDisplayer } from "../components/common/errors";
 
-import { Card, ListGroup, Spinner, Button, Modal } from "react-bootstrap";
+import { Card, Col, Row, Spinner, Button } from "react-bootstrap";
 
 const Track = (props) => (
     <>
@@ -16,7 +16,17 @@ const Track = (props) => (
                 {props.info.TrackName}
             </Card.Header>
 
-            <Card.Body>File</Card.Body>
+            <Card.Body>
+                <div className="text-center">
+                    <audio controls>
+                        <source
+                            src={"/api/uploads/save/" + props.info.TrackID}
+                            type="audio/mpeg"
+                        />
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </Card.Body>
         </Card>
         <br />
     </>
@@ -30,7 +40,9 @@ export function TrackList() {
 
     if (data) {
         const CueFormedList = data.payload.map((item) => (
-            <Track key={item.TrackID} info={item} />
+            <Col key={item.TrackID} xs={6}>
+                <Track info={item} />
+            </Col>
         ));
 
         return (
@@ -44,7 +56,12 @@ export function TrackList() {
                 <br />
 
                 <ErrorDisplayer error={error} />
-                {data.payload.length > 0 ? CueFormedList : "No tracks"}
+
+                {data.payload.length > 0 ? (
+                    <Row>{CueFormedList}</Row>
+                ) : (
+                    "No tracks"
+                )}
             </>
         );
     } else {
