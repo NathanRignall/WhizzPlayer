@@ -1,7 +1,5 @@
 import Layout from "../components/layouts/main";
 
-import { useState } from "react";
-import { useRouter } from "next/router";
 import useSWR from "swr";
 
 import { fetcher } from "../components/common/functions";
@@ -18,7 +16,7 @@ import {
     ListGroup,
     Spinner,
     Button,
-    Modal,
+    Badge,
 } from "react-bootstrap";
 
 const CueRepeatItem = (props) => (
@@ -59,14 +57,22 @@ const Cue = (props) => (
     <>
         <Card>
             <Card.Header
-                as="h4"
                 className={
                     props.info.Enabled
                         ? "bg-success text-white"
                         : "bg-secondary text-white"
                 }
             >
-                {props.info.CueName}
+                <h4>{props.info.CueName}</h4>
+
+                <div>
+                    <Badge
+                        className="mb-2"
+                        variant={props.info.Enabled ? "light" : "dark"}
+                    >
+                        {props.info.Enabled ? "Enabled" : "Disabled"}
+                    </Badge>
+                </div>
             </Card.Header>
 
             <Card.Body>
@@ -103,7 +109,8 @@ const Cue = (props) => (
                 <br />
 
                 <div className="text-right">
-                    <CueEditModal /> <CueDeleteModal />
+                    <CueEditModal info={props.info} />{" "}
+                    <CueDeleteModal info={props.info} />
                 </div>
             </Card.Body>
         </Card>
@@ -147,7 +154,6 @@ export default function Main() {
 
             <div>
                 <CueCreateModal />{" "}
-                <Button variant="danger">Delete Selected Cues</Button>
             </div>
 
             <br />
