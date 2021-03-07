@@ -1,8 +1,6 @@
 import Link from "next/link";
 
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
+import { Navbar, Nav, NavDropdown, Button } from "react-bootstrap";
 
 export default function CoreNavbar(props) {
     return (
@@ -45,11 +43,10 @@ export default function CoreNavbar(props) {
                 </Nav>
 
                 <Nav>
-                    <Nav.Link href="#deets">{props.DisplayName}</Nav.Link>
-
-                    <Nav.Link eventKey={2} href="#memes">
-                        Logout
-                    </Nav.Link>
+                    <Nav.Link href="/acount">{props.DisplayName}</Nav.Link>{" "}
+                    <Link href="/logout">
+                        <Button variant="outline-light">Logout</Button>
+                    </Link>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>

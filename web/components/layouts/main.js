@@ -8,8 +8,9 @@ import useSWR from "swr";
 import axios from "axios";
 
 import { fetcher } from "../common/functions";
+import { Loader } from "../common/elements";
 
-import Container from "react-bootstrap/Container";
+import { Container } from "react-bootstrap";
 
 const Layout = (props) => {
     const router = useRouter();
@@ -27,7 +28,7 @@ const Layout = (props) => {
 
         if (error) {
             router.push("/login");
-            return <>Loading</>;
+            return <Loader />;
         } else {
             return (
                 <div>
@@ -42,9 +43,9 @@ const Layout = (props) => {
     } else {
         if (error) {
             router.push("/login");
-            return <>Loading</>;
+            return <Loader />;
         } else {
-            return <>Loading</>;
+            return <Loader />;
         }
     }
 };

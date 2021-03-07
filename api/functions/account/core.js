@@ -320,3 +320,12 @@ exports.password = function (req, res, next) {
         });
     }
 };
+
+exports.logout = function (req, res, next) {
+    req.session.destroy(function (err) {
+        res.status(200).json({
+            message: "okay",
+            reqid: res.locals.reqid,
+        });
+    });
+};
