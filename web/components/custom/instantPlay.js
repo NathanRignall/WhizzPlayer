@@ -133,8 +133,6 @@ export default function InstantPlay(props) {
                     actions.setSubmitting(false);
                 }
             });
-
-        console.log(json);
     };
 
     return (

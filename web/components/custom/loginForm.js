@@ -120,6 +120,7 @@ export function FormExample() {
                             {serverState.message}
                         </Alert>
                     )}
+
                     {isSubmitting ? (
                         <Button type="submit" disabled>
                             <Spinner
