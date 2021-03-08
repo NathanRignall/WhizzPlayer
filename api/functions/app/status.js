@@ -1,7 +1,9 @@
+// load the dependancies
 var axios = require("axios");
 
-var urlPlayStatus = "http://back:5000/status/play";
-var urlSystemStatus = "http://back:5000/status/system";
+// set constants
+const urlPlayStatus = "http://back:5000/status/play";
+const urlSystemStatus = "http://back:5000/status/system";
 
 exports.home = function (req, res, next) {
     // create the http promises
@@ -22,26 +24,30 @@ exports.home = function (req, res, next) {
     Promise.allSettled([getPlayingData, getStatusData, getSystemLog]).then(
         (response) => {
             // if get play data successful
-            console.log(response[0].value);
             if (response[0].status == "fulfilled") {
+                // set vars if request is 200
                 playingData = {
                     payload: response[0].value.data.payload,
                     code: response[0].value.status,
                 };
             } else {
                 if (response[0].reason.response) {
+                    // set vars if request is not 200
                     playingData = {
                         payload: response[0].reason.response.data,
-                        code: response[0].reason.response.status.payload,
+                        message: "Error with rquest to backend",
+                        code: response[0].reason.response.status,
                     };
                 } else if (response[0].reason.request) {
+                    // no response from server
                     playingData = {
-                        message: "server error 1",
+                        message: "No response from backend server",
                         code: 500,
                     };
                 } else {
+                    // error with the axios request
                     playingData = {
-                        message: "server error 2",
+                        message: "Error sending request to backend",
                         code: 500,
                     };
                 }
@@ -49,24 +55,29 @@ exports.home = function (req, res, next) {
 
             // if get system data sucessful
             if (response[1].status == "fulfilled") {
+                // set vars if request is 200
                 statusData = {
                     payload: response[1].value.data.payload,
                     code: response[1].value.status,
                 };
             } else {
                 if (response[1].reason.response) {
+                    // set vars if request is not 200
                     statusData = {
                         payload: response[1].reason.response.data,
+                        message: "Error with rquest to backend",
                         code: response[1].reason.response.status,
                     };
                 } else if (response[1].reason.request) {
+                    // no response from server
                     statusData = {
-                        message: "server error 1",
+                        message: "No response from backend server",
                         code: 500,
                     };
                 } else {
+                    // error with the axios request
                     statusData = {
-                        message: "server error 2",
+                        message: "Error sending request to backend",
                         code: 500,
                     };
                 }
@@ -74,13 +85,15 @@ exports.home = function (req, res, next) {
 
             // if get mysql data sucsessful
             if (response[2].status == "fulfilled") {
+                // set vars if request to mysql was successful
                 logData = {
                     payload: response[2].value,
                     code: 200,
                 };
             } else {
+                // if there was an error with the mysql request
                 statusData = {
-                    message: "sql error",
+                    message: "Error with sql request",
                     code: 500,
                 };
             }
@@ -99,6 +112,7 @@ exports.home = function (req, res, next) {
     );
 };
 
+// curently unfinished
 exports.all = function (req, res, next) {
     res.send("status all");
 };

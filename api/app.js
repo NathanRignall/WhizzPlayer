@@ -56,7 +56,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-// setup cors vars
+// set the trusted domains for cors
 const whitelist = [
     "http://localhost:3000",
     "http://10.0.15.228:3000",

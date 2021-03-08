@@ -1,5 +1,6 @@
 exports.simple = () => {
     return (req, res, next) => {
+        // check if the user is logged in
         if (req.session.UserID) {
             next();
         } else {
@@ -13,9 +14,9 @@ exports.simple = () => {
 
 exports.edit = () => {
     return (req, res, next) => {
+        // check if the user is logged in and has permisions
         if (
-            req.session.Access == 5 ||
-            req.session.Access == 10 ||
+            (req.session.Access == 5 || req.session.Access == 10) &&
             req.session.UserID
         ) {
             next();
@@ -35,6 +36,7 @@ exports.edit = () => {
 
 exports.admin = () => {
     return (req, res, next) => {
+        // check if the user is logged in and has admin perms
         if (req.session.Access == 10 || req.session.UserID) {
             // approve and go
             next();
@@ -54,6 +56,7 @@ exports.admin = () => {
 
 exports.backend = () => {
     return (req, res, next) => {
+        // temporary backend authentication (none existant)
         next();
     };
 };

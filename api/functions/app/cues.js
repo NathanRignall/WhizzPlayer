@@ -1,9 +1,5 @@
-exports.temp = function (req, res, next) {
-    res.send("temp");
-};
-
 exports.list = function (req, res, next) {
-    // get the tracks info from the database
+    // get the cues info from the database
     db.query(
         "SELECT Cues.CueID, Cues.CueName, Cues.PlayTime, Cues.Repeats, Cues.RepeatMonday, Cues.RepeatTuesday, Cues.RepeatWednesday,  Cues.RepeatThursday, Cues.RepeatFriday, Cues.RepeatSaturday, Cues.RepeatSunday, Cues.Enabled, Tracks.TrackID, Tracks.TrackName FROM Cues INNER JOIN Tracks ON Tracks.TrackID = Cues.TrackID",
         function (error, results, fields) {
@@ -53,6 +49,7 @@ exports.create = function (req, res, next) {
         // check the display name is not funny
         if (checkCharacters(CueName)) {
             var CueID = idgen.genterateCueID();
+            // create the cue in the database
             db.query(
                 "INSERT INTO Cues SET CueID = ?, CueName = ?, TrackID = ?, PlayTime = ?, Repeats = ?, RepeatMonday = ?, RepeatTuesday = ?, RepeatWednesday = ?,  RepeatThursday = ?, RepeatFriday = ?, RepeatSaturday = ?, RepeatSunday = ?, Enabled = ?",
                 [
@@ -96,7 +93,7 @@ exports.create = function (req, res, next) {
         } else {
             // retun the correct vars
             res.status(400).json({
-                message: "Display name contains invalid characters",
+                message: "Cue name contains invalid characters",
                 reqid: res.locals.reqid,
             });
         }
@@ -112,7 +109,7 @@ exports.create = function (req, res, next) {
 exports.info = function (req, res, next) {
     // get req params
     var CueID = req.params.cueid;
-    // get the tracks info from the database
+    // get indvidual cue from database
     db.query(
         "SELECT Cues.CueID, Cues.CueName, Cues.PlayTime, Cues.Repeats, Cues.RepeatMonday, Cues.RepeatTuesday, Cues.RepeatWednesday,  Cues.RepeatThursday, Cues.RepeatFriday, Cues.RepeatSaturday, Cues.RepeatSunday, Cues.Enabled, Tracks.TrackID, Tracks.TrackName FROM Cues INNER JOIN Tracks ON Tracks.TrackID = Cues.TrackID WHERE CueID = ?",
         [CueID],
@@ -173,6 +170,7 @@ exports.edit = function (req, res, next) {
     if (CueName && TrackID && PlayTime) {
         // check the display name is not funny
         if (checkCharacters(CueName)) {
+            // update a cue in the database
             db.query(
                 "UPDATE Cues SET CueName = ?, TrackID = ?, PlayTime = ?, Repeats = ?, RepeatMonday = ?, RepeatTuesday = ?, RepeatWednesday = ?,  RepeatThursday = ?, RepeatFriday = ?, RepeatSaturday = ?, RepeatSunday = ?, Enabled = ? WHERE CueID = ?",
                 [
@@ -225,7 +223,7 @@ exports.edit = function (req, res, next) {
         } else {
             // retun the correct vars
             res.status(400).json({
-                message: "Display name contains invalid characters",
+                message: "Cue name contains invalid characters",
                 reqid: res.locals.reqid,
             });
         }
@@ -241,7 +239,7 @@ exports.edit = function (req, res, next) {
 exports.delete = function (req, res, next) {
     // get req parms
     var CueID = req.params.cueid;
-    // delete the track from db
+    // delete the cue from db
     db.query(
         "DELETE FROM Cues WHERE CueID = ?",
         [CueID],

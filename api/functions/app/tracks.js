@@ -1,14 +1,12 @@
+// load the dependancies
 const Lame = require("node-lame").Lame;
 var crypto = require("crypto");
 const FileType = require("file-type");
 var fs = require("fs");
 
-var tempUploadDir = "/uploads/temp/";
-var uploadDir = "/uploads/save/";
-
-exports.temp = function (req, res, next) {
-    res.send("temp");
-};
+// set constants
+const tempUploadDir = "/uploads/temp/";
+const uploadDir = "/uploads/save/";
 
 exports.list = function (req, res, next) {
     // get the tracks info from the database
@@ -41,8 +39,9 @@ exports.list = function (req, res, next) {
 };
 
 exports.search = function (req, res, next) {
+    // set req parms
     var query = req.query.search;
-
+    // check there was a query
     if (query) {
         db.query(
             "SELECT * FROM Tracks WHERE TrackName LIKE CONCAT(?,  '%') LIMIT 10",
@@ -90,13 +89,15 @@ exports.search = function (req, res, next) {
 };
 
 exports.upload = async function (req, res, next) {
+    // generate a tempoary file id
     var tempFileID = crypto.randomBytes(20).toString("hex");
-
+    // make sure a file was uploaded
     if (req.file) {
+        // get the file type of the file
         type = await FileType.fromBuffer(req.file.buffer);
-
+        // check the file type was an mp3
         if (type.ext == "mp3" && type.mime == "audio/mpeg") {
-            // write to a new file named 2pac.txt
+            // write to a new file
             fs.writeFile(
                 tempUploadDir + tempFileID,
                 req.file.buffer,
@@ -112,7 +113,6 @@ exports.upload = async function (req, res, next) {
                             reqid: res.locals.reqid,
                         });
                     } else {
-                        console.log(error);
                         // retun the correct vars
                         res.locals.errors.push({
                             location: "/api/app/tracks.js/upload-3",
@@ -127,12 +127,14 @@ exports.upload = async function (req, res, next) {
                     }
                 }
             );
+            // now check if the file is a wav
         } else if (type.ext == "wav" && type.mime == "audio/vnd.wave") {
+            // setup the encoder
             const encoder = new Lame({
                 output: tempUploadDir + tempFileID,
                 bitrate: 192,
             }).setBuffer(req.file.buffer);
-
+            // convert the wav into an mp3
             encoder
                 .encode()
                 .then(() => {
@@ -187,7 +189,6 @@ exports.create = function (req, res, next) {
         // check the display name is not funny
         if (checkCharacters(TrackName)) {
             // check the file exists
-            console.log(tempUploadDir + FileID);
             if (fs.existsSync(tempUploadDir + FileID)) {
                 // make the trackid
                 var TrackID = idgen.genterateTrackID();
@@ -213,7 +214,7 @@ exports.create = function (req, res, next) {
                                         // retun the correct vars
                                         res.locals.errors.push({
                                             location:
-                                                "/api/account/tracks.js/create-3",
+                                                "/api/account/tracks.js/create-2",
                                             code: error.code,
                                             from: "mysql",
                                         });
@@ -228,7 +229,7 @@ exports.create = function (req, res, next) {
                         } else {
                             // retun the correct vars
                             res.locals.errors.push({
-                                location: "/api/account/tracks.js/create-2",
+                                location: "/api/account/tracks.js/create-1",
                                 code: "couln't move file",
                                 from: "fs",
                             });
@@ -242,13 +243,8 @@ exports.create = function (req, res, next) {
                 );
             } else {
                 // retun the correct vars
-                res.locals.errors.push({
-                    location: "/api/account/tracks.js/create-1",
-                    code: "temp file not found",
-                    from: "fs",
-                });
-                res.status(500).json({
-                    message: "Server Error",
+                res.status(400).json({
+                    message: "Uploaded file not found",
                     errors: res.locals.errors,
                     reqid: res.locals.reqid,
                 });
@@ -256,7 +252,7 @@ exports.create = function (req, res, next) {
         } else {
             // retun the correct vars
             res.status(400).json({
-                message: "Display name contains invalid characters",
+                message: "Track name contains invalid characters",
                 reqid: res.locals.reqid,
             });
         }
@@ -318,7 +314,7 @@ exports.edit = function (req, res, next) {
         } else {
             // retun the correct vars
             res.status(400).json({
-                message: "Display name contains invalid characters",
+                message: "Track name contains invalid characters",
                 reqid: res.locals.reqid,
             });
         }

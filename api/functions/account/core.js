@@ -1,3 +1,4 @@
+// load the dependancies
 var bcrypt = require("bcrypt");
 
 exports.register = function (req, res, next) {
@@ -322,7 +323,9 @@ exports.password = function (req, res, next) {
 };
 
 exports.logout = function (req, res, next) {
+    // destroy the session
     req.session.destroy(function (err) {
+        // retun the correct vars
         res.status(200).json({
             message: "okay",
             reqid: res.locals.reqid,

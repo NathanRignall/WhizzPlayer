@@ -37,4 +37,5 @@ router.put("/tracks/:trackid", auth.edit(), tracks.edit); // edit
 router.delete("/tracks/:trackid", auth.edit(), tracks.delete); // edit
 router.get("/tracks/lookup", auth.simple(), tracks.search); // view
 
+// export the router
 module.exports = router;
