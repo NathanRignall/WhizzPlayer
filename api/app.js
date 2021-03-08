@@ -6,12 +6,10 @@ var validator = require("validator");
 var crypto = require("crypto");
 const cors = require("cors");
 var logger = require("morgan");
-var responseFormat = require("./functions/response");
 var idgen = require("./functions/idgen");
 var auth = require("./middleware/auth");
 
 // make the some modules global
-global.responseFormat = responseFormat;
 global.idgen = idgen;
 global.auth = auth;
 
