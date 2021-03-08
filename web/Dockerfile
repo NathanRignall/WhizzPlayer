@@ -1,8 +1,14 @@
 FROM node:14.15.5-buster
 
+# args
+ARG VERSION_CODE
+
 # env vars
 ENV PORT 3000
 ENV NODE_ENV=production
+
+ENV NEXT_PUBLIC_VERSION=:$VERSION_CODE
+ENV NEXT_TELEMETRY_DISABLED: 1
 
 # update the system and install apps
 RUN apt-get update
