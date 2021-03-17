@@ -6,6 +6,8 @@ services:
     build:
       context: ./web
       dockerfile: ./Dockerfile
+      args:
+        VERSION_CODE: dev
     environment:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
