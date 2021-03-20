@@ -6,6 +6,7 @@ import useSWR from "swr";
 
 import { fetcher } from "../components/common/functions";
 import { ErrorDisplayer } from "../components/common/errors";
+import { UploadTrackModal } from "../components/custom/manageTracks";
 
 import { Card, Col, Row, Spinner, Button } from "react-bootstrap";
 
@@ -47,14 +48,6 @@ export function TrackList() {
 
         return (
             <>
-                <h1>Track List</h1>
-
-                <div>
-                    <Button variant="danger">Delete Selected Tracks</Button>
-                </div>
-
-                <br />
-
                 <ErrorDisplayer error={error} />
 
                 {data.payload.length > 0 ? (
@@ -79,6 +72,13 @@ export function TrackList() {
 export default function Main() {
     return (
         <Layout title="Tracks">
+            <h1>Track List</h1>
+
+            <div>
+                <UploadTrackModal />{" "}
+            </div>
+
+            <br />
             <TrackList />
         </Layout>
     );
