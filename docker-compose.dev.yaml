@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  web:
+    image: whizzplayer:web
+    build:
+      context: ./web
+      dockerfile: ./Dockerfile
+      args:
+        VERSION_CODE: dev
+    environment:
+      NODE_ENV: development
+    ports:
+      - 3000
+  api:
+    image: whizzplayer:api
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+      args:
+        VERSION_CODE: dev
+    env_file:
+      - ./api/.env
+    environment:
+      NODE_ENV: development
+    volumes:
+      - "./uploads/:/uploads"
+    ports:
+      - 4000
+  back:
+    image: whizzplayer:back
+    build:
+      context: ./back
+      dockerfile: ./Dockerfile
+      args:
+        VERSION_CODE: dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - "./uploads/:/uploads"
+    devices:
+      - "/dev/snd"
+    ports:
+      - 5000
+  proxy:
+    image: whizzplayer:proxy
+    build:
+      context: ./proxy
+      dockerfile: ./Dockerfile
+      args:
+        VERSION_CODE: dev
+    ports:
+      - 80:80

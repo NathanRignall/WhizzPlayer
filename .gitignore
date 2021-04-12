@@ -1,4 +1,2 @@
 .vscode
 uploads
-docker-compose.alpha.yaml
-docker-compose.prod.yaml
