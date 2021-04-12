@@ -17,14 +17,17 @@ import {
     Spinner,
     Button,
     Badge,
+    Alert,
 } from "react-bootstrap";
 
+// used for the cue repeat days area (each item)
 const CueRepeatItem = (props) => (
     <ListGroup.Item variant={props.repeat ? "primary" : "light"}>
         {props.children}
     </ListGroup.Item>
 );
 
+// used for the cue repeat days area (the grid)
 const CueRepeatGrid = (props) => (
     <ListGroup horizontal="lg">
         <CueRepeatItem repeat={props.info.RepeatMonday}>Monday</CueRepeatItem>
@@ -43,6 +46,7 @@ const CueRepeatGrid = (props) => (
     </ListGroup>
 );
 
+// card for displaying info about a cue (card)
 const CueInfoItem = (props) => (
     <Card bg="light" className="text-center">
         <Card.Body>
@@ -53,6 +57,7 @@ const CueInfoItem = (props) => (
     </Card>
 );
 
+// whole large card for displaying all the information about a cue
 const Cue = (props) => (
     <>
         <Card>
@@ -118,7 +123,8 @@ const Cue = (props) => (
     </>
 );
 
-export function CueList() {
+// main cue list loader
+const CueList = (props) => {
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/app/cues",
         fetcher
@@ -132,7 +138,14 @@ export function CueList() {
         return (
             <>
                 <ErrorDisplayer error={error} />
-                {data.payload.length > 0 ? CueFormedList : "No cues"}
+                {data.payload.length > 0 ? (
+                    CueFormedList
+                ) : (
+                    <Alert variant="warning">
+                        {" "}
+                        There are currently 0 Cues in the system.
+                    </Alert>
+                )}
             </>
         );
     } else {
@@ -145,8 +158,9 @@ export function CueList() {
             </>
         );
     }
-}
+};
 
+// main app function
 export default function Main() {
     return (
         <Layout title="Cues">

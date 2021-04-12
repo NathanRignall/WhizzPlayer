@@ -1,6 +1,8 @@
 import { useState, useEffect, forwardRef } from "react";
 import useSWR, { mutate } from "swr";
 
+import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
+
 import { Formik, useField, useFormikContext } from "formik";
 import * as yup from "yup";
 import DatePicker from "react-datepicker";
@@ -8,22 +10,38 @@ import "react-datepicker/dist/react-datepicker.css";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
 
-import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
+// axios request urls
+const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
+const CUES_URI = process.env.NEXT_PUBLIC_API_URL + "/app/cues";
 
+// form schema
 const schema = yup.object().shape({
     CueName: yup.string().required(),
     TrackID: yup.string().required(),
 });
 
-const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
-
+// track selector component
 const TrackSelector = (props) => {
+    // send details back to formik
     const { setFieldValue } = useFormikContext();
 
+    // hold the current status
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState([]);
     const [singleSelections, setSingleSelections] = useState([]);
 
+    useEffect(() => {
+        if (props.type == "edit") {
+            setSingleSelections([
+                {
+                    TrackName: props.DefaultTrackName,
+                    TrackID: props.DefaultTrackID,
+                },
+            ]);
+        }
+    }, []);
+
+    // if a single item is selected set the formik status
     useEffect(() => {
         if (singleSelections.length > 0) {
             console.log(singleSelections[0]);
@@ -31,29 +49,41 @@ const TrackSelector = (props) => {
         }
     }, [singleSelections]);
 
+    // main feild searcher
     const handleSearch = (query) => {
+        // set loading state to true
         setIsLoading(true);
 
+        // make the axios request for track search
         axios
             .get(`${SEARCH_URI}?search=${query}`)
             .then((response) => {
+                // put the response into array
                 const options = response.data.payload.map((items) => ({
                     TrackName: items.TrackName,
                     TrackID: items.TrackID,
                 }));
-
+                // set the options state to this new array
                 setOptions(options);
+                // set loading false
                 setIsLoading(false);
             })
             .catch((error) => {
+                // catch each type of axios error
                 if (error.response) {
-                    console.log("error with response");
+                    if (error.response.status == 404) {
+                        console.log("No results in track search");
+                    } else {
+                        console.log("Error with response in track search");
+                    }
                 } else if (error.request) {
-                    console.log("no response");
+                    console.log("No response in track search");
                 } else {
-                    console.log("axios error");
+                    console.log("Axios error in track search");
                 }
+                // set options to itself
                 setOptions(options);
+                // set loading to false
                 setIsLoading(false);
             });
     };
@@ -81,10 +111,15 @@ const TrackSelector = (props) => {
     );
 };
 
+// cue create date selector
 const DateSelector = ({ ...props }) => {
+    // send details back to formik
     const { setFieldValue } = useFormikContext();
+
+    // hold the current status
     const [field] = useField(props);
 
+    // custom button to control date picker
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
         <Button variant="light" type="button" onClick={onClick} ref={ref}>
             {value ? value : "Set Date and Time"}
@@ -107,24 +142,31 @@ const DateSelector = ({ ...props }) => {
     );
 };
 
-export function CueCreateModal(props) {
+// full create cue modal
+export const CueCreateModal = (props) => {
+    // contain the state of the modal
     const [show, setShow] = useState(false);
 
+    // set the state of the modal
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    // satus of the form requests
     const [serverState, setServerState] = useState({
         show: false,
         error: false,
         message: "none",
     });
 
+    // set the server state from a response
     const handleServerResponse = (show, error, message) => {
         setServerState({ show, error, message });
     };
 
+    // handle a from submit to create cue
     const handleOnSubmit = (values, actions) => {
-        var json = JSON.stringify({
+        // create the json object to post lcue
+        const json = JSON.stringify({
             CueName: values.CueName,
             TrackID: values.TrackID,
             PlayTime: new Date(values.PlayTime)
@@ -134,26 +176,34 @@ export function CueCreateModal(props) {
             Repeats: values.Repeats,
         });
 
+        // axios post create cue
         axios
-            .post(process.env.NEXT_PUBLIC_API_URL + "/app/cues", json, {
+            .post(CUES_URI, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
             .then((response) => {
+                // set loading to false
                 actions.setSubmitting(false);
+                // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                mutate(process.env.NEXT_PUBLIC_API_URL + "/app/cues");
+                // reload the cue list
+                mutate(CUES_URI);
+                // close the modal
                 handleClose();
             })
             .catch(function (error) {
+                // catch each type of axios error
                 if (error.response) {
                     if (error.response.status == 500) {
+                        // check if a server error
                         handleServerResponse(
                             true,
                             true,
                             error.response.data.message
                         );
                     } else {
+                        // check if a user error
                         handleServerResponse(
                             true,
                             false,
@@ -161,20 +211,25 @@ export function CueCreateModal(props) {
                         );
                     }
                     actions.setSubmitting(false);
+                    // set loading to false
                 } else if (error.request) {
+                    // check if a request error
                     handleServerResponse(
                         true,
                         true,
                         "Error sending request to server"
                     );
                     actions.setSubmitting(false);
+                    // set loading to false
                 } else {
+                    // check if a browser error
                     handleServerResponse(
                         true,
                         true,
                         "Error in browser request"
                     );
                     actions.setSubmitting(false);
+                    // set loading to false
                 }
             });
     };
@@ -216,6 +271,7 @@ export function CueCreateModal(props) {
                             </Modal.Header>
 
                             <Modal.Body>
+                                {/* cue name group */}
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
@@ -228,18 +284,21 @@ export function CueCreateModal(props) {
                                     {errors.CueName}
                                 </Form.Group>
 
+                                {/* track selector */}
                                 <Form.Group controlId="validationFormik05">
                                     <TrackSelector name="TrackID" />
 
                                     {errors.TrackID}
                                 </Form.Group>
 
+                                {/* cue time group */}
                                 <Form.Group controlId="validationFormik02">
                                     <DateSelector name="PlayTime" />
 
                                     {errors.PlayTime}
                                 </Form.Group>
 
+                                {/* repeats group */}
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Check
                                         name="Repeats"
@@ -250,8 +309,23 @@ export function CueCreateModal(props) {
                                         isInvalid={errors.Repeats}
                                     />
                                 </Form.Group>
+
+                                {/* display errors to the user */}
+                                {serverState.show && (
+                                    <Alert
+                                        variant={
+                                            !serverState.error
+                                                ? "warning"
+                                                : "danger"
+                                        }
+                                    >
+                                        {serverState.message}
+                                    </Alert>
+                                )}
                             </Modal.Body>
+
                             <Modal.Footer>
+                                {/* Close Modal button*/}
                                 <Button
                                     variant="secondary"
                                     onClick={handleClose}
@@ -259,6 +333,7 @@ export function CueCreateModal(props) {
                                     Close
                                 </Button>
 
+                                {/* Submit button*/}
                                 {isSubmitting ? (
                                     <Button type="submit" disabled>
                                         <Spinner
@@ -281,26 +356,33 @@ export function CueCreateModal(props) {
             </Modal>
         </>
     );
-}
+};
 
+// full edit cue modal
 export function CueEditModal(props) {
+    // contain the state of the modal
     const [show, setShow] = useState(false);
 
+    // set the state of the modal
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    // satus of the form requests
     const [serverState, setServerState] = useState({
         show: false,
         error: false,
         message: "none",
     });
 
+    // set the server state from a response
     const handleServerResponse = (show, error, message) => {
         setServerState({ show, error, message });
     };
 
+    // handle a from submit to create cue
     const handleOnSubmit = (values, actions) => {
-        var json = JSON.stringify({
+        // create the json object to post lcue
+        const json = JSON.stringify({
             CueName: values.CueName,
             TrackID: values.TrackID,
             PlayTime: new Date(values.PlayTime)
@@ -310,32 +392,34 @@ export function CueEditModal(props) {
             Repeats: values.Repeats,
         });
 
+        // axios post edit cue
         axios
-            .put(
-                process.env.NEXT_PUBLIC_API_URL +
-                    "/app/cues/" +
-                    props.info.CueID,
-                json,
-                {
-                    withCredentials: true,
-                    headers: { "Content-Type": "application/json" },
-                }
-            )
+            .put(`${CUES_URI}/${props.info.CueID}`, json, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
             .then((response) => {
+                // set loading to false
                 actions.setSubmitting(false);
+                // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                mutate(process.env.NEXT_PUBLIC_API_URL + "/app/cues");
+                // reload the cue list
+                mutate(CUES_URI);
+                // close the modal
                 handleClose();
             })
             .catch(function (error) {
+                // catch each type of axios error
                 if (error.response) {
                     if (error.response.status == 500) {
+                        // check if a server error
                         handleServerResponse(
                             true,
                             true,
                             error.response.data.message
                         );
                     } else {
+                        // check if a user error
                         handleServerResponse(
                             true,
                             false,
@@ -343,20 +427,25 @@ export function CueEditModal(props) {
                         );
                     }
                     actions.setSubmitting(false);
+                    // set loading to false
                 } else if (error.request) {
+                    // check if a request error
                     handleServerResponse(
                         true,
                         true,
                         "Error sending request to server"
                     );
                     actions.setSubmitting(false);
+                    // set loading to false
                 } else {
+                    // check if a browser error
                     handleServerResponse(
                         true,
                         true,
                         "Error in browser request"
                     );
                     actions.setSubmitting(false);
+                    // set loading to false
                 }
             });
     };
@@ -379,7 +468,7 @@ export function CueEditModal(props) {
                     validationSchema={schema}
                     initialValues={{
                         CueName: props.info.CueName,
-                        TrackID: props.info.TrackID,
+                        TrackID: "",
                         PlayTime: props.info.PlayTime,
                         Repeats: props.info.Repeats ? true : false,
                     }}
@@ -401,6 +490,7 @@ export function CueEditModal(props) {
 
                             <Modal.Body>
                                 <Form.Group controlId="validationFormik01">
+                                    {/* cue name group */}
                                     <Form.Control
                                         type="text"
                                         name="CueName"
@@ -412,18 +502,26 @@ export function CueEditModal(props) {
                                     {errors.CueName}
                                 </Form.Group>
 
+                                {/* track selector */}
                                 <Form.Group controlId="validationFormik05">
-                                    <TrackSelector name="TrackID" />
+                                    <TrackSelector
+                                        name="TrackID"
+                                        type="edit"
+                                        DefaultTrackName={props.info.TrackName}
+                                        DefaultTrackID={props.info.TrackID}
+                                    />
 
                                     {errors.TrackID}
                                 </Form.Group>
 
+                                {/* cue time group */}
                                 <Form.Group controlId="validationFormik02">
                                     <DateSelector name="PlayTime" />
 
                                     {errors.PlayTime}
                                 </Form.Group>
 
+                                {/* repeats group */}
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Check
                                         name="Repeats"
@@ -435,8 +533,23 @@ export function CueEditModal(props) {
                                         isInvalid={errors.Repeats}
                                     />
                                 </Form.Group>
+
+                                {/* display errors to the user */}
+                                {serverState.show && (
+                                    <Alert
+                                        variant={
+                                            !serverState.error
+                                                ? "warning"
+                                                : "danger"
+                                        }
+                                    >
+                                        {serverState.message}
+                                    </Alert>
+                                )}
                             </Modal.Body>
+
                             <Modal.Footer>
+                                {/* Close Modal button*/}
                                 <Button
                                     variant="secondary"
                                     onClick={handleClose}
@@ -444,6 +557,7 @@ export function CueEditModal(props) {
                                     Close
                                 </Button>
 
+                                {/* Submit button*/}
                                 {isSubmitting ? (
                                     <Button type="submit" disabled>
                                         <Spinner
@@ -468,69 +582,81 @@ export function CueEditModal(props) {
     );
 }
 
+// full delete cue modal
 export function CueDeleteModal(props) {
+    // contain the state of the modal
     const [show, setShow] = useState(false);
 
+    // set the state of the modal
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    // satus of the form requests
     const [serverState, setServerState] = useState({
         show: false,
         error: false,
         message: "none",
     });
 
+    // set the server state from a response
     const handleServerResponse = (show, error, message) => {
         setServerState({ show, error, message });
     };
 
+    // handle delete cue
     const deleteCue = () => {
+        // axios delete cue
         axios
-            .delete(
-                process.env.NEXT_PUBLIC_API_URL +
-                    "/app/cues/" +
-                    props.info.CueID,
-                {
-                    withCredentials: true,
-                    headers: { "Content-Type": "application/json" },
-                }
-            )
+            .delete(`${CUES_URI}/${props.info.CueID}`, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
             .then((response) => {
-                if (response.status == 200) {
-                    handleServerResponse(false, false, response.data.message);
-                    mutate(process.env.NEXT_PUBLIC_API_URL + "/app/cues");
-                    handleClose();
-                } else {
-                    handleServerResponse(true, false, response.data.message);
-                }
+                // set the server state to handle errors
+                handleServerResponse(false, false, response.data.message);
+                // reload the cue list
+                mutate(CUES_URI);
+                // close the modal
+                handleClose();
             })
             .catch(function (error) {
+                // catch each type of axios error
                 if (error.response) {
                     if (error.response.status == 500) {
+                        // check if a server error
                         handleServerResponse(
                             true,
                             true,
                             error.response.data.message
                         );
                     } else {
+                        // check if a user error
                         handleServerResponse(
                             true,
                             false,
                             error.response.data.message
                         );
                     }
+                    actions.setSubmitting(false);
+                    // set loading to false
                 } else if (error.request) {
+                    // check if a request error
                     handleServerResponse(
                         true,
                         true,
                         "Error sending request to server"
                     );
+                    actions.setSubmitting(false);
+                    // set loading to false
                 } else {
+                    // check if a browser error
                     handleServerResponse(
                         true,
                         true,
                         "Error in browser request"
                     );
+                    actions.setSubmitting(false);
+                    // set loading to false
                 }
             });
     };
@@ -552,21 +678,31 @@ export function CueDeleteModal(props) {
                 <Modal.Header className="bg-danger text-white">
                     <Modal.Title>Are you sure?</Modal.Title>
                 </Modal.Header>
+
                 <Modal.Body>
                     Are you sure you would like to delete the cue "
                     {props.info.CueName}"
-                    {serverState.show && (
-                        <Alert
-                            variant={!serverState.error ? "warning" : "danger"}
-                        >
-                            {serverState.message}
-                        </Alert>
-                    )}
+                    <>
+                        {/* display errors to the user */}
+                        {serverState.show && (
+                            <Alert
+                                variant={
+                                    !serverState.error ? "warning" : "danger"
+                                }
+                            >
+                                {serverState.message}
+                            </Alert>
+                        )}
+                    </>
                 </Modal.Body>
+
                 <Modal.Footer>
+                    {/* Close Modal button*/}
                     <Button variant="secondary" onClick={handleClose}>
                         Cancel
                     </Button>
+
+                    {/* Delete button*/}
                     <Button variant="danger" onClick={deleteCue}>
                         Delete
                     </Button>
