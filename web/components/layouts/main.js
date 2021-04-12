@@ -5,13 +5,12 @@ import CoreFooter from "../parts/footers";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
-import axios from "axios";
-
 import { fetcher } from "../common/functions";
 import { Loader } from "../common/elements";
 
 import { Container } from "react-bootstrap";
 
+// main layout for pages with auth
 const Layout = (props) => {
     const router = useRouter();
 
@@ -24,8 +23,6 @@ const Layout = (props) => {
     );
 
     if (data) {
-        console.log(data);
-
         if (error) {
             router.push("/login");
             return <Loader />;
