@@ -4,13 +4,14 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
 
-import { fetcher, TrackSearch } from "../components/common/functions";
+import { fetcher } from "../components/common/functions";
 import { ErrorDisplayer } from "../components/common/errors";
 import InstantPlay from "../components/custom/instantPlay";
 
 import { Jumbotron, Container, Badge, Card, Spinner } from "react-bootstrap";
 
-function StatusHeader() {
+// top status header
+const StatusHeader = () => {
     return (
         <Jumbotron>
             <Container>
@@ -28,14 +29,16 @@ function StatusHeader() {
             </Container>
         </Jumbotron>
     );
-}
+};
 
-export function StatusArea() {
+// status area (cards)
+const StatusArea = () => {
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/app/status",
         fetcher
     );
 
+    //TODO: display information
     if (data) {
         console.log(data.payload);
         return (
@@ -54,13 +57,15 @@ export function StatusArea() {
             </>
         );
     }
-}
+};
 
+// main app function
 export default function Main() {
     return (
         <Layout title="Tracks">
             <StatusHeader />
             <StatusArea />
+            {/* Temporary card */}
             <Card>
                 <Card.Header>Instant Play</Card.Header>
                 <Card.Body>

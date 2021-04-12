@@ -7,19 +7,26 @@ import * as yup from "yup";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
 
+// axios request urls
+const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
+const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play";
+
+// form schema
 const schema = yup.object().shape({
     TrackID: yup.string().required(),
 });
 
-const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
-
+// track selector component
 const TrackSelector = (props) => {
+    // send details back to formik
     const { setFieldValue } = useFormikContext();
 
+    // hold the current status
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState([]);
     const [singleSelections, setSingleSelections] = useState([]);
 
+    // if a single item is selected set the formik status
     useEffect(() => {
         if (singleSelections.length > 0) {
             console.log(singleSelections[0]);
@@ -27,29 +34,41 @@ const TrackSelector = (props) => {
         }
     }, [singleSelections]);
 
+    // main feild searcher
     const handleSearch = (query) => {
+        // set loading state to true
         setIsLoading(true);
 
+        // make the axios request for track search
         axios
             .get(`${SEARCH_URI}?search=${query}`)
             .then((response) => {
+                // put the response into array
                 const options = response.data.payload.map((items) => ({
                     TrackName: items.TrackName,
                     TrackID: items.TrackID,
                 }));
-
+                // set the options state to this new array
                 setOptions(options);
+                // set loading false
                 setIsLoading(false);
             })
             .catch((error) => {
+                // catch each type of axios error
                 if (error.response) {
-                    console.log("error with response");
+                    if (error.response.status == 404) {
+                        console.log("No results in track search");
+                    } else {
+                        console.log("Error with response in track search");
+                    }
                 } else if (error.request) {
-                    console.log("no response");
+                    console.log("No response in track search");
                 } else {
-                    console.log("axios error");
+                    console.log("Axios error in track search");
                 }
+                // set options to itself
                 setOptions(options);
+                // set loading to false
                 setIsLoading(false);
             });
     };
@@ -78,38 +97,44 @@ const TrackSelector = (props) => {
 };
 
 export default function InstantPlay(props) {
+    // satus of the form requests
     const [serverState, setServerState] = useState({
         show: false,
         error: false,
         message: "none",
     });
 
+    // set the server state from a response
     const handleServerResponse = (show, error, message) => {
         setServerState({ show, error, message });
     };
 
+    // handle a from submit to login
     const handleOnSubmit = (values, actions) => {
+        // axios get request to play song
         axios
-            .get(
-                process.env.NEXT_PUBLIC_API_URL + "/app/play/" + values.TrackID,
-                {
-                    withCredentials: true,
-                    headers: { "Content-Type": "application/json" },
-                }
-            )
+            .get(`${PLAY_URI}/${values.TrackID}`, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
             .then((response) => {
+                // set loading to false
                 actions.setSubmitting(false);
+                // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
             })
             .catch(function (error) {
+                // catch each type of axios error
                 if (error.response) {
                     if (error.response.status == 500) {
+                        // check if a server error
                         handleServerResponse(
                             true,
                             true,
                             error.response.data.message
                         );
                     } else {
+                        // check if a user error
                         handleServerResponse(
                             true,
                             false,
@@ -117,20 +142,25 @@ export default function InstantPlay(props) {
                         );
                     }
                     actions.setSubmitting(false);
+                    // set loading to false
                 } else if (error.request) {
+                    // check if a request error
                     handleServerResponse(
                         true,
                         true,
                         "Error sending request to server"
                     );
                     actions.setSubmitting(false);
+                    // set loading to false
                 } else {
+                    // check if a browser error
                     handleServerResponse(
                         true,
                         true,
                         "Error in browser request"
                     );
                     actions.setSubmitting(false);
+                    // set loading to false
                 }
             });
     };
@@ -152,12 +182,14 @@ export default function InstantPlay(props) {
                     isSubmitting,
                 }) => (
                     <Form noValidate onSubmit={handleSubmit}>
+                        {/* track selector group */}
                         <Form.Group controlId="validationFormik05">
                             <TrackSelector name="TrackID" />
 
                             {errors.TrackID}
                         </Form.Group>
 
+                        {/* Submit button*/}
                         {isSubmitting ? (
                             <Button type="submit" disabled>
                                 <Spinner
