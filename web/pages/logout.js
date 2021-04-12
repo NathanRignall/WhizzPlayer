@@ -7,6 +7,7 @@ import { fetcher } from "../components/common/functions";
 import { Loader } from "../components/common/elements";
 import { ErrorDisplayer } from "../components/common/errors";
 
+// main app function
 export default function Main() {
     const router = useRouter();
 
@@ -19,19 +20,22 @@ export default function Main() {
     );
 
     if (data) {
-        // okay
+        // okay push back to login page
         router.push("/login");
         return <Loader />;
     } else {
         if (error) {
+            // check if a not logged in error
             if (error.status == 401) {
                 // not logged in
                 router.push("/login");
                 return <Loader />;
             } else {
+                // error that can't be ignored
                 return (
                     <>
-                        Error <Loader />
+                        <Loader />
+                        <ErrorDisplayer error={error} />
                     </>
                 );
             }

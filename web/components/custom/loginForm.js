@@ -7,48 +7,65 @@ import axios from "axios";
 import { Formik } from "formik";
 import * as yup from "yup";
 
+// axios request urls
+const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/account/login";
+
+// form schema
 const schema = yup.object().shape({
     email: yup.string().email().required(),
     password: yup.string().required(),
 });
 
-export function FormExample() {
+// main login form function
+export const MainForm = () => {
     const router = useRouter();
 
+    // satus of the form requests
     const [serverState, setServerState] = useState({
         show: false,
         error: false,
         message: "none",
     });
 
+    // set the server state from a response
     const handleServerResponse = (show, error, message) => {
         setServerState({ show, error, message });
     };
 
+    // handle a from submit to login
     const handleOnSubmit = (values, actions) => {
-        var json = JSON.stringify({
+        // create the json object to post login
+        const json = JSON.stringify({
             Email: values.email,
             Password: values.password,
         });
+
+        // axios post login request
         axios
-            .post(process.env.NEXT_PUBLIC_API_URL + "/account/login", json, {
+            .post(SEARCH_URI, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
             .then((response) => {
-                window.location.replace("/");
+                // redirect back to the login page
+                router.push("/");
+                // set loading to false
                 actions.setSubmitting(false);
+                // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
             })
             .catch(function (error) {
+                // catch each type of axios error
                 if (error.response) {
                     if (error.response.status == 500) {
+                        // check if a server error
                         handleServerResponse(
                             true,
                             true,
                             error.response.data.message
                         );
                     } else {
+                        // check if a user error
                         handleServerResponse(
                             true,
                             false,
@@ -56,14 +73,19 @@ export function FormExample() {
                         );
                     }
                     actions.setSubmitting(false);
+                    // set loading to false
                 } else if (error.request) {
+                    // check if a request error
+                    console.error(error);
                     handleServerResponse(
                         true,
                         true,
                         "Error sending request to server"
                     );
                     actions.setSubmitting(false);
+                    // set loading to false
                 } else {
+                    // check if a browser error
                     console.error(error);
                     handleServerResponse(
                         true,
@@ -71,6 +93,7 @@ export function FormExample() {
                         "Error in browser request"
                     );
                     actions.setSubmitting(false);
+                    // set loading to false
                 }
             });
     };
@@ -83,6 +106,7 @@ export function FormExample() {
         >
             {({ handleSubmit, handleChange, values, errors, isSubmitting }) => (
                 <Form noValidate onSubmit={handleSubmit}>
+                    {/* email group */}
                     <Form.Group controlId="validationFormik01">
                         <Form.Control
                             type="email"
@@ -98,6 +122,7 @@ export function FormExample() {
                         </Form.Control.Feedback>
                     </Form.Group>
 
+                    {/* password group */}
                     <Form.Group controlId="validationFormik02">
                         <Form.Control
                             type="password"
@@ -113,6 +138,7 @@ export function FormExample() {
                         </Form.Control.Feedback>
                     </Form.Group>
 
+                    {/* display errors to the user */}
                     {serverState.show && (
                         <Alert
                             variant={!serverState.error ? "warning" : "danger"}
@@ -121,6 +147,7 @@ export function FormExample() {
                         </Alert>
                     )}
 
+                    {/* Submit button*/}
                     {isSubmitting ? (
                         <Button type="submit" disabled>
                             <Spinner
@@ -140,4 +167,4 @@ export function FormExample() {
             )}
         </Formik>
     );
-}
+};

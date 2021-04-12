@@ -1,11 +1,10 @@
 import Layout from "../components/layouts/base";
 
-import useSWR, { mutate } from "swr";
-
-import { FormExample } from "../components/custom/loginForm";
+import { MainForm } from "../components/custom/loginForm";
 
 import { Jumbotron, Container, Badge } from "react-bootstrap";
 
+// main app function
 export default function Main() {
     return (
         <Layout title="Home">
@@ -29,7 +28,8 @@ export default function Main() {
                 <h2>Login</h2>
                 <p>Please fill in your credentials to login.</p>
 
-                <FormExample />
+                {/* Load the form component */}
+                <MainForm />
             </Container>
         </Layout>
     );
