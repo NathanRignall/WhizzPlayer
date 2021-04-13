@@ -4,8 +4,8 @@ WhizzPlayer is an application to cue playback of tracks for automatic playback v
 
 Built with docker containers, uses docker compose to deploy
 
-[WEB](web/README.md)
+[WEB](web)
 
-[API](api/README.md)
+[API](api)
 
-[BACKEND](back/README.md)
+[BACKEND](back)

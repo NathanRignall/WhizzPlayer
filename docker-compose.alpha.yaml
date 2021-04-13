@@ -3,8 +3,6 @@ version: "3"
 services:
   web:
     image: nathanrignall/whizzplayer:web-alpha
-    ports:
-      - 3000
     environment:
       DB_HOST: db
       DB_USER: root
@@ -14,6 +12,8 @@ services:
       SESSION_KEY1: dev1
       SESSION_KEY2: dev2
       SESSION_KEY3: dev3
+    ports:
+      - 3000
   api:
     image: nathanrignall/whizzplayer:api-alpha
     volumes:
