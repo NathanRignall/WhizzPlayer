@@ -10,6 +10,7 @@ import { UploadTrackModal } from "../components/custom/manageTracks";
 
 import { Card, Col, Row, Spinner, Button } from "react-bootstrap";
 
+// card for displyaing info about a track
 const Track = (props) => (
     <>
         <Card>
@@ -33,7 +34,7 @@ const Track = (props) => (
     </>
 );
 
-export function TrackList() {
+const TrackList = (props) => {
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/app/tracks",
         fetcher
@@ -67,7 +68,7 @@ export function TrackList() {
             </>
         );
     }
-}
+};
 
 export default function Main() {
     return (

@@ -48,7 +48,7 @@ export const MainForm = () => {
             })
             .then((response) => {
                 // redirect back to the login page
-                router.push("/");
+                window.location.replace("/");
                 // set loading to false
                 actions.setSubmitting(false);
                 // set the server state to handle errors
