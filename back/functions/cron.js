@@ -1,6 +1,6 @@
 var axios = require("axios");
 
-var urlGrab = "http://api:4000/backend/grab";
+const urlGrab = process.env.API_URL + "/backend/grab";
 
 exports.grabTrack = async function () {
     await axios

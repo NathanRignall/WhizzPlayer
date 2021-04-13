@@ -1,5 +1,11 @@
-var spawn = require("child_process").spawn;
+const spawn = require("child_process").spawn;
 const fs = require("fs");
+const path = require("path");
+
+const uploadPath =
+    process.env.NODE_ENV == "production"
+        ? "/uploads"
+        : path.resolve(__dirname, "../../uploads");
 
 function Player(opts) {
     this.options = {
@@ -36,7 +42,7 @@ function Player(opts) {
         // set the this vars
         this.status.playing = true;
         this.status.json = json;
-        this.status.file = "/uploads/save/" + json.TrackID;
+        this.status.file = uploadPath + "/save/" + json.TrackID;
         // log the current satus
         console.log(
             JSON.stringify({
