@@ -3,25 +3,30 @@ version: "3"
 services:
   web:
     image: nathanrignall/whizzplayer:web
-    ports:
-      - 3000
+    restart: always
     environment:
       DB_HOST: db
       DB_USER: root
-      DB_PASS: production
+      DB_PASS: password
       DB_DB: whizzplayer
-      SESSION_SECRET: secrets
-      SESSION_KEY1: production1
-      SESSION_KEY2: production2
-      SESSION_KEY3: production3
+      SESSION_SECRET: secret
+      SESSION_KEY1: dev1
+      SESSION_KEY2: dev2
+      SESSION_KEY3: dev3
+    depends_on:
+      - db
+    ports:
+      - 3000
   api:
     image: nathanrignall/whizzplayer:api
+    restart: always
     volumes:
       - "./uploads/:/uploads"
     ports:
       - 4000
   back:
     image: nathanrignall/whizzplayer:back
+    restart: always
     volumes:
       - "./uploads/:/uploads"
     devices:
@@ -29,13 +34,14 @@ services:
     ports:
       - 5000
   db:
-    image: mariadb
+    image: jsurf/rpi-mariadb
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: production
+      MYSQL_ROOT_PASSWORD: password
     volumes:
       - ./mysql:/var/lib/mysql
   proxy:
     image: nathanrignall/whizzplayer:proxy
+    restart: always
     ports:
       - 80:80

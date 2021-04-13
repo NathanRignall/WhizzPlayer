@@ -7,47 +7,56 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev
-    environment:
-      NODE_ENV: production
-      NEXT_TELEMETRY_DISABLED: 1
-      PORT: 3000
+        VERSION_CODE: dev docker
+    depends_on:
+      - db
     ports:
-      - 3000
+      - 3000:3000
   api:
     image: whizzplayer:api
     build:
       context: ./api
       dockerfile: ./Dockerfile
-    env_file:
-      - ./api/.env
+      args:
+        VERSION_CODE: dev docker
     environment:
-      NODE_ENV: production
-      PORT: 4000
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: password
+      SESSION_SECRET: secret
+      SESSION_KEY1: dev1
+      SESSION_KEY2: dev2
+      SESSION_KEY3: dev3
     volumes:
       - "./uploads/:/uploads"
     ports:
-      - 4000
+      - 4000:4000
   back:
     image: whizzplayer:back
     build:
       context: ./back
       dockerfile: ./Dockerfile
-    env_file:
-      - ./back/.env
-    environment:
-      NODE_ENV: production
-      PORT: 5000
+      args:
+        VERSION_CODE: dev docker
     volumes:
       - "./uploads/:/uploads"
     devices:
       - "/dev/snd"
     ports:
-      - 5000
+      - 5000:5000
+  db:
+    image: jsurf/rpi-mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./mysql:/var/lib/mysql
   proxy:
     image: whizzplayer:proxy
     build:
       context: ./proxy
       dockerfile: ./Dockerfile
+      args:
+        VERSION_CODE: dev docker
     ports:
       - 80:80
