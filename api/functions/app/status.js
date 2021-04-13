@@ -2,8 +2,8 @@
 var axios = require("axios");
 
 // set constants
-const urlPlayStatus = "http://back:5000/status/play";
-const urlSystemStatus = "http://back:5000/status/system";
+const urlPlayStatus = process.env.BACKEND_URL + "/status/play";
+const urlSystemStatus = process.env.BACKEND_URL + "/status/system";
 
 exports.home = function (req, res, next) {
     // create the http promises

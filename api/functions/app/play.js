@@ -2,8 +2,8 @@
 var axios = require("axios");
 
 // set constants
-const urlPlay = "http://back:5000/play/";
-const urlHalt = "http://back:5000/halt/";
+const urlPlay = process.env.BACKEND_URL + "/play/";
+const urlHalt = process.env.BACKEND_URL + "/halt/";
 
 exports.track = function (req, res, next) {
     // get req parms

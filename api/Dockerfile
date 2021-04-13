@@ -3,6 +3,7 @@ FROM node:14.15.5-buster
 # env vars
 ENV PORT=4000
 ENV NODE_ENV=production
+ENV BACKEND_URL=http://back:5000
 
 # update the system and install apps
 RUN apt-get update

@@ -5,8 +5,10 @@ const FileType = require("file-type");
 var fs = require("fs");
 
 // set constants
-const tempUploadDir = "/uploads/temp/";
-const uploadDir = "/uploads/save/";
+const uploadPath =
+    process.env.NODE_ENV == "production" ? "/uploads" : "../../uploads";
+const tempUploadDir = uploadPath + "/temp/";
+const uploadDir = uploadPath + "/save/";
 
 exports.list = function (req, res, next) {
     // get the tracks info from the database
