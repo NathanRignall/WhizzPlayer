@@ -3,10 +3,13 @@ const Lame = require("node-lame").Lame;
 var crypto = require("crypto");
 const FileType = require("file-type");
 var fs = require("fs");
+const path = require("path");
 
 // set constants
 const uploadPath =
-    process.env.NODE_ENV == "production" ? "/uploads" : "../../uploads";
+    process.env.NODE_ENV == "production"
+        ? "/uploads"
+        : path.resolve(__dirname, "../../../uploads");
 const tempUploadDir = uploadPath + "/temp/";
 const uploadDir = uploadPath + "/save/";
 
