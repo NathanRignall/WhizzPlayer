@@ -17,7 +17,7 @@ exports.register = function (req, res, next) {
             // check if the password is strong
             if (validator.isStrongPassword(Password, { minSymbols: 0 })) {
                 // check the stystem is in setup mode
-                db.query("SELECT Data FROM Settings WHERE Feild = ?", ["setup"], function (error, results, fields) {
+                db.query("SELECT Data FROM Settings WHERE Feild = ?", ["Setup"], function (error, results, fields) {
                     // check if sucessfull
                     if (!error) {
                         // check the key was found
@@ -60,7 +60,7 @@ exports.register = function (req, res, next) {
 
                                             db.query(
                                                 "UPDATE Settings SET Data = ? WHERE Feild = ?",
-                                                ["false", "setup"],
+                                                ["false", "Setup"],
                                                 function (error, results, fields) {
                                                     if (error) {
                                                         return db.rollback(function () {
