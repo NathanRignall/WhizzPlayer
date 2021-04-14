@@ -9,6 +9,7 @@ var user = require("../functions/account/core");
 var auth = require("../middleware/auth");
 
 // routes
+router.get("/setup", user.setup);
 router.post("/register", user.register);
 router.post("/login", user.login);
 router.get("/info", auth.simple(), user.info);

@@ -1,6 +1,55 @@
 // load the dependancies
 var bcrypt = require("bcrypt");
 
+exports.setup = function (req, res, next) {
+    db.query("SELECT Data FROM Settings WHERE Feild = ?", ["Setup"], function (error, results, fields) {
+        // check if sucessfull
+        if (!error) {
+            // check the key was found
+            if (results.length == 1) {
+                // check the setup mode is true
+                if (results[0].Data == "true") {
+                    // retun the correct vars
+                    res.status(200).json({
+                        message: "okay",
+                        reqid: res.locals.reqid,
+                    });
+                } else {
+                    // retun the correct vars
+                    res.status(400).json({
+                        message: "System not in setup mode",
+                        reqid: res.locals.reqid,
+                    });
+                }
+            } else {
+                // retun the correct vars
+                res.locals.errors.push({
+                    location: "/api/account/core.js/register-4",
+                    from: "mysql",
+                });
+                // retun the correct vars
+                res.status(500).json({
+                    message: "System not configured correctly",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
+            }
+        } else {
+            // retun the correct vars
+            res.locals.errors.push({
+                location: "/api/account/core.js/register-5",
+                code: error.code,
+                from: "mysql",
+            });
+            res.status(500).json({
+                message: "Server error",
+                errors: res.locals.errors,
+                reqid: res.locals.reqid,
+            });
+        }
+    });
+};
+
 exports.register = function (req, res, next) {
     // get the info from json
     var json = req.body;
