@@ -24,9 +24,6 @@ services:
       DB_USER: root
       DB_PASS: password
       SESSION_SECRET: secret
-      SESSION_KEY1: dev1
-      SESSION_KEY2: dev2
-      SESSION_KEY3: dev3
     volumes:
       - "./uploads/:/uploads"
     ports:

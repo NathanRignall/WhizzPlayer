@@ -8,11 +8,7 @@ services:
       DB_HOST: db
       DB_USER: root
       DB_PASS: password
-      DB_DB: whizzplayer
       SESSION_SECRET: secret
-      SESSION_KEY1: dev1
-      SESSION_KEY2: dev2
-      SESSION_KEY3: dev3
     depends_on:
       - db
     ports:
