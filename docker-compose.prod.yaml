@@ -1,34 +1,6 @@
 version: "3"
 
 services:
-  web:
-    image: nathanrignall/whizzplayer:web
-    restart: always
-    environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASS: password
-      SESSION_SECRET: secret
-    depends_on:
-      - db
-    ports:
-      - 3000
-  api:
-    image: nathanrignall/whizzplayer:api
-    restart: always
-    volumes:
-      - "./uploads/:/uploads"
-    ports:
-      - 4000
-  back:
-    image: nathanrignall/whizzplayer:back
-    restart: always
-    volumes:
-      - "./uploads/:/uploads"
-    devices:
-      - "/dev/snd"
-    ports:
-      - 5000
   db:
     image: jsurf/rpi-mariadb
     restart: always
@@ -36,6 +8,28 @@ services:
       MYSQL_ROOT_PASSWORD: password
     volumes:
       - ./mysql:/var/lib/mysql
+  web:
+    image: nathanrignall/whizzplayer:web
+    restart: always
+  back:
+    image: nathanrignall/whizzplayer:back
+    restart: always
+    volumes:
+      - "./uploads/:/uploads"
+    devices:
+      - "/dev/snd"
+  api:
+    image: nathanrignall/whizzplayer:api
+    restart: always
+    volumes:
+      - "./uploads/:/uploads"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: password
+      SESSION_SECRET: secret
   proxy:
     image: nathanrignall/whizzplayer:proxy
     restart: always

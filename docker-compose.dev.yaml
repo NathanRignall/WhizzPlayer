@@ -9,20 +9,7 @@ services:
       args:
         VERSION_CODE: dev docker
     ports:
-      - 3000:3000
-  api:
-    image: whizzplayer:api
-    build:
-      context: ./api
-      dockerfile: ./Dockerfile
-      args:
-        VERSION_CODE: dev docker
-    env_file:
-      - ./api/.docker.env
-    volumes:
-      - "./uploads/:/uploads"
-    ports:
-      - 4000:4000
+      - 3000
   back:
     image: whizzplayer:back
     build:
@@ -35,7 +22,20 @@ services:
     devices:
       - "/dev/snd"
     ports:
-      - 5000:5000
+      - 5000
+  api:
+    image: whizzplayer:api
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+      args:
+        VERSION_CODE: dev docker
+    env_file:
+      - ./api/.docker.env
+    volumes:
+      - "./uploads/:/uploads"
+    ports:
+      - 4000
   proxy:
     image: whizzplayer:proxy
     build:

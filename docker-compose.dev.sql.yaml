@@ -1,6 +1,13 @@
 version: "3"
 
 services:
+  db:
+    image: jsurf/rpi-mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./mysql:/var/lib/mysql
   web:
     image: whizzplayer:web
     build:
@@ -8,26 +15,9 @@ services:
       dockerfile: ./Dockerfile
       args:
         VERSION_CODE: dev docker
-    depends_on:
-      - db
+
     ports:
-      - 3000:3000
-  api:
-    image: whizzplayer:api
-    build:
-      context: ./api
-      dockerfile: ./Dockerfile
-      args:
-        VERSION_CODE: dev docker
-    environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASS: password
-      SESSION_SECRET: secret
-    volumes:
-      - "./uploads/:/uploads"
-    ports:
-      - 4000:4000
+      - 3000
   back:
     image: whizzplayer:back
     build:
@@ -40,14 +30,25 @@ services:
     devices:
       - "/dev/snd"
     ports:
-      - 5000:5000
-  db:
-    image: jsurf/rpi-mariadb
-    restart: always
+      - 5000
+  api:
+    image: whizzplayer:api
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+      args:
+        VERSION_CODE: dev docker
+    depends_on:
+      - db
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: password
+      SESSION_SECRET: secret
     volumes:
-      - ./mysql:/var/lib/mysql
+      - "./uploads/:/uploads"
+    ports:
+      - 4000
   proxy:
     image: whizzplayer:proxy
     build:
