@@ -82,31 +82,13 @@ app.use(function (req, res, next) {
     next();
 });
 
-// set the trusted domains for cors production
-const whitelist = ["http://localhost:3000", "http://10.0.15.228:3000", "http://10.0.15.228"];
-
-const corsOptions =
-    process.env.NODE_ENV == "production"
-        ? {
-              origin: function (origin, callback) {
-                  if (whitelist.indexOf(origin) !== -1) {
-                      callback(null, true);
-                  } else if (origin == null) {
-                      callback(null, true);
-                  } else {
-                      console.log(origin);
-                      callback(new Error("Not allowed by CORS"));
-                  }
-              },
-              credentials: true,
-          }
-        : {
-              origin: function (origin, callback) {
-                  callback(null, true);
-              },
-              credentials: true,
-          };
-
+// set the cors allowed all
+const corsOptions = {
+    origin: function (origin, callback) {
+        callback(null, true);
+    },
+    credentials: true,
+};
 app.use(cors(corsOptions));
 
 // setup the session
