@@ -5,7 +5,7 @@ import Link from "next/link";
 import useSWR from "swr";
 
 import { fetcher } from "../components/common/functions";
-import { ErrorDisplayer } from "../components/common/errors";
+import { ErrorDisplayer, StickyError } from "../components/common/errors";
 import InstantPlay from "../components/custom/instantPlay";
 
 import { Jumbotron, Container, Badge, Card, Spinner } from "react-bootstrap";
@@ -59,6 +59,35 @@ const StatusArea = () => {
     }
 };
 
+// status area (cards)
+const SetupModeWarning = () => {
+    const { data, error } = useSWR(
+        process.env.NEXT_PUBLIC_API_URL + "/account/setup",
+        fetcher,
+        {
+            revalidateOnFocus: false,
+        }
+    );
+
+    if (data) {
+        return (
+            <StickyError
+                variant="warning"
+                text="System in setup mode, must dissable for security reasons"
+            />
+        );
+    } else {
+        if (error) {
+            if (error.status == 400) {
+                return "";
+            }
+            return <ErrorDisplayer error={error} />;
+        } else {
+            return "";
+        }
+    }
+};
+
 // main app function
 export default function Main() {
     return (
@@ -72,6 +101,7 @@ export default function Main() {
                     <InstantPlay />
                 </Card.Body>
             </Card>
+            <SetupModeWarning />
         </Layout>
     );
 }

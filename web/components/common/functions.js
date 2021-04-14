@@ -10,7 +10,6 @@ export const fetcher = async (url) => {
         error.info = await res;
         error.status = res.status;
 
-        console.error(error.info);
         throw error;
     }
 

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Alert, Button } from "react-bootstrap";
 
 // sticky error component
-const StickyError = (props) => {
+export const StickyError = (props) => {
     // contain the state of the error
     const [show, setShow] = useState(true);
 
