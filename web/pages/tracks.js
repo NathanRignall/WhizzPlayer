@@ -14,7 +14,7 @@ import { Card, Col, Row, Spinner, Button } from "react-bootstrap";
 const Track = (props) => (
     <>
         <Card>
-            <Card.Header as="h4" className="bg-dark text-white">
+            <Card.Header as="h4" className="bg-secondary text-white">
                 {props.info.TrackName}
             </Card.Header>
 
@@ -28,12 +28,20 @@ const Track = (props) => (
                         Your browser does not support the audio element.
                     </audio>
                 </div>
+
+                <br />
+
+                <div className="text-right">
+                    <Button variant="primary">Edit Track</Button>{" "}
+                    <Button variant="danger">Delete Track</Button>
+                </div>
             </Card.Body>
         </Card>
         <br />
     </>
 );
 
+// main track list loader
 const TrackList = (props) => {
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/app/tracks",
@@ -70,6 +78,7 @@ const TrackList = (props) => {
     }
 };
 
+// main app function
 export default function Main() {
     return (
         <Layout title="Tracks">

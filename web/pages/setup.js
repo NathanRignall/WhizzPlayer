@@ -9,15 +9,25 @@ import { MainForm } from "../components/custom/registerForm";
 
 import { Jumbotron, Container, Badge, Spinner, Button } from "react-bootstrap";
 
+// component to show not in setup
 const NotInSetup = (props) => (
     <>
-        NOT IN SETUP MODE
-        <Link href="/">
-            <Button variant="success">Return to home</Button>
-        </Link>
+        <div className="text-center">
+            <h4>
+                WhizzPlayer is not in setup mode, refer to the docs to manually
+                put into setup mode
+            </h4>
+            <br />
+            <Link href="/">
+                <Button size="lg" variant="primary">
+                    Return to home
+                </Button>
+            </Link>
+        </div>
     </>
 );
 
+// register area loader
 const RegisterArea = (props) => {
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/account/setup",
@@ -37,7 +47,9 @@ const RegisterArea = (props) => {
             return (
                 <>
                     <h2>Register Admin User</h2>
-                    <p>Please fill in your details to register.</p>
+                    <p>
+                        Please fill in your details to register an admin user.
+                    </p>
                     <MainForm />
                 </>
             );

@@ -482,7 +482,7 @@ export function CueEditModal(props) {
                         isSubmitting,
                     }) => (
                         <Form noValidate onSubmit={handleSubmit}>
-                            <Modal.Header className="bg-success text-white">
+                            <Modal.Header className="bg-primary text-white">
                                 <Modal.Title>
                                     Edit Cue: "{props.info.CueName}"
                                 </Modal.Title>
@@ -559,7 +559,11 @@ export function CueEditModal(props) {
 
                                 {/* Submit button*/}
                                 {isSubmitting ? (
-                                    <Button type="submit" disabled>
+                                    <Button
+                                        type="submit"
+                                        variant="success"
+                                        disabled
+                                    >
                                         <Spinner
                                             as="span"
                                             animation="border"
@@ -571,7 +575,9 @@ export function CueEditModal(props) {
                                         Loading...
                                     </Button>
                                 ) : (
-                                    <Button type="submit">Save</Button>
+                                    <Button variant="success" type="submit">
+                                        Apply Changes
+                                    </Button>
                                 )}
                             </Modal.Footer>
                         </Form>
