@@ -260,16 +260,8 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                 onSubmit={handleOnSubmit}
                 initialValues={{ TrackName: "" }}
             >
-                {({
-                    handleSubmit,
-                    handleChange,
-                    values,
-                    errors,
-                    isSubmitting,
-                    clearProgress,
-                    handleClose,
-                }) => (
-                    <Form noValidate onSubmit={handleSubmit}>
+                {(props) => (
+                    <Form noValidate onSubmit={props.handleSubmit}>
                         <Modal.Body>
                             {/* cue name group */}
                             <Form.Group controlId="validationFormik01">
@@ -277,11 +269,11 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                                     type="text"
                                     name="TrackName"
                                     placeholder="Enter TrackName"
-                                    value={values.TrackName}
-                                    onChange={handleChange}
+                                    value={props.values.TrackName}
+                                    onChange={props.handleChange}
                                 />
 
-                                {errors.TrackName}
+                                {props.errors.TrackName}
                             </Form.Group>
 
                             {/* display errors to the user */}
@@ -308,7 +300,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                             </Button>
 
                             {/* Submit button*/}
-                            {isSubmitting ? (
+                            {props.isSubmitting ? (
                                 <Button type="submit" disabled>
                                     <Spinner
                                         as="span"
