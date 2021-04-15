@@ -2,10 +2,7 @@ exports.core = function (req, res, next) {
     // set the time vars for sql request
     var time = new Date().getTime();
     var timeNow = new Date(time).toISOString().slice(0, 19).replace("T", " ");
-    var timeNowMinus = new Date(time - 60000)
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", " ");
+    var timeNowMinus = new Date(time - 60000).toISOString().slice(0, 19).replace("T", " ");
     // make the query to check if a song needs to be played
     db.query(
         "SELECT Cues.CueID, Cues.CueName, Cues.PlayTime, Tracks.TrackID, Tracks.TrackName FROM Cues INNER JOIN Tracks ON Tracks.TrackID = Cues.TrackID WHERE Cues.Enabled=1 AND Cues.Repeats=0 AND Cues.PlayTime > ? AND Cues.PlayTime <= ?",

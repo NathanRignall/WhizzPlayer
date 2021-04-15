@@ -6,6 +6,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
+      TZ: UTC
     volumes:
       - ./mysql:/var/lib/mysql
   web:

@@ -44,7 +44,6 @@ const TrackSelector = (props) => {
     // if a single item is selected set the formik status
     useEffect(() => {
         if (singleSelections.length > 0) {
-            console.log(singleSelections[0]);
             setFieldValue(props.name, singleSelections[0].TrackID);
         }
     }, [singleSelections]);
@@ -130,8 +129,8 @@ const DateSelector = ({ ...props }) => {
         <DatePicker
             {...field}
             {...props}
-            selected={(field.value && new Date(field.value)) || null}
-            dateFormat="MM/dd/yyyy h:mm aa"
+            selected={field.value}
+            dateFormat="MM/dd/yyyy HH:mm:ss"
             showTimeInput
             todayButton="Today"
             customInput={<ExampleCustomInput />}
@@ -469,7 +468,7 @@ export function CueEditModal(props) {
                     initialValues={{
                         CueName: props.info.CueName,
                         TrackID: "",
-                        PlayTime: props.info.PlayTime,
+                        PlayTime: new Date(props.info.PlayTime),
                         Repeats: props.info.Repeats ? true : false,
                     }}
                     onSubmit={handleOnSubmit}

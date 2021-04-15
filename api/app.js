@@ -21,7 +21,7 @@ const tempConnection = mysql.createConnection({
     password: process.env.DB_PASS,
     supportBigNumbers: true,
     bigNumberStrings: true,
-    dateStrings: true,
+    timezone: "utc",
 });
 
 // connect to mysql and create database and tables if not exists
@@ -44,7 +44,7 @@ tempConnection.connect((err) => {
             database: dbUse,
             supportBigNumbers: true,
             bigNumberStrings: true,
-            dateStrings: true,
+            timezone: "utc",
         });
 
         // make the db global
