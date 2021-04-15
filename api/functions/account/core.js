@@ -11,13 +11,12 @@ exports.setup = function (req, res, next) {
                 if (results[0].Data == "true") {
                     // retun the correct vars
                     res.status(200).json({
-                        message: "okay",
+                        message: "true",
                         reqid: res.locals.reqid,
                     });
                 } else {
-                    // retun the correct vars
-                    res.status(400).json({
-                        message: "System not in setup mode",
+                    res.status(200).json({
+                        message: "false",
                         reqid: res.locals.reqid,
                     });
                 }

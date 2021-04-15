@@ -71,21 +71,21 @@ const SetupModeWarning = () => {
     );
 
     if (data) {
-        return (
-            <StickyError
-                variant="warning"
-                text="System in setup mode, must dissable for security reasons"
-            />
-        );
-    } else {
-        if (error) {
-            if (error.status == 400) {
-                return "";
-            }
-            return <ErrorDisplayer error={error} />;
+        if (data.message == "true") {
+            return (
+                <StickyError
+                    variant="danger"
+                    text="System in setup mode, must dissable for security reasons"
+                />
+            );
         } else {
             return "";
         }
+    } else {
+        if (error) {
+            console.error(error);
+        }
+        return "";
     }
 };
 

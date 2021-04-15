@@ -38,12 +38,7 @@ const RegisterArea = (props) => {
     );
 
     if (data) {
-        if (error) {
-            if (error.status == 400) {
-                return <NotInSetup />;
-            }
-            return <ErrorDisplayer error={error} />;
-        } else {
+        if (data.message == "true") {
             return (
                 <>
                     <h2>Register Admin User</h2>
@@ -51,22 +46,26 @@ const RegisterArea = (props) => {
                         Please fill in your details to register an admin user.
                     </p>
                     <MainForm />
+                    <ErrorDisplayer error={error} />
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <NotInSetup />
+                    <ErrorDisplayer error={error} />
                 </>
             );
         }
     } else {
-        if (error) {
-            if (error.status == 400) {
-                return <NotInSetup />;
-            }
-            return <ErrorDisplayer error={error} />;
-        } else {
-            return (
+        return (
+            <>
                 <div className="text-center">
                     <Spinner animation="border" />
                 </div>
-            );
-        }
+                <ErrorDisplayer error={error} />
+            </>
+        );
     }
 };
 
