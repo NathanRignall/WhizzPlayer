@@ -41,6 +41,7 @@ const fileUpload = (file, onUploadProgress) => {
 // upload file modal component
 const UploadFile = ({ handleClose, setTempID }) => {
     // hold the current status
+    const [fileName, setFileName] = useState("Upload MP3 or WAV file");
     const [selectedFiles, setSelectedFiles] = useState(undefined);
     const [currentFile, setCurrentFile] = useState(undefined);
     const [progress, setProgress] = useState(0);
@@ -54,6 +55,7 @@ const UploadFile = ({ handleClose, setTempID }) => {
 
     // set the selected file
     const selectFile = (event) => {
+        setFileName(event.target.files[0].name);
         setSelectedFiles(event.target.files);
     };
 
@@ -143,8 +145,9 @@ const UploadFile = ({ handleClose, setTempID }) => {
                 {currentFile && <ProgressBar now={progress} />}
 
                 {/* File selector*/}
-                <Form.File onChange={selectFile} />
-
+                <Form>
+                    <Form.File label={fileName} custom onChange={selectFile} />
+                </Form>
                 <br />
 
                 {/* display errors to the user */}
@@ -313,7 +316,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                                     Loading...
                                 </Button>
                             ) : (
-                                <Button type="submit">Create</Button>
+                                <Button type="submit">Name</Button>
                             )}
                         </Modal.Footer>
                     </Form>
