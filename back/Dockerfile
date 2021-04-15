@@ -1,13 +1,10 @@
-FROM node:14.15.5-buster
+FROM node:14.16.1-buster
 
-# env vars
-ENV PORT=5000
+# pre env vars
 ENV NODE_ENV=production
-ENV API_URL=http://api:4000
 
 # update the system and install apps
-RUN apt-get update
-RUN apt-get install mpg123 -y
+RUN apt-get update && apt-get install mpg123 -y && apt-get clean
 
 # create the app dir
 WORKDIR /usr/src/app
@@ -15,6 +12,13 @@ WORKDIR /usr/src/app
 # install the dependencies
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
 RUN npm install --production --silent && mv node_modules ../
+
+# args
+ARG VERSION_CODE
+
+# post env vars
+ENV PORT=5000
+ENV API_URL=http://api:4000
 
 # move the app to location
 COPY . .

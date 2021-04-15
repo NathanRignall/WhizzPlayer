@@ -1,18 +1,10 @@
-FROM node:14.15.5-buster
+FROM node:14.16.1-buster
 
-# args
-ARG VERSION_CODE
-
-# env vars
-ENV PORT 3000
+# pre env vars
 ENV NODE_ENV=production
-ENV NEXT_PUBLIC_VERSION $VERSION_CODE
-ENV NEXT_PUBLIC_API_URL /api
-ENV NEXT_TELEMETRY_DISABLED 1
 
 # update the system and install apps
-RUN apt-get update
-RUN apt-get install libvips -y
+RUN apt-get update && apt-get install libvips -y && apt-get clean
 
 # Create app directory
 RUN mkdir -p /usr/src/app
@@ -21,6 +13,15 @@ WORKDIR /usr/src/app
 # Installing dependencies
 COPY package*.json /usr/src/app/
 RUN npm install
+
+# args
+ARG VERSION_CODE
+
+# post env vars
+ENV PORT 3000
+ENV NEXT_PUBLIC_VERSION $VERSION_CODE
+ENV NEXT_PUBLIC_API_URL /api
+ENV NEXT_TELEMETRY_DISABLED 1
 
 # Copying source files
 COPY . /usr/src/app
