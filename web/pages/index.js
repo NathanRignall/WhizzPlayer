@@ -7,6 +7,7 @@ import useSWR from "swr";
 import { fetcher } from "../components/common/functions";
 import { ErrorDisplayer, StickyError } from "../components/common/errors";
 import InstantPlay from "../components/custom/instantPlay";
+import HaltPlayModal from "../components/custom/haltPlay";
 
 import { Jumbotron, Container, Badge, Card, Spinner } from "react-bootstrap";
 
@@ -26,6 +27,7 @@ const StatusHeader = () => {
                     Track scheduler system, create cues and upload audio files
                     to schedule audio playback
                 </p>
+                <HaltPlayModal />
             </Container>
         </Jumbotron>
     );
@@ -43,7 +45,6 @@ const StatusArea = () => {
         console.log(data.payload);
         return (
             <>
-                <h1>Data</h1>
                 <ErrorDisplayer error={error} />
             </>
         );
