@@ -2,8 +2,6 @@ var express = require("express");
 var router = express.Router();
 
 router.get("/", async function (req, res, next) {
-    // get the info from json
-    var json = req.body;
     // play the song
     var track = await player.halt();
     // if successful return 200

@@ -8,20 +8,23 @@ exports.grabTrack = async function () {
         .then((response) => {
             if (response.status == 200) {
                 var json = response.data.payload;
-                console.log(player.play(json));
+                player.play(json);
             } else {
-                console.log("wtf wierd error");
+                logger.error("wtf wierd error in cron");
             }
         })
         .catch((error) => {
             if (error.response) {
-                if (error.response.status != 404) {
+                if (error.response.status != 400) {
                     console.log("server error");
+                    logger.error("server error from api in cron");
+                } else {
+                    logger.debug("no song to play in cron");
                 }
             } else if (error.request) {
-                console.log("no response");
+                logger.error("no response from api in cron");
             } else {
-                console.log("no axios error");
+                logger.error("axios error in cron");
             }
         });
 };

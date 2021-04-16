@@ -20,7 +20,11 @@ function Player(opts) {
 
     this.play = function (json) {
         // first check if a song is playing on the system
-        if (this.status.playing == true)
+        if (this.status.playing == true) {
+            logger.error({
+                details: "Song already playing",
+                json: json,
+            });
             return {
                 success: false,
                 message: "Song already playing",
@@ -29,8 +33,12 @@ function Player(opts) {
                     from: "state",
                 },
             };
+        }
         // next check if json was sent
-        if (!json)
+        if (!json) {
+            logger.error({
+                details: "No details in request",
+            });
             return {
                 success: false,
                 message: "No details in request",
@@ -39,30 +47,28 @@ function Player(opts) {
                     from: "file",
                 },
             };
+        }
         // set the this vars
         this.status.playing = true;
         this.status.json = json;
         this.status.file = uploadPath + "/save/" + json.TrackID;
         // log the current satus
-        console.log(
-            JSON.stringify({
-                action: "play",
-                status: this.status,
-            })
-        );
+        logger.playback({
+            action: "play",
+            details: "Play song",
+            status: this.status,
+        });
         // check if the file exists
         if (fs.existsSync(this.status.file)) {
             this.process = spawn("mpg123", [this.status.file], this.options);
             // make sure the process started
             if (!this.process) {
                 this.status.playing = false;
-                console.log(
-                    JSON.stringify({
-                        action: "error",
-                        message: "Error starting process",
-                        status: this.status,
-                    })
-                );
+                logger.error({
+                    action: "error",
+                    details: "Error starting process",
+                    status: this.status,
+                });
                 return {
                     success: false,
                     message: "Error starting process",
@@ -75,13 +81,11 @@ function Player(opts) {
             // on process close
             this.process.on("close", (code) => {
                 this.status.playing = false;
-                console.log(
-                    JSON.stringify({
-                        action: "end",
-                        message: "Playback ended",
-                        status: this.status,
-                    })
-                );
+                logger.playback({
+                    action: "end",
+                    details: "Playback ended",
+                    status: this.status,
+                });
             });
             // return to reg
             return {
@@ -90,13 +94,11 @@ function Player(opts) {
             };
         } else {
             this.status.playing = false;
-            console.log(
-                JSON.stringify({
-                    action: "error",
-                    message: "File does not exist",
-                    status: this.status,
-                })
-            );
+            logger.error({
+                action: "error",
+                details: "File does not exist",
+                status: this.status,
+            });
             return {
                 success: false,
                 message: "File does not exist",
@@ -113,24 +115,30 @@ function Player(opts) {
             if (this.status.playing == true) {
                 this.process.kill();
                 this.status.playing = false;
-                console.log(
-                    JSON.stringify({
-                        action: "killed",
-                        message: "Playback ended",
-                        status: this.status,
-                    })
-                );
+                logger.playback({
+                    action: "halt",
+                    details: "Playback ended",
+                    status: this.status,
+                });
                 return {
                     success: true,
                     message: "Halted track",
                 };
             } else {
+                logger.info({
+                    action: "halt",
+                    details: "No track currently playing",
+                });
                 return {
                     success: false,
                     message: "No track currently playing",
                 };
             }
         } else {
+            logger.info({
+                action: "halt",
+                details: "No track currently playing",
+            });
             return {
                 success: false,
                 message: "No track currently playing",

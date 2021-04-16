@@ -19,7 +19,7 @@ exports.core = function (req, res, next) {
                         reqid: res.locals.reqid,
                     });
                 } else {
-                    res.status(404).json({
+                    res.status(400).json({
                         message: "no play",
                         reqid: res.locals.reqid,
                     });
