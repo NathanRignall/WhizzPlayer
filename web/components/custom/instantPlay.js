@@ -7,6 +7,8 @@ import * as yup from "yup";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
 
+import { StickyError } from "../common/errors";
+
 // axios request urls
 const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
 const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play";
@@ -36,9 +38,6 @@ const TrackSelector = (props) => {
 
     // main feild searcher
     const handleSearch = (query) => {
-        // set loading state to true
-        setIsLoading(true);
-
         // make the axios request for track search
         axios
             .get(`${SEARCH_URI}?search=${query}`)
@@ -50,13 +49,11 @@ const TrackSelector = (props) => {
                 }));
                 // set the options state to this new array
                 setOptions(options);
-                // set loading false
-                setIsLoading(false);
             })
             .catch((error) => {
                 // catch each type of axios error
                 if (error.response) {
-                    if (error.response.status == 404) {
+                    if (error.response.status == 400) {
                         console.log("No results in track search");
                     } else {
                         console.log("Error with response in track search");
@@ -68,8 +65,6 @@ const TrackSelector = (props) => {
                 }
                 // set options to itself
                 setOptions(options);
-                // set loading to false
-                setIsLoading(false);
             });
     };
 
@@ -204,6 +199,16 @@ export default function InstantPlay(props) {
                             </Button>
                         ) : (
                             <Button type="submit">Play</Button>
+                        )}
+
+                        {/* display errors to the user */}
+                        {serverState.show && (
+                            <StickyError
+                                variant={
+                                    !serverState.error ? "warning" : "danger"
+                                }
+                                text={serverState.message}
+                            />
                         )}
                     </Form>
                 )}

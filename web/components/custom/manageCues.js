@@ -70,7 +70,7 @@ const TrackSelector = (props) => {
             .catch((error) => {
                 // catch each type of axios error
                 if (error.response) {
-                    if (error.response.status == 404) {
+                    if (error.response.status == 400) {
                         console.log("No results in track search");
                     } else {
                         console.log("Error with response in track search");

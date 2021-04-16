@@ -149,7 +149,6 @@ const CueList = (props) => {
                     CueFormedList
                 ) : (
                     <Alert variant="warning">
-                        {" "}
                         There are currently 0 Cues in the system.
                     </Alert>
                 )}
