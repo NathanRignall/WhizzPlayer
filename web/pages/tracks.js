@@ -6,9 +6,12 @@ import useSWR from "swr";
 
 import { fetcher } from "../components/common/functions";
 import { ErrorDisplayer } from "../components/common/errors";
-import { UploadTrackModal } from "../components/custom/manageTracks";
+import {
+    UploadTrackModal,
+    TrackDeleteModal,
+} from "../components/custom/manageTracks";
 
-import { Card, Col, Row, Spinner, Button } from "react-bootstrap";
+import { Card, Col, Row, Spinner, Button, Alert } from "react-bootstrap";
 
 // card for displyaing info about a track
 const Track = (props) => (
@@ -33,7 +36,7 @@ const Track = (props) => (
 
                 <div className="text-right">
                     <Button variant="primary">Edit Track</Button>{" "}
-                    <Button variant="danger">Delete Track</Button>
+                    <TrackDeleteModal info={props.info} />
                 </div>
             </Card.Body>
         </Card>
@@ -42,7 +45,7 @@ const Track = (props) => (
 );
 
 // main track list loader
-const TrackList = (props) => {
+const TrackList = () => {
     const { data, error } = useSWR(
         process.env.NEXT_PUBLIC_API_URL + "/app/tracks",
         fetcher
@@ -50,7 +53,7 @@ const TrackList = (props) => {
 
     if (data) {
         const CueFormedList = data.payload.map((item) => (
-            <Col key={item.TrackID} xs={6}>
+            <Col key={item.TrackID} xs={12} md={6}>
                 <Track info={item} />
             </Col>
         ));
@@ -62,7 +65,9 @@ const TrackList = (props) => {
                 {data.payload.length > 0 ? (
                     <Row>{CueFormedList}</Row>
                 ) : (
-                    "No tracks"
+                    <Alert variant="warning">
+                        There are currently 0 Tracks in the system.
+                    </Alert>
                 )}
             </>
         );

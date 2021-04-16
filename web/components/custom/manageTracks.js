@@ -55,7 +55,12 @@ const UploadFile = ({ handleClose, setTempID }) => {
 
     // set the selected file
     const selectFile = (event) => {
-        setFileName(event.target.files[0].name);
+        if (event.target.files[0]) {
+            setFileName(event.target.files[0].name);
+        } else {
+            setFileName("Upload MP3 or WAV file");
+        }
+
         setSelectedFiles(event.target.files);
     };
 
@@ -142,7 +147,12 @@ const UploadFile = ({ handleClose, setTempID }) => {
         <>
             <Modal.Body>
                 {/* Progress bar*/}
-                {currentFile && <ProgressBar now={progress} />}
+                {currentFile && (
+                    <>
+                        <ProgressBar now={progress} />
+                        <br />
+                    </>
+                )}
 
                 {/* File selector*/}
                 <Form>
@@ -381,3 +391,127 @@ export const UploadTrackModal = (props) => {
         </>
     );
 };
+
+// full delete track modal
+export function TrackDeleteModal(props) {
+    // contain the state of the modal
+    const [show, setShow] = useState(false);
+
+    // set the state of the modal
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    // satus of the form requests
+    const [serverState, setServerState] = useState({
+        show: false,
+        error: false,
+        message: "none",
+    });
+
+    // set the server state from a response
+    const handleServerResponse = (show, error, message) => {
+        setServerState({ show, error, message });
+    };
+
+    // handle delete track
+    const deleteTrack = () => {
+        // axios delete track
+        axios
+            .delete(`${TRACKS_URI}/${props.info.TrackID}`, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
+            .then((response) => {
+                // set the server state to handle errors
+                handleServerResponse(false, false, response.data.message);
+                // reload the track list
+                mutate(TRACKS_URI);
+                // close the modal
+                handleClose();
+            })
+            .catch(function (error) {
+                // catch each type of axios error
+                if (error.response) {
+                    if (error.response.status == 500) {
+                        // check if a server error
+                        handleServerResponse(
+                            true,
+                            true,
+                            error.response.data.message
+                        );
+                    } else {
+                        // check if a user error
+                        handleServerResponse(
+                            true,
+                            false,
+                            error.response.data.message
+                        );
+                    }
+                } else if (error.request) {
+                    // check if a request error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error sending request to server"
+                    );
+                } else {
+                    // check if a browser error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error in browser request"
+                    );
+                }
+            });
+    };
+
+    return (
+        <>
+            <Button variant="danger" onClick={handleShow}>
+                Delete Track
+            </Button>
+
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                size="md"
+                centered={true}
+                keyboard={false}
+            >
+                <Modal.Header className="bg-danger text-white">
+                    <Modal.Title>Are you sure?</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    Are you sure you would like to delete the track "
+                    {props.info.TrackName}"
+                    <>
+                        {/* display errors to the user */}
+                        {serverState.show && (
+                            <Alert
+                                variant={
+                                    !serverState.error ? "warning" : "danger"
+                                }
+                            >
+                                {serverState.message}
+                            </Alert>
+                        )}
+                    </>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    {/* Close Modal button*/}
+                    <Button variant="secondary" onClick={handleClose}>
+                        Cancel
+                    </Button>
+
+                    {/* Delete button*/}
+                    <Button variant="danger" onClick={deleteTrack}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </>
+    );
+}

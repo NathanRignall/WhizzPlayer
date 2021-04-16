@@ -57,7 +57,7 @@ tempConnection.connect((err) => {
 // setup global validators
 global.validator = validator;
 function checkCharacters(input) {
-    return /^[A-z ]+$/.test(input);
+    return true;
 }
 global.checkCharacters = checkCharacters;
 
