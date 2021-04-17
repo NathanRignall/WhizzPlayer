@@ -16,6 +16,7 @@ var auth = require("../middleware/auth");
 
 // status routes
 router.get("/status", auth.simple(), status.home); // view
+router.get("/status/playing", auth.simple(), status.playing); // view
 router.get("/status/all", auth.simple(), status.all); // view
 
 // play routes
