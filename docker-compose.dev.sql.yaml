@@ -15,7 +15,7 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker
+        VERSION_CODE: dev docker sql
 
     ports:
       - 3000
@@ -25,7 +25,7 @@ services:
       context: ./back
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker
+        VERSION_CODE: dev docker sql
     volumes:
       - "./uploads/:/uploads"
     devices:
@@ -38,7 +38,7 @@ services:
       context: ./api
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker
+        VERSION_CODE: dev docker sql
     depends_on:
       - db
     environment:
@@ -56,6 +56,6 @@ services:
       context: ./proxy
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker
+        VERSION_CODE: dev docker sql
     ports:
       - 80:80
