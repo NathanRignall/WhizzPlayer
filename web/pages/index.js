@@ -17,6 +17,7 @@ import {
     Badge,
     Card,
     Spinner,
+    CardDeck,
 } from "react-bootstrap";
 
 // setup warning
@@ -72,42 +73,44 @@ const StatusHeader = () => {
 
 // status card
 const StatusCard = (props) => (
-    <Col xs={12} md={6}>
-        <Card>
-            <Card.Header as="h4" className="bg-secondary text-white">
-                {props.header}
-            </Card.Header>
+    <Card>
+        <Card.Header as="h4" className={"bg-" + props.variant + " text-white"}>
+            {props.header}
+        </Card.Header>
 
-            <Card.Body>{props.children}</Card.Body>
-        </Card>
-        <br />
-    </Col>
+        <Card.Body className="text-center">{props.children}</Card.Body>
+    </Card>
 );
 
-// status area (cards)
-const StatusArea = () => {
+// instant play
+const InstantPlayCard = () => (
+    <StatusCard variant="secondary" header="Instant Play">
+        <InstantPlay />
+    </StatusCard>
+);
+
+// now playing
+const NowPlayingCard = () => {
     const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/app/status",
-        fetcher
+        process.env.NEXT_PUBLIC_API_URL + "/app/status/playing",
+        fetcher,
+        { refreshInterval: 10000 }
     );
 
-    //TODO: display information
     if (data) {
-        return (
-            <>
-                <Row>
-                    <StatusCard header="Instant Play">
-                        <InstantPlay />
-                    </StatusCard>
-                    <StatusCard header="Now Playing">No song</StatusCard>
-                    <StatusCard header="System Status">
-                        System Status
-                    </StatusCard>
-                    <StatusCard header="System Log">System Log</StatusCard>
-                </Row>
-                <ErrorDisplayer error={error} />
-            </>
-        );
+        if (data.payload.playing == true) {
+            return (
+                <StatusCard variant="warning" header="Now Playing">
+                    <h3>{data.payload.json.TrackName}</h3>
+                </StatusCard>
+            );
+        } else {
+            return (
+                <StatusCard variant="secondary" header="Now Playing">
+                    <h3>Not Playing</h3>
+                </StatusCard>
+            );
+        }
     } else {
         return (
             <>
@@ -120,11 +123,33 @@ const StatusArea = () => {
     }
 };
 
+// status area (cards)
+const StatusArea = () => (
+    <>
+        <CardDeck>
+            <InstantPlayCard />
+            <NowPlayingCard />
+        </CardDeck>
+
+        <br />
+
+        <CardDeck>
+            <StatusCard variant="secondary" header="System Status">
+                Status
+            </StatusCard>
+            <StatusCard variant="secondary" header="System Logs">
+                Logs
+            </StatusCard>
+        </CardDeck>
+    </>
+);
+
 // main app function
 export default function Main() {
     return (
         <Layout title="Tracks">
             <StatusHeader />
+
             <StatusArea />
 
             <SetupModeWarning />

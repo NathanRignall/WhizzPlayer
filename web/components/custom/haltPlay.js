@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { mutate } from "swr";
 
 import { Button, Modal, Alert } from "react-bootstrap";
 
@@ -6,6 +7,7 @@ import axios from "axios";
 
 // axios request urls
 const HALT_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play/halt";
+const STATUS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/status";
 
 // full halt track modal
 export default function HaltPlayModal(props) {
@@ -44,6 +46,8 @@ export default function HaltPlayModal(props) {
                 handleServerResponse(false, false, response.data.message);
                 // close the modal
                 handleClose();
+                // mutate now playing
+                mutate(`${STATUS_URI}/playing`);
             })
             .catch(function (error) {
                 // catch each type of axios error

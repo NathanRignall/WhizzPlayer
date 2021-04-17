@@ -1,6 +1,7 @@
 import { useState, useEffect, forwardRef } from "react";
+import { mutate } from "swr";
 
-import { Form, Button, Spinner } from "react-bootstrap";
+import { Form, Button, Spinner, Col } from "react-bootstrap";
 
 import { Formik, useField, useFormikContext } from "formik";
 import * as yup from "yup";
@@ -12,6 +13,7 @@ import { StickyError } from "../common/errors";
 // axios request urls
 const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
 const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play";
+const STATUS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/status";
 
 // form schema
 const schema = yup.object().shape({
@@ -117,6 +119,8 @@ export default function InstantPlay(props) {
                 actions.setSubmitting(false);
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
+                // mutate now playing
+                mutate(`${STATUS_URI}/playing`);
             })
             .catch(function (error) {
                 // catch each type of axios error
@@ -176,41 +180,49 @@ export default function InstantPlay(props) {
                     errors,
                     isSubmitting,
                 }) => (
-                    <Form noValidate onSubmit={handleSubmit}>
-                        {/* track selector group */}
-                        <Form.Group controlId="validationFormik05">
-                            <TrackSelector name="TrackID" />
+                    <div>
+                        <Form noValidate onSubmit={handleSubmit}>
+                            <Form.Row>
+                                <Col md={12} lg={10}>
+                                    {/* track selector group */}
+                                    <Form.Group controlId="validationFormik05">
+                                        <TrackSelector name="TrackID" />
 
-                            {errors.TrackID}
-                        </Form.Group>
+                                        {errors.TrackID}
+                                    </Form.Group>
+                                </Col>
+                                <Col md={12} lg={2}>
+                                    {/* Submit button*/}
+                                    {isSubmitting ? (
+                                        <Button type="submit" disabled>
+                                            <Spinner
+                                                as="span"
+                                                animation="border"
+                                                size="sm"
+                                                role="status"
+                                                aria-hidden="true"
+                                                className="mr-2"
+                                            />
+                                        </Button>
+                                    ) : (
+                                        <Button type="submit">Play</Button>
+                                    )}
+                                </Col>
+                            </Form.Row>
 
-                        {/* Submit button*/}
-                        {isSubmitting ? (
-                            <Button type="submit" disabled>
-                                <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                    className="mr-2"
+                            {/* display errors to the user */}
+                            {serverState.show && (
+                                <StickyError
+                                    variant={
+                                        !serverState.error
+                                            ? "warning"
+                                            : "danger"
+                                    }
+                                    text={serverState.message}
                                 />
-                                Loading...
-                            </Button>
-                        ) : (
-                            <Button type="submit">Play</Button>
-                        )}
-
-                        {/* display errors to the user */}
-                        {serverState.show && (
-                            <StickyError
-                                variant={
-                                    !serverState.error ? "warning" : "danger"
-                                }
-                                text={serverState.message}
-                            />
-                        )}
-                    </Form>
+                            )}
+                        </Form>
+                    </div>
                 )}
             </Formik>
         </>
