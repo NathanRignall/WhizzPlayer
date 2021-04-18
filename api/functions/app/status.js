@@ -15,7 +15,6 @@ exports.stats = function (req, res, next) {
         .get(urlVersionStatus)
         .then((response) => {
             // retun the correct vars
-            console.log(response);
             res.status(200).json({
                 message: "okay",
                 payload: {
@@ -34,7 +33,6 @@ exports.stats = function (req, res, next) {
                 // catch error in response
                 if (error.response.status == 400) {
                     // retun the correct vars
-                    console.log(response);
                     res.status(200).json({
                         message: "okay",
                         payload: {
@@ -52,7 +50,6 @@ exports.stats = function (req, res, next) {
                 } else {
                     res.locals.errors.push(error.response.data.errors);
                     // retun the correct vars
-                    console.log(response);
                     res.status(200).json({
                         message: "okay",
                         payload: {
@@ -76,7 +73,6 @@ exports.stats = function (req, res, next) {
                     from: "axios",
                 });
                 // retun the correct vars
-                console.log(response);
                 res.status(200).json({
                     message: "okay",
                     payload: {
