@@ -21,6 +21,13 @@ export const StickyError = (props) => {
     );
 };
 
+// inline error component
+export const InlineError = (props) => (
+    <div>
+        <Alert variant={props.variant}>{props.text}</Alert>
+    </div>
+);
+
 // main error displayer
 export const ErrorDisplayer = (props) => {
     // save the error to var
@@ -41,6 +48,34 @@ export const ErrorDisplayer = (props) => {
             } else {
                 return (
                     <StickyError variant="danger" text="Server error occured" />
+                );
+            }
+        }
+    } else {
+        return "";
+    }
+};
+
+// main error displayer
+export const InlineErrorDisplayer = (props) => {
+    // save the error to var
+    const error = props.error;
+
+    // check there is acually an error
+    if (error) {
+        //TODO: add buttons to fix errors (login button)
+        if (error.status == 401) {
+            return <InlineError variant="danger" text="Need to login" />;
+        } else if (error.status == 403) {
+            return <InlineError variant="warning" text="Invalid permissions" />;
+        } else if (error.status == 502) {
+            return <InlineError variant="danger" text="Error fetching api" />;
+        } else {
+            if (error.hasOwnProperty("message")) {
+                return <InlineError variant="danger" text={error.message} />;
+            } else {
+                return (
+                    <InlineError variant="danger" text="Server error occured" />
                 );
             }
         }

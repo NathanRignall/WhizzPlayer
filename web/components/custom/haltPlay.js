@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { mutate } from "swr";
 
-import { Button, Modal, Alert } from "react-bootstrap";
-
 import axios from "axios";
+
+import { Button, Modal, Alert } from "react-bootstrap";
 
 // axios request urls
 const HALT_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play/halt";

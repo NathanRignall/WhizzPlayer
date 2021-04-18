@@ -5,7 +5,11 @@ import Link from "next/link";
 import useSWR from "swr";
 
 import { fetcher } from "../components/common/functions";
-import { ErrorDisplayer, StickyError } from "../components/common/errors";
+import {
+    ErrorDisplayer,
+    StickyError,
+    InlineErrorDisplayer,
+} from "../components/common/errors";
 import InstantPlay from "../components/custom/instantPlay";
 import HaltPlayModal from "../components/custom/haltPlay";
 
@@ -112,14 +116,90 @@ const NowPlayingCard = () => {
             );
         }
     } else {
+        if (error) {
+            return (
+                <StatusCard variant="danger" header="Now Playing">
+                    <InlineErrorDisplayer error={error} />
+                </StatusCard>
+            );
+        } else {
+            return (
+                <StatusCard variant="secondary" header="Now Playing">
+                    <div className="text-center">
+                        <Spinner animation="border" />
+                    </div>
+                </StatusCard>
+            );
+        }
+    }
+};
+
+// stats card
+const StatsCard = () => {
+    const { data, error } = useSWR(
+        process.env.NEXT_PUBLIC_API_URL + "/app/status",
+        fetcher
+    );
+
+    if (data) {
         return (
-            <>
-                <div className="text-center">
-                    <Spinner animation="border" />
-                </div>
-                <ErrorDisplayer error={error} />
-            </>
+            <StatusCard
+                variant={
+                    data.payload.api.alive && data.payload.back.alive
+                        ? "success"
+                        : "danger"
+                }
+                header="Stats"
+            >
+                <h5 className="mb-1">
+                    API{" "}
+                    <Badge
+                        variant={data.payload.api.alive ? "success" : "danger"}
+                    >
+                        {data.payload.api.alive
+                            ? data.payload.api.version
+                            : "Offline!"}
+                    </Badge>
+                </h5>
+
+                <h5 className="mb-1">
+                    Backend{" "}
+                    <Badge
+                        variant={data.payload.back.alive ? "success" : "danger"}
+                    >
+                        {data.payload.back.alive
+                            ? data.payload.back.version
+                            : "Offline!"}
+                    </Badge>
+                </h5>
+
+                <h5 className="mb-0">{data.payload.time}</h5>
+            </StatusCard>
         );
+    } else {
+        if (error) {
+            return (
+                <StatusCard variant="danger" header="Stats">
+                    <h5 className="mb-1">
+                        API <Badge variant="danger">Offline!</Badge>
+                    </h5>
+
+                    <h5 className="mb-1">
+                        Backend <Badge variant="danger">Offline!</Badge>
+                    </h5>
+
+                    <h5 className="mb-0">Offline!</h5>
+                </StatusCard>
+            );
+        } else {
+            return (
+                <StatusCard variant="secondary" header="Stats">
+                    <div className="text-center">
+                        <Spinner animation="border" />
+                    </div>
+                </StatusCard>
+            );
+        }
     }
 };
 
@@ -134,10 +214,8 @@ const StatusArea = () => (
         <br />
 
         <CardDeck>
-            <StatusCard variant="secondary" header="System Status">
-                Status
-            </StatusCard>
-            <StatusCard variant="secondary" header="System Logs">
+            <StatsCard />
+            <StatusCard variant="secondary" header="Playback Logs">
                 Logs
             </StatusCard>
         </CardDeck>
