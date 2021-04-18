@@ -56,7 +56,7 @@ const checkSettingsTable = () => {
                                                     });
                                                 }
                                                 // okay
-                                                console.log("Created Settings Table V" + SettingsTableVersion);
+                                                logger.info("Created Settings Table V" + SettingsTableVersion);
                                                 checkOtherTables();
                                             });
                                         }
@@ -69,7 +69,7 @@ const checkSettingsTable = () => {
             } else {
                 // does exist no need to create
                 //TODO: check the right version
-                console.log("Settings table up to date V" + SettingsTableVersion);
+                logger.info("Settings table up to date V" + SettingsTableVersion);
                 checkOtherTables();
             }
         }
@@ -127,7 +127,7 @@ const checkTracksTable = () => {
                                                         });
                                                     }
                                                     // okay
-                                                    console.log("Created Tracks Table A V" + TracksTableVersion);
+                                                    logger.info("Created Tracks Table A V" + TracksTableVersion);
                                                 });
                                             }
                                         );
@@ -140,7 +140,7 @@ const checkTracksTable = () => {
                                                 });
                                             }
                                             // okay
-                                            console.log("Created Tracks Table V" + TracksTableVersion);
+                                            logger.info("Created Tracks Table V" + TracksTableVersion);
                                         });
                                     }
                                 }
@@ -151,7 +151,7 @@ const checkTracksTable = () => {
             } else {
                 // does exist no need to create
                 //TODO: check the right version
-                console.log("Tracks table up to date V" + TracksTableVersion);
+                logger.info("Tracks table up to date V" + TracksTableVersion);
             }
         }
     });
@@ -208,7 +208,7 @@ const checkCuesTable = () => {
                                                         });
                                                     }
                                                     // okay
-                                                    console.log("Created Cues Table A V" + CuesTableVersion);
+                                                    logger.info("Created Cues Table A V" + CuesTableVersion);
                                                 });
                                             }
                                         );
@@ -221,7 +221,7 @@ const checkCuesTable = () => {
                                                 });
                                             }
                                             // okay
-                                            console.log("Created Cues Table V" + CuesTableVersion);
+                                            logger.info("Created Cues Table V" + CuesTableVersion);
                                         });
                                     }
                                 }
@@ -232,7 +232,7 @@ const checkCuesTable = () => {
             } else {
                 // does exist no need to create
                 //TODO: check the right version
-                console.log("Cues table up to date V" + CuesTableVersion);
+                logger.info("Cues table up to date V" + CuesTableVersion);
             }
         }
     });
@@ -306,7 +306,7 @@ const checkUsersTable = () => {
                                                                 });
                                                             }
                                                             // okay
-                                                            console.log("Created Users Table A V" + UsersTableVersion);
+                                                            logger.info("Created Users Table A V" + UsersTableVersion);
                                                         });
                                                     }
                                                 );
@@ -332,7 +332,7 @@ const checkUsersTable = () => {
                                                         });
                                                     }
                                                     // okay
-                                                    console.log("Created Users Table V" + UsersTableVersion);
+                                                    logger.info("Created Users Table V" + UsersTableVersion);
                                                 });
                                             }
                                         );
@@ -345,7 +345,7 @@ const checkUsersTable = () => {
             } else {
                 // does exist no need to create
                 //TODO: check the right version
-                console.log("Users table up to date V" + UsersTableVersion);
+                logger.info("Users table up to date V" + UsersTableVersion);
             }
         }
     });

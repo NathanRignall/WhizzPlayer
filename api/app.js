@@ -5,7 +5,9 @@ var mysql = require("mysql");
 var validator = require("validator");
 var crypto = require("crypto");
 const cors = require("cors");
-var logger = require("morgan");
+const { serializeError } = require("serialize-error");
+var morgan = require("morgan");
+var logger = require("./functions/winston").logger;
 var idgen = require("./functions/idgen");
 var initsql = require("./functions/initsql");
 var auth = require("./middleware/auth");
@@ -13,6 +15,8 @@ var auth = require("./middleware/auth");
 // make the some modules global
 global.idgen = idgen;
 global.auth = auth;
+global.logger = logger;
+global.serializeError = serializeError;
 
 // temp connect to the mysql server
 const tempConnection = mysql.createConnection({
@@ -72,7 +76,6 @@ var backendRouter = require("./routes/backend");
 var app = express();
 
 // setup the middleware
-app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -81,6 +84,26 @@ app.use(function (req, res, next) {
     res.locals.reqid = crypto.randomBytes(20).toString("hex");
     next();
 });
+
+// setup logging
+morgan.token("json", function (tokens, req, res) {
+    return JSON.stringify({
+        method: tokens.method(req, res),
+        url: tokens.url(req, res),
+        status: tokens.status(req, res),
+        content: tokens.res(req, res, "content-length"),
+        time: tokens["response-time"](req, res),
+        reqID: res.locals.reqID,
+    });
+});
+
+const stream = {
+    write: function (message, encoding) {
+        logger.http(message);
+    },
+};
+
+app.use(morgan("json", { stream: stream }));
 
 // set the cors allowed all
 const corsOptions = {
