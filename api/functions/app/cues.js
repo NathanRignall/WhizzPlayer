@@ -35,15 +35,15 @@ exports.create = function (req, res, next) {
     var CueName = json.CueName;
     var TrackID = json.TrackID;
     var PlayTime = json.PlayTime;
-    var Repeats = json.Repeats ? json.Repeats : false;
-    var RepeatMonday = json.RepeatMonday ? json.RepeatMonday : false;
-    var RepeatTuesday = json.RepeatTuesday ? json.RepeatTuesday : false;
-    var RepeatWednesday = json.RepeatWednesday ? json.RepeatWednesday : false;
-    var RepeatThursday = json.RepeatThursday ? json.RepeatThursday : false;
-    var RepeatFriday = json.RepeatFriday ? json.RepeatFriday : false;
-    var RepeatSaturday = json.RepeatSaturday ? json.RepeatSaturday : false;
-    var RepeatSunday = json.RepeatSunday ? json.RepeatSunday : false;
-    var Enabled = json.Enabled ? json.Enabled : true;
+    var Repeats = json.hasOwnProperty("Repeats") ? json.Repeats : false;
+    var RepeatMonday = json.hasOwnProperty("RepeatMonday") ? json.RepeatMonday : false;
+    var RepeatTuesday = json.hasOwnProperty("RepeatTuesday") ? json.RepeatTuesday : false;
+    var RepeatWednesday = json.hasOwnProperty("RepeatWednesday") ? json.RepeatWednesday : false;
+    var RepeatThursday = json.hasOwnProperty("RepeatThursday") ? json.RepeatThursday : false;
+    var RepeatFriday = json.hasOwnProperty("RepeatFriday") ? json.RepeatFriday : false;
+    var RepeatSaturday = json.hasOwnProperty("RepeatSaturday") ? json.RepeatSaturday : false;
+    var RepeatSunday = json.hasOwnProperty("RepeatSunday") ? json.RepeatSunday : false;
+    var Enabled = json.hasOwnProperty("Enabled") ? json.Enabled : true;
     // check the fields are present
     if (CueName && TrackID && PlayTime) {
         // check the display name is not funny
@@ -157,15 +157,15 @@ exports.edit = function (req, res, next) {
     var CueName = json.CueName;
     var TrackID = json.TrackID;
     var PlayTime = json.PlayTime;
-    var Repeats = json.Repeats ? json.Repeats : false;
-    var RepeatMonday = json.RepeatMonday ? json.RepeatMonday : false;
-    var RepeatTuesday = json.RepeatTuesday ? json.RepeatTuesday : false;
-    var RepeatWednesday = json.RepeatWednesday ? json.RepeatWednesday : false;
-    var RepeatThursday = json.RepeatThursday ? json.RepeatThursday : false;
-    var RepeatFriday = json.RepeatFriday ? json.RepeatFriday : false;
-    var RepeatSaturday = json.RepeatSaturday ? json.RepeatSaturday : false;
-    var RepeatSunday = json.RepeatSunday ? json.RepeatSunday : false;
-    var Enabled = json.Enabled ? json.Enabled : true;
+    var Repeats = json.hasOwnProperty("Repeats") ? json.Repeats : false;
+    var RepeatMonday = json.hasOwnProperty("RepeatMonday") ? json.RepeatMonday : false;
+    var RepeatTuesday = json.hasOwnProperty("RepeatTuesday") ? json.RepeatTuesday : false;
+    var RepeatWednesday = json.hasOwnProperty("RepeatWednesday") ? json.RepeatWednesday : false;
+    var RepeatThursday = json.hasOwnProperty("RepeatThursday") ? json.RepeatThursday : false;
+    var RepeatFriday = json.hasOwnProperty("RepeatFriday") ? json.RepeatFriday : false;
+    var RepeatSaturday = json.hasOwnProperty("RepeatSaturday") ? json.RepeatSaturday : false;
+    var RepeatSunday = json.hasOwnProperty("RepeatSunday") ? json.RepeatSunday : false;
+    var Enabled = json.hasOwnProperty("Enabled") ? json.Enabled : true;
     // check the fields are present
     if (CueName && TrackID && PlayTime) {
         // check the display name is not funny
