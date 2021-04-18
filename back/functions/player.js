@@ -27,24 +27,25 @@ function Player(opts) {
             });
             return {
                 success: false,
+                server: false,
                 message: "Song already playing",
-                error: {
-                    location: "/backend/player.js/play-1",
-                    from: "state",
-                },
             };
         }
         // next check if json was sent
         if (!json) {
             logger.error({
-                details: "No details in request",
+                location: "/backend/player.js/play-1",
+                from: "json",
+                message: "No details in request",
             });
             return {
                 success: false,
+                server: true,
                 message: "No details in request",
                 error: {
-                    location: "/backend/player.js/play-2",
-                    from: "file",
+                    location: "/backend/player.js/play-1",
+                    from: "json",
+                    message: "No details in request",
                 },
             };
         }
@@ -65,16 +66,18 @@ function Player(opts) {
             if (!this.process) {
                 this.status.playing = false;
                 logger.error({
-                    action: "error",
-                    details: "Error starting process",
+                    location: "/backend/player.js/play-2",
+                    message: "Error starting process",
                     status: this.status,
                 });
                 return {
                     success: false,
+                    server: true,
                     message: "Error starting process",
                     error: {
-                        location: "/backend/player.js/play-3",
+                        location: "/backend/player.js/play-2",
                         from: "state",
+                        message: "Error starting process",
                     },
                 };
             }
@@ -95,16 +98,19 @@ function Player(opts) {
         } else {
             this.status.playing = false;
             logger.error({
-                action: "error",
-                details: "File does not exist",
+                location: "/backend/player.js/play-3",
+                from: "fs",
+                message: "File does not exist",
                 status: this.status,
             });
             return {
                 success: false,
+                server: true,
                 message: "File does not exist",
                 error: {
-                    location: "/backend/player.js/play-4",
+                    location: "/backend/player.js/play-3",
                     from: "fs",
+                    message: "File does not exist",
                 },
             };
         }
@@ -131,6 +137,7 @@ function Player(opts) {
                 });
                 return {
                     success: false,
+                    server: false,
                     message: "No track currently playing",
                 };
             }
@@ -141,6 +148,7 @@ function Player(opts) {
             });
             return {
                 success: false,
+                server: false,
                 message: "No track currently playing",
             };
         }

@@ -12,10 +12,15 @@ router.post("/", async function (req, res, next) {
             message: "okay",
             reqid: res.locals.reqid,
         });
-    } else {
-        res.locals.errors.push(track.error);
-        res.status(500).json({
+    } else if (track.server == false) {
+        res.status(400).json({
             message: track.message,
+            reqid: res.locals.reqid,
+        });
+    } else {
+        res.locals.errors = track.error;
+        res.status(500).json({
+            message: "Server error",
             errors: res.locals.errors,
             reqid: res.locals.reqid,
         });
