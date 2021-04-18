@@ -6,12 +6,8 @@ exports.grabTrack = async function () {
     await axios
         .get(urlGrab)
         .then((response) => {
-            if (response.status == 200) {
-                var json = response.data.payload;
-                player.play(json);
-            } else {
-                logger.error("wtf wierd error in cron");
-            }
+            var json = response.data.payload;
+            player.play(json);
         })
         .catch((error) => {
             if (error.response) {

@@ -12,7 +12,30 @@ router.get("/play", async function (req, res, next) {
     });
 });
 
-router.get("/system", async function (req, res, next) {
+router.get("/version", async function (req, res, next) {
+    // return 200
+    res.status(200).json({
+        message: "okay",
+        payload: {
+            alive: true,
+            version: "0.0.0",
+        },
+        reqid: res.locals.reqid,
+    });
+});
+
+router.get("/logs/system", async function (req, res, next) {
+    // return 200
+    res.status(200).json({
+        message: "okay",
+        payload: {
+            demo: true,
+        },
+        reqid: res.locals.reqid,
+    });
+});
+
+router.get("/logs/playback", async function (req, res, next) {
     // return 200
     res.status(200).json({
         message: "okay",

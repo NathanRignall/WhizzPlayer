@@ -27,15 +27,6 @@ const level = () => {
     return isDevelopment ? "debug" : "http";
 };
 
-// winston error formatter
-// NOT IN USE
-const format = winston.format.combine(
-    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
-    winston.format.printf(
-        (info) => `${info.timestamp} ${info.level}: ${info.message}`
-    )
-);
-
 // set the winston transports
 const transports = [
     new winston.transports.Console({
