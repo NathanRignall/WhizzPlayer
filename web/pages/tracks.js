@@ -35,7 +35,6 @@ const Track = (props) => (
                 <br />
 
                 <div className="text-right">
-                    <Button variant="primary">Edit Track</Button>{" "}
                     <TrackDeleteModal info={props.info} />
                 </div>
             </Card.Body>

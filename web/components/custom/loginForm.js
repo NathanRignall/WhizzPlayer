@@ -64,6 +64,9 @@ export const MainForm = () => {
                             true,
                             error.response.data.message
                         );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
                     } else {
                         // check if a user error
                         handleServerResponse(
@@ -115,6 +118,7 @@ export const MainForm = () => {
                             value={values.email}
                             onChange={handleChange}
                             isInvalid={errors.email}
+                            autocomplete="email"
                         />
 
                         <Form.Control.Feedback type="invalid">
@@ -131,6 +135,7 @@ export const MainForm = () => {
                             value={values.password}
                             onChange={handleChange}
                             isInvalid={errors.password}
+                            autocomplete="current-password"
                         />
 
                         <Form.Control.Feedback type="invalid">

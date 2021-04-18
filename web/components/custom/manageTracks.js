@@ -234,6 +234,9 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                             true,
                             error.response.data.message
                         );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
                     } else {
                         // check if a user error
                         handleServerResponse(
@@ -284,6 +287,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                                     placeholder="Enter TrackName"
                                     value={props.values.TrackName}
                                     onChange={props.handleChange}
+                                    autocomplete="off"
                                 />
 
                                 {props.errors.TrackName}
@@ -439,6 +443,9 @@ export function TrackDeleteModal(props) {
                             true,
                             error.response.data.message
                         );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
                     } else {
                         // check if a user error
                         handleServerResponse(

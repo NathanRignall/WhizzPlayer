@@ -164,14 +164,14 @@ export const CueCreateModal = (props) => {
 
     // handle a from submit to create cue
     const handleOnSubmit = (values, actions) => {
+        // create the time object
+        const time = new Date(values.PlayTime);
+        time.setSeconds(0);
         // create the json object to post lcue
         const json = JSON.stringify({
             CueName: values.CueName,
             TrackID: values.TrackID,
-            PlayTime: new Date(values.PlayTime)
-                .toISOString()
-                .slice(0, 19)
-                .replace("T", " "),
+            PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
             Enabled: values.Enabled,
         });
 
@@ -201,6 +201,9 @@ export const CueCreateModal = (props) => {
                             true,
                             error.response.data.message
                         );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
                     } else {
                         // check if a user error
                         handleServerResponse(
@@ -278,6 +281,7 @@ export const CueCreateModal = (props) => {
                                         placeholder="Enter CueName"
                                         value={values.CueName}
                                         onChange={handleChange}
+                                        autocomplete="off"
                                     />
 
                                     {errors.CueName}
@@ -381,14 +385,14 @@ export function CueEditModal(props) {
 
     // handle a from submit to create cue
     const handleOnSubmit = (values, actions) => {
+        // create the time object
+        const time = new Date(values.PlayTime);
+        time.setSeconds(0);
         // create the json object to post lcue
         const json = JSON.stringify({
             CueName: values.CueName,
             TrackID: values.TrackID,
-            PlayTime: new Date(values.PlayTime)
-                .toISOString()
-                .slice(0, 19)
-                .replace("T", " "),
+            PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
             Enabled: values.Enabled,
         });
 
@@ -418,6 +422,9 @@ export function CueEditModal(props) {
                             true,
                             error.response.data.message
                         );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
                     } else {
                         // check if a user error
                         handleServerResponse(
@@ -497,6 +504,7 @@ export function CueEditModal(props) {
                                         placeholder="Enter CueName"
                                         value={values.CueName}
                                         onChange={handleChange}
+                                        autocomplete="off"
                                     />
 
                                     {errors.CueName}
@@ -635,6 +643,9 @@ export function CueDeleteModal(props) {
                             true,
                             error.response.data.message
                         );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
                     } else {
                         // check if a user error
                         handleServerResponse(

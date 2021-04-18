@@ -59,6 +59,9 @@ export default function HaltPlayModal(props) {
                             true,
                             error.response.data.message
                         );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
                     } else {
                         // check if a user error
                         handleServerResponse(
