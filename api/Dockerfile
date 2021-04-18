@@ -18,6 +18,7 @@ ARG VERSION_CODE
 
 # post env vars
 ENV PORT=4000
+ENV API_VERSION $VERSION_CODE
 ENV BACKEND_URL=http://back:5000
 
 # move the app to location
