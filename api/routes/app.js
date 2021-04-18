@@ -15,8 +15,7 @@ var tracks = require("../functions/app/tracks");
 var auth = require("../middleware/auth");
 
 // status routes
-router.get("/status/api", auth.simple(), status.api); // view
-router.get("/status/back", auth.simple(), status.back); // view
+router.get("/status", auth.simple(), status.stats); // view
 router.get("/status/playing", auth.simple(), status.playing); // view
 router.get("/status/logs/api", auth.simple(), status.logsAPI); // view
 router.get("/status/logs/back", auth.simple(), status.logsBack); // view

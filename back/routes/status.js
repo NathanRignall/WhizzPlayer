@@ -18,7 +18,7 @@ router.get("/version", async function (req, res, next) {
         message: "okay",
         payload: {
             alive: true,
-            version: "0.0.0",
+            version: process.env.BACK_VERSION,
         },
         reqid: res.locals.reqid,
     });
