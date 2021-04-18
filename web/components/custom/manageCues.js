@@ -172,7 +172,7 @@ export const CueCreateModal = (props) => {
                 .toISOString()
                 .slice(0, 19)
                 .replace("T", " "),
-            Repeats: values.Repeats,
+            Enabled: values.Enabled,
         });
 
         // axios post create cue
@@ -253,7 +253,7 @@ export const CueCreateModal = (props) => {
                         CueName: "",
                         TrackID: "",
                         PlayTime: new Date(),
-                        Repeats: false,
+                        Enabled: true,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -297,15 +297,16 @@ export const CueCreateModal = (props) => {
                                     {errors.PlayTime}
                                 </Form.Group>
 
-                                {/* repeats group */}
+                                {/* enabled group */}
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Check
-                                        name="Repeats"
+                                        name="Enabled"
                                         type="switch"
-                                        label="Repeats"
-                                        value={values.Repeats}
+                                        label="Enabled"
+                                        checked={values.Enabled}
+                                        value={values.Enabled}
                                         onChange={handleChange}
-                                        isInvalid={errors.Repeats}
+                                        isInvalid={errors.Enabled}
                                     />
                                 </Form.Group>
 
@@ -388,7 +389,7 @@ export function CueEditModal(props) {
                 .toISOString()
                 .slice(0, 19)
                 .replace("T", " "),
-            Repeats: values.Repeats,
+            Enabled: values.Enabled,
         });
 
         // axios post edit cue
@@ -469,7 +470,7 @@ export function CueEditModal(props) {
                         CueName: props.info.CueName,
                         TrackID: "",
                         PlayTime: new Date(props.info.PlayTime),
-                        Repeats: props.info.Repeats ? true : false,
+                        Enabled: props.info.Enabled ? true : false,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -523,13 +524,13 @@ export function CueEditModal(props) {
                                 {/* repeats group */}
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Check
-                                        name="Repeats"
+                                        name="Enabled"
                                         type="switch"
-                                        label="Repeats"
-                                        checked={values.Repeats}
-                                        value={values.Repeats}
+                                        label="Enabled"
+                                        checked={values.Enabled}
+                                        value={values.Enabled}
                                         onChange={handleChange}
-                                        isInvalid={errors.Repeats}
+                                        isInvalid={errors.Enabled}
                                     />
                                 </Form.Group>
 
