@@ -86,7 +86,7 @@ exports.register = function (req, res, next) {
                                                 return db.rollback(function () {
                                                     if (error.code == "ER_DUP_ENTRY") {
                                                         // retun the correct vars
-                                                        res.status(409).json({
+                                                        res.status(400).json({
                                                             message: "Email already used in account",
                                                             reqid: res.locals.reqid,
                                                         });
@@ -306,7 +306,7 @@ exports.info = function (req, res, next) {
                     });
                 } else {
                     // retun the correct vars
-                    res.status(404).json({
+                    res.status(400).json({
                         message: "User not found",
                         reqid: res.locals.reqid,
                     });

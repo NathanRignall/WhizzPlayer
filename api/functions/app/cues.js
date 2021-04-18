@@ -126,7 +126,7 @@ exports.info = function (req, res, next) {
                     });
                 } else {
                     // retun the correct vars
-                    res.status(404).json({
+                    res.status(400).json({
                         message: "Cue not found",
                         reqid: res.locals.reqid,
                     });
@@ -200,7 +200,7 @@ exports.edit = function (req, res, next) {
                             });
                         } else {
                             // retun the correct vars
-                            res.status(404).json({
+                            res.status(400).json({
                                 message: "Cue not found",
                                 reqid: res.locals.reqid,
                             });
@@ -240,38 +240,34 @@ exports.delete = function (req, res, next) {
     // get req parms
     var CueID = req.params.cueid;
     // delete the cue from db
-    db.query(
-        "DELETE FROM Cues WHERE CueID = ?",
-        [CueID],
-        function (error, results, fields) {
-            // check if sucessfull
-            if (!error) {
-                if (results.affectedRows > 0) {
-                    // retun the correct vars
-                    res.status(200).json({
-                        message: "okay",
-                        reqid: res.locals.reqid,
-                    });
-                } else {
-                    // retun the correct vars
-                    res.status(404).json({
-                        message: "Cue not found",
-                        reqid: res.locals.reqid,
-                    });
-                }
+    db.query("DELETE FROM Cues WHERE CueID = ?", [CueID], function (error, results, fields) {
+        // check if sucessfull
+        if (!error) {
+            if (results.affectedRows > 0) {
+                // retun the correct vars
+                res.status(200).json({
+                    message: "okay",
+                    reqid: res.locals.reqid,
+                });
             } else {
                 // retun the correct vars
-                res.locals.errors.push({
-                    location: "/api/account/cues.js/delete-1",
-                    code: error.code,
-                    from: "mysql",
-                });
-                res.status(500).json({
-                    message: "Server error",
-                    errors: res.locals.errors,
+                res.status(400).json({
+                    message: "Cue not found",
                     reqid: res.locals.reqid,
                 });
             }
+        } else {
+            // retun the correct vars
+            res.locals.errors.push({
+                location: "/api/account/cues.js/delete-1",
+                code: error.code,
+                from: "mysql",
+            });
+            res.status(500).json({
+                message: "Server error",
+                errors: res.locals.errors,
+                reqid: res.locals.reqid,
+            });
         }
-    );
+    });
 };
