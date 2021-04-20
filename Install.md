@@ -1,31 +1,32 @@
 # WhizzPlayer Raspberry Pi Install Instructions
-
-sudo apt-get update
-sudo apt-get upgrade -y
-sudo reboot
-
+## Update Pi
+sudo apt-get update <br>
+sudo apt-get upgrade -y <br>
+sudo reboot <br>
+## Set Pi Settings
 sudo raspi-config
 - System Option - Audio - Headphones
 - System Option - Password - ENTER NEW PASSWORD
 - System Option - Hostname - WhizzPlayer
 - Interface Option - SSH - Enable
-
+## Set Volume
 alsamixer
 - set volume to 80
-
+# Download Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
-
+# Install Docker Compose
 sudo apt-get install docker-compose -y
-
-mkdir WhizzPlayer
-cd WhizzPlayer
-mkdir mysql
-mkdir uploads
-mkdir uploads/save
-mkdir uploads/temp
-
+# Make File Directories
+mkdir WhizzPlayer<br>
+cd WhizzPlayer<br>
+mkdir mysql<br>
+mkdir uploads<br>
+mkdir uploads/save<br>
+mkdir uploads/temp<br>
+# Set Up Docker Compose
 nano docker-compose.yaml
 - PASTE LATEST DOCKER COMPOSE PROD FROM GITHUB)
-
-sudo docker-compose up -d
+# Start Program
+sudo docker-compose up -d<br>
+<strong>Navigate to http://IPADDRESS/setup</strong>
