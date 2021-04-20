@@ -120,7 +120,7 @@ export const MainForm = () => {
                             value={values.displayName}
                             onChange={handleChange}
                             isInvalid={errors.displayName}
-                            autocomplete="nickname"
+                            autoComplete="nickname"
                         />
 
                         <Form.Control.Feedback type="invalid">
@@ -137,7 +137,7 @@ export const MainForm = () => {
                             value={values.email}
                             onChange={handleChange}
                             isInvalid={errors.email}
-                            autocomplete="current-password"
+                            autoComplete="current-password"
                         />
 
                         <Form.Control.Feedback type="invalid">
@@ -154,7 +154,7 @@ export const MainForm = () => {
                             value={values.password}
                             onChange={handleChange}
                             isInvalid={errors.password}
-                            autocomplete="new-password"
+                            autoComplete="new-password"
                         />
 
                         <Form.Control.Feedback type="invalid">

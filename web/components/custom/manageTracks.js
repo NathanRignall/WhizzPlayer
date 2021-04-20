@@ -287,7 +287,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                                     placeholder="Enter TrackName"
                                     value={props.values.TrackName}
                                     onChange={props.handleChange}
-                                    autocomplete="off"
+                                    autoComplete="off"
                                 />
 
                                 {props.errors.TrackName}

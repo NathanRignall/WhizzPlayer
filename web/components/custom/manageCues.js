@@ -281,7 +281,7 @@ export const CueCreateModal = (props) => {
                                         placeholder="Enter CueName"
                                         value={values.CueName}
                                         onChange={handleChange}
-                                        autocomplete="off"
+                                        autoComplete="off"
                                     />
 
                                     {errors.CueName}
@@ -504,7 +504,7 @@ export function CueEditModal(props) {
                                         placeholder="Enter CueName"
                                         value={values.CueName}
                                         onChange={handleChange}
-                                        autocomplete="off"
+                                        autoComplete="off"
                                     />
 
                                     {errors.CueName}
