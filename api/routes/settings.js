@@ -12,11 +12,26 @@ var users = require("../functions/settings/users");
 // middleware
 var auth = require("../middleware/auth");
 
-// routes
+// admin check
+router.get("/", auth.admin(), function (req, res, next) {
+    res.send("Allowed");
+});
+
+// logs
 router.get("/logs", auth.admin(), logs.temp);
+
+// network
 router.get("/network", auth.admin(), network.temp);
+
+// power
 router.get("/power", auth.admin(), power.temp);
+
+// system
 router.get("/system", auth.admin(), system.temp);
+router.post("/system/playback/enable", auth.admin(), system.temp);
+router.post("/system/playback/dissable", auth.admin(), system.temp);
+router.post("/system/setup/enable", auth.admin(), system.temp);
+router.post("/system/setup/dissable", auth.admin(), system.temp);
 
 // users
 router.get("/users", auth.admin(), users.list);

@@ -41,7 +41,7 @@ const checkSettingsTable = () => {
                                     // okay
                                     db.query(
                                         "INSERT INTO Settings SET Feild = ?, Data = ?",
-                                        ["SettingsTableVersion", SettingsTableVersion],
+                                        ["Playback", "enabled"],
                                         function (error, results, fields) {
                                             if (error) {
                                                 return db.rollback(function () {
@@ -49,16 +49,28 @@ const checkSettingsTable = () => {
                                                 });
                                             }
                                             // okay
-                                            db.commit(function (err) {
-                                                if (err) {
-                                                    return db.rollback(function () {
-                                                        throw error;
+                                            db.query(
+                                                "INSERT INTO Settings SET Feild = ?, Data = ?",
+                                                ["SettingsTableVersion", SettingsTableVersion],
+                                                function (error, results, fields) {
+                                                    if (error) {
+                                                        return db.rollback(function () {
+                                                            throw error;
+                                                        });
+                                                    }
+                                                    // okay
+                                                    db.commit(function (err) {
+                                                        if (err) {
+                                                            return db.rollback(function () {
+                                                                throw error;
+                                                            });
+                                                        }
+                                                        // okay
+                                                        logger.info("Created Settings Table V" + SettingsTableVersion);
+                                                        checkOtherTables();
                                                     });
                                                 }
-                                                // okay
-                                                logger.info("Created Settings Table V" + SettingsTableVersion);
-                                                checkOtherTables();
-                                            });
+                                            );
                                         }
                                     );
                                 }
