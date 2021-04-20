@@ -87,7 +87,7 @@ const UploadFile = ({ handleClose, setTempID }) => {
                     // set the server state to handle errors
                     handleServerResponse(false, false, response.data.message);
                     // set the fileid
-                    setTempID(response.data.payload.id);
+                    setTempID(response.data.payload.id, currentFile.name);
                 } else {
                     // set the server state to handle errors
                     handleServerResponse(true, false, response.data.message);
@@ -274,7 +274,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
             <Formik
                 validationSchema={schema}
                 onSubmit={handleOnSubmit}
-                initialValues={{ TrackName: "" }}
+                initialValues={{ TrackName: trackProgress.tempName }}
             >
                 {(props) => (
                     <Form noValidate onSubmit={props.handleSubmit}>
@@ -351,16 +351,17 @@ export const UploadTrackModal = (props) => {
     // contain the state of the file upload
     const [trackProgress, setTrackProgress] = useState({
         tempID: null,
+        tempName: null,
     });
 
     // set the file id
-    const setTempID = (id) => {
-        setTrackProgress({ tempID: id });
+    const setTempID = (id, name) => {
+        setTrackProgress({ tempID: id, tempName: name });
     };
 
     // clear the current file id
     const clearProgress = () => {
-        setTrackProgress({ tempID: null });
+        setTrackProgress({ tempID: null, tempName: null });
     };
 
     return (
