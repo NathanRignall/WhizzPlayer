@@ -3,7 +3,7 @@ var bcrypt = require("bcrypt");
 
 exports.list = function (req, res, next) {
     // get the cues info from the database
-    db.query("SELECT UserID, Email, DisplayName, Access FROM Users", function (error, results, fields) {
+    db.query("SELECT UserID, Email, DisplayName, Access, Enabled FROM Users", function (error, results, fields) {
         // check if successful
         if (!error) {
             // retun the correct vars
@@ -36,6 +36,7 @@ exports.create = function (req, res, next) {
     var DisplayName = json.DisplayName;
     var Password = json.Password;
     var Access = json.hasOwnProperty("Access") ? json.Access : 0;
+    var Enabled = json.hasOwnProperty("Enabled") ? json.Enabled : true;
     // check the fields are present and valid
     if (Email && DisplayName && Password) {
         // hash the password
@@ -50,8 +51,8 @@ exports.create = function (req, res, next) {
                 var UserID = idgen.genterateUserID();
                 // create the user in the database
                 db.query(
-                    "INSERT INTO Users SET UserID = ?, Email = ?, DisplayName = ?, Password = ?, Access = ?",
-                    [UserID, validator.normalizeEmail(Email), validator.trim(DisplayName), Hash, Access],
+                    "INSERT INTO Users SET UserID = ?, Email = ?, DisplayName = ?, Password = ?, Access = ?, Enabled = ?",
+                    [UserID, validator.normalizeEmail(Email), validator.trim(DisplayName), Hash, Access, Enabled],
                     function (error, results, fields) {
                         if (!error) {
                             // retun the correct vars
@@ -115,6 +116,7 @@ exports.edit = function (req, res, next) {
     var DisplayName = json.DisplayName;
     var Password = json.Password;
     var Access = json.hasOwnProperty("Access") ? json.Access : 0;
+    var Enabled = json.hasOwnProperty("Enabled") ? json.Enabled : true;
     // check the fields are present and valid
     if (Email && DisplayName && Password) {
         // hash the password
@@ -127,8 +129,8 @@ exports.edit = function (req, res, next) {
                 var Hash = bcrypt.hashSync(Password, 10);
                 // create the user in the database
                 db.query(
-                    "UPDATE Users SET Email = ?, DisplayName = ?, Password = ?, Access = ? WHERE UserID = ?",
-                    [validator.normalizeEmail(Email), validator.trim(DisplayName), Hash, Access, UserID],
+                    "UPDATE Users SET Email = ?, DisplayName = ?, Password = ?, Access = ?, Enabled = ? WHERE UserID = ?",
+                    [validator.normalizeEmail(Email), validator.trim(DisplayName), Hash, Access, Enabled, UserID],
                     function (error, results, fields) {
                         if (!error) {
                             // retun the correct vars

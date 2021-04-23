@@ -12,11 +12,6 @@ var users = require("../functions/settings/users");
 // middleware
 var auth = require("../middleware/auth");
 
-// admin check
-router.get("/", auth.admin(), function (req, res, next) {
-    res.send("Allowed");
-});
-
 // logs
 router.get("/logs", auth.admin(), logs.temp);
 
