@@ -10,7 +10,7 @@ import { Loader } from "../common/elements";
 
 import { Container } from "react-bootstrap";
 
-// main layout for pages with auth
+// settings layout for pages with auth
 const Layout = (props) => {
     const router = useRouter();
 
@@ -27,15 +27,19 @@ const Layout = (props) => {
             router.push("/login");
             return <Loader />;
         } else {
-            return (
-                <div>
-                    <CoreHeader title={props.title} />
-                    <CoreNavbar info={data.payload} />
-                    <br />
-                    <Container>{props.children}</Container>
-                    <CoreFooter />
-                </div>
-            );
+            if (data.payload == 10) {
+                return (
+                    <div>
+                        <CoreHeader title={props.title} />
+                        <CoreNavbar info={data.payload} />
+                        <br />
+                        <Container>{props.children}</Container>
+                        <CoreFooter />
+                    </div>
+                );
+            } else {
+                return "Access Dennied";
+            }
         }
     } else {
         if (error) {
