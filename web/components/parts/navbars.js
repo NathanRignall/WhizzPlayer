@@ -30,11 +30,6 @@ export default function CoreNavbar(props) {
                             title="Settings"
                             id="collasible-nav-dropdown"
                         >
-                            <Link href="/settings/system">
-                                <NavDropdown.Item href="/settings/system">
-                                    System
-                                </NavDropdown.Item>
-                            </Link>
                             <Link href="/settings/users">
                                 <NavDropdown.Item href="/settings/users">
                                     Users

@@ -11,11 +11,16 @@ import axios from "axios";
 // axios request urls
 const USERS_URI = process.env.NEXT_PUBLIC_API_URL + "/settings/users";
 
-// form schema
-const schema = yup.object().shape({
+// form schemas
+const schemaCreate = yup.object().shape({
     email: yup.string().email().required(),
     displayName: yup.string().required(),
     password: yup.string().required(),
+});
+
+const schemaEdit = yup.object().shape({
+    email: yup.string().email().required(),
+    displayName: yup.string().required(),
 });
 
 // full create user modal
@@ -126,7 +131,7 @@ export const UserCreateModal = (props) => {
                 keyboard={false}
             >
                 <Formik
-                    validationSchema={schema}
+                    validationSchema={schemaCreate}
                     initialValues={{
                         email: "",
                         password: "",
@@ -144,7 +149,7 @@ export const UserCreateModal = (props) => {
                         isSubmitting,
                     }) => (
                         <Form noValidate onSubmit={handleSubmit}>
-                            <Modal.Header className="bg-primary text-white">
+                            <Modal.Header className="bg-success text-white">
                                 <Modal.Title>Create User</Modal.Title>
                             </Modal.Header>
 
@@ -200,6 +205,21 @@ export const UserCreateModal = (props) => {
                                     </Form.Control.Feedback>
                                 </Form.Group>
 
+                                {/* access group */}
+                                <Form.Group controlId="exampleForm.SelectCustom">
+                                    <Form.Control
+                                        as="select"
+                                        name="access"
+                                        value={values.access}
+                                        onChange={handleChange}
+                                        custom
+                                    >
+                                        <option value="0" label="View Only" />
+                                        <option value="5" label="Standard" />
+                                        <option value="10" label="Admin" />
+                                    </Form.Control>
+                                </Form.Group>
+
                                 {/* display errors to the user */}
                                 {serverState.show && (
                                     <Alert
@@ -238,6 +258,232 @@ export const UserCreateModal = (props) => {
                                     </Button>
                                 ) : (
                                     <Button type="submit">Create</Button>
+                                )}
+                            </Modal.Footer>
+                        </Form>
+                    )}
+                </Formik>
+            </Modal>
+        </>
+    );
+};
+
+// full edit user modal
+export const UserEditModal = (props) => {
+    // contain the state of the modal
+    const [show, setShow] = useState(false);
+
+    // set the state of the modal
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    // satus of the form requests
+    const [serverState, setServerState] = useState({
+        show: false,
+        error: false,
+        message: "none",
+    });
+
+    // set the server state from a response
+    const handleServerResponse = (show, error, message) => {
+        setServerState({ show, error, message });
+    };
+
+    // handle a from submit to edit user
+    const handleOnSubmit = (values, actions) => {
+        // create the json object to post lcue
+        const json = JSON.stringify({
+            Email: values.email,
+            DisplayName: values.displayName,
+            Access: values.access,
+            Enabled: values.enabled,
+        });
+
+        // axios post create user
+        axios
+            .put(`${USERS_URI}/${props.info.UserID}`, json, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
+            .then((response) => {
+                // set loading to false
+                actions.setSubmitting(false);
+                // set the server state to handle errors
+                handleServerResponse(false, false, response.data.message);
+                // reload the user list
+                mutate(USERS_URI);
+                // close the modal
+                handleClose();
+            })
+            .catch(function (error) {
+                // catch each type of axios error
+                if (error.response) {
+                    if (error.response.status == 500) {
+                        // check if a server error
+                        handleServerResponse(
+                            true,
+                            true,
+                            error.response.data.message
+                        );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
+                    } else {
+                        // check if a user error
+                        handleServerResponse(
+                            true,
+                            false,
+                            error.response.data.message
+                        );
+                    }
+                    actions.setSubmitting(false);
+                    // set loading to false
+                } else if (error.request) {
+                    // check if a request error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error sending request to server"
+                    );
+                    actions.setSubmitting(false);
+                    // set loading to false
+                } else {
+                    // check if a browser error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error in browser request"
+                    );
+                    actions.setSubmitting(false);
+                    // set loading to false
+                }
+            });
+    };
+
+    return (
+        <>
+            <Button variant="primary" size="sm" onClick={handleShow}>
+                Edit
+            </Button>
+
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                size="lg"
+                centered={true}
+                keyboard={false}
+            >
+                <Formik
+                    validationSchema={schemaEdit}
+                    initialValues={{
+                        email: props.info.Email,
+                        displayName: props.info.DisplayName,
+                        access: props.info.Access,
+                        enabled: props.info.Enabled,
+                    }}
+                    onSubmit={handleOnSubmit}
+                >
+                    {({
+                        handleSubmit,
+                        handleChange,
+                        values,
+                        errors,
+                        isSubmitting,
+                    }) => (
+                        <Form noValidate onSubmit={handleSubmit}>
+                            <Modal.Header className="bg-primary text-white">
+                                <Modal.Title>Create User</Modal.Title>
+                            </Modal.Header>
+
+                            <Modal.Body>
+                                {/* display name group */}
+                                <Form.Group controlId="validationFormik01">
+                                    <Form.Control
+                                        type="text"
+                                        name="displayName"
+                                        placeholder="Enter Display Name"
+                                        value={values.displayName}
+                                        onChange={handleChange}
+                                        isInvalid={errors.displayName}
+                                        autocomplete="nickname"
+                                    />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.displayName}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+
+                                {/* email group */}
+                                <Form.Group controlId="validationFormik02">
+                                    <Form.Control
+                                        type="email"
+                                        name="email"
+                                        placeholder="Enter Email"
+                                        value={values.email}
+                                        onChange={handleChange}
+                                        isInvalid={errors.email}
+                                        autocomplete="current-password"
+                                    />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.email}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+
+                                {/* access group */}
+                                <Form.Group controlId="exampleForm.SelectCustom">
+                                    <Form.Control
+                                        as="select"
+                                        name="access"
+                                        value={values.access}
+                                        onChange={handleChange}
+                                        custom
+                                    >
+                                        <option value="0" label="View Only" />
+                                        <option value="5" label="Standard" />
+                                        <option value="10" label="Admin" />
+                                    </Form.Control>
+                                </Form.Group>
+
+                                {/* display errors to the user */}
+                                {serverState.show && (
+                                    <Alert
+                                        variant={
+                                            !serverState.error
+                                                ? "warning"
+                                                : "danger"
+                                        }
+                                    >
+                                        {serverState.message}
+                                    </Alert>
+                                )}
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                {/* Close Modal button*/}
+                                <Button
+                                    variant="secondary"
+                                    onClick={handleClose}
+                                >
+                                    Close
+                                </Button>
+
+                                {/* Submit button*/}
+                                {isSubmitting ? (
+                                    <Button type="submit" disabled>
+                                        <Spinner
+                                            as="span"
+                                            animation="border"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                            className="mr-2"
+                                        />
+                                        Loading...
+                                    </Button>
+                                ) : (
+                                    <Button type="submit">Edit</Button>
                                 )}
                             </Modal.Footer>
                         </Form>
@@ -332,8 +578,8 @@ export function UserDeleteModal(props) {
 
     return (
         <>
-            <Button variant="danger" onClick={handleShow}>
-                Delete User
+            <Button variant="danger" size="sm" onClick={handleShow}>
+                Delete
             </Button>
 
             <Modal

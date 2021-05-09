@@ -27,7 +27,7 @@ const Layout = (props) => {
             router.push("/login");
             return <Loader />;
         } else {
-            if (data.payload == 10) {
+            if (data.payload.Access == 10) {
                 return (
                     <div>
                         <CoreHeader title={props.title} />

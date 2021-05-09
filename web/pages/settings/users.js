@@ -1,4 +1,4 @@
-import Layout from "../../components/layouts/main";
+import Layout from "../../components/layouts/settings";
 
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -9,25 +9,32 @@ import { ErrorDisplayer } from "../../components/common/errors";
 import {
     UserCreateModal,
     UserDeleteModal,
+    UserEditModal,
 } from "../../components/custom/manageUsers";
 
-import {
-    Card,
-    ListGroup,
-    Row,
-    Spinner,
-    Button,
-    Alert,
-    Badge,
-} from "react-bootstrap";
+import { Card, Table, Spinner, Button, Alert, Badge } from "react-bootstrap";
 
 // card for displyaing info about a track
-const User = (props) => (
-    <ListGroup.Item>
-        {props.info.DisplayName} - {props.info.Email} - {props.info.Access}{" "}
-        <UserDeleteModal info={props.info} />
-    </ListGroup.Item>
-);
+const User = (props) => {
+    let access = "View Only";
+    if (props.info.Access == 10) {
+        access = "Admin";
+    } else if (props.info.Access == 5) {
+        access = "Standard";
+    }
+
+    return (
+        <tr>
+            <td>{props.info.DisplayName}</td>
+            <td>{props.info.Email}</td>
+            <td>{access}</td>
+            <td>
+                <UserEditModal info={props.info} />{" "}
+                <UserDeleteModal info={props.info} />
+            </td>
+        </tr>
+    );
+};
 
 // main user list loader
 const UserList = () => {
@@ -46,9 +53,17 @@ const UserList = () => {
                 <ErrorDisplayer error={error} />
 
                 {data.payload.length > 0 ? (
-                    <Card>
-                        <ListGroup variant="flush">{UsersFormedList}</ListGroup>
-                    </Card>
+                    <Table bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Display Name</th>
+                                <th>Email</th>
+                                <th>Access</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>{UsersFormedList}</tbody>
+                    </Table>
                 ) : (
                     <Alert variant="warning">
                         There are currently 0 Users in the system.
