@@ -114,60 +114,47 @@ exports.edit = function (req, res, next) {
     // set the vars from post
     var Email = json.Email;
     var DisplayName = json.DisplayName;
-    var Password = json.Password;
     var Access = json.hasOwnProperty("Access") ? json.Access : 0;
     var Enabled = json.hasOwnProperty("Enabled") ? json.Enabled : true;
     // check the fields are present and valid
-    if (Email && DisplayName && Password) {
-        // hash the password
-        var Hash = bcrypt.hashSync(Password, 10);
+    if (Email && DisplayName) {
         // check the email is and email display name is not funny
         if (validator.isEmail(Email) && checkCharacters(DisplayName)) {
             // check if the password is strong
-            if (validator.isStrongPassword(Password, { minSymbols: 0 })) {
-                // hash the password
-                var Hash = bcrypt.hashSync(Password, 10);
-                // create the user in the database
-                db.query(
-                    "UPDATE Users SET Email = ?, DisplayName = ?, Password = ?, Access = ?, Enabled = ? WHERE UserID = ?",
-                    [validator.normalizeEmail(Email), validator.trim(DisplayName), Hash, Access, Enabled, UserID],
-                    function (error, results, fields) {
-                        if (!error) {
+            // create the user in the database
+            db.query(
+                "UPDATE Users SET Email = ?, DisplayName = ?, Access = ?, Enabled = ? WHERE UserID = ?",
+                [validator.normalizeEmail(Email), validator.trim(DisplayName), Access, Enabled, UserID],
+                function (error, results, fields) {
+                    if (!error) {
+                        // retun the correct vars
+                        if (results.affectedRows == 1) {
                             // retun the correct vars
-                            if (results.affectedRows == 1) {
-                                // retun the correct vars
-                                res.status(200).json({
-                                    message: "okay",
-                                    reqid: res.locals.reqid,
-                                });
-                            } else {
-                                // retun the correct vars
-                                res.status(400).json({
-                                    message: "User not found",
-                                    reqid: res.locals.reqid,
-                                });
-                            }
-                        } else {
-                            res.locals.errors.push({
-                                location: "/api/settings/users.js/edit-1",
-                                code: error.code,
-                                from: "mysql",
+                            res.status(200).json({
+                                message: "okay",
+                                reqid: res.locals.reqid,
                             });
-                            res.status(500).json({
-                                message: "Server error",
-                                errors: res.locals.errors,
+                        } else {
+                            // retun the correct vars
+                            res.status(400).json({
+                                message: "User not found",
                                 reqid: res.locals.reqid,
                             });
                         }
+                    } else {
+                        res.locals.errors.push({
+                            location: "/api/settings/users.js/edit-1",
+                            code: error.code,
+                            from: "mysql",
+                        });
+                        res.status(500).json({
+                            message: "Server error",
+                            errors: res.locals.errors,
+                            reqid: res.locals.reqid,
+                        });
                     }
-                );
-            } else {
-                // retun the correct vars
-                res.status(400).json({
-                    message: "Password not secure",
-                    reqid: res.locals.reqid,
-                });
-            }
+                }
+            );
         } else {
             // retun the correct vars
             res.status(400).json({
