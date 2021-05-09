@@ -314,18 +314,20 @@ export const CueCreateModal = (props) => {
                                     />
                                 </Form.Group>
 
-                                {/* display errors to the user */}
-                                {serverState.show && (
-                                    <Alert
-                                        variant={
-                                            !serverState.error
-                                                ? "warning"
-                                                : "danger"
-                                        }
-                                    >
-                                        {serverState.message}
-                                    </Alert>
-                                )}
+                                <div className="pt-2">
+                                    {/* display errors to the user */}
+                                    {serverState.show && (
+                                        <Alert
+                                            variant={
+                                                !serverState.error
+                                                    ? "warning"
+                                                    : "danger"
+                                            }
+                                        >
+                                            {serverState.message}
+                                        </Alert>
+                                    )}
+                                </div>
                             </Modal.Body>
 
                             <Modal.Footer>
@@ -542,18 +544,20 @@ export function CueEditModal(props) {
                                     />
                                 </Form.Group>
 
-                                {/* display errors to the user */}
-                                {serverState.show && (
-                                    <Alert
-                                        variant={
-                                            !serverState.error
-                                                ? "warning"
-                                                : "danger"
-                                        }
-                                    >
-                                        {serverState.message}
-                                    </Alert>
-                                )}
+                                <div className="pt-2">
+                                    {/* display errors to the user */}
+                                    {serverState.show && (
+                                        <Alert
+                                            variant={
+                                                !serverState.error
+                                                    ? "warning"
+                                                    : "danger"
+                                            }
+                                        >
+                                            {serverState.message}
+                                        </Alert>
+                                    )}
+                                </div>
                             </Modal.Body>
 
                             <Modal.Footer>
@@ -654,8 +658,6 @@ export function CueDeleteModal(props) {
                             error.response.data.message
                         );
                     }
-                    actions.setSubmitting(false);
-                    // set loading to false
                 } else if (error.request) {
                     // check if a request error
                     handleServerResponse(
@@ -663,8 +665,6 @@ export function CueDeleteModal(props) {
                         true,
                         "Error sending request to server"
                     );
-                    actions.setSubmitting(false);
-                    // set loading to false
                 } else {
                     // check if a browser error
                     handleServerResponse(
@@ -672,8 +672,6 @@ export function CueDeleteModal(props) {
                         true,
                         "Error in browser request"
                     );
-                    actions.setSubmitting(false);
-                    // set loading to false
                 }
             });
     };
@@ -699,7 +697,7 @@ export function CueDeleteModal(props) {
                 <Modal.Body>
                     Are you sure you would like to delete the cue "
                     {props.info.CueName}"
-                    <>
+                    <div className="pt-2">
                         {/* display errors to the user */}
                         {serverState.show && (
                             <Alert
@@ -710,7 +708,7 @@ export function CueDeleteModal(props) {
                                 {serverState.message}
                             </Alert>
                         )}
-                    </>
+                    </div>
                 </Modal.Body>
 
                 <Modal.Footer>

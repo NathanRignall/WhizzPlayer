@@ -293,18 +293,20 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                                 {props.errors.TrackName}
                             </Form.Group>
 
-                            {/* display errors to the user */}
-                            {serverState.show && (
-                                <Alert
-                                    variant={
-                                        !serverState.error
-                                            ? "warning"
-                                            : "danger"
-                                    }
-                                >
-                                    {serverState.message}
-                                </Alert>
-                            )}
+                            <div className="pt-2">
+                                {/* display errors to the user */}
+                                {serverState.show && (
+                                    <Alert
+                                        variant={
+                                            !serverState.error
+                                                ? "warning"
+                                                : "danger"
+                                        }
+                                    >
+                                        {serverState.message}
+                                    </Alert>
+                                )}
+                            </div>
                         </Modal.Body>
 
                         <Modal.Footer>
@@ -493,7 +495,7 @@ export function TrackDeleteModal(props) {
                 <Modal.Body>
                     Are you sure you would like to delete the track "
                     {props.info.TrackName}"
-                    <>
+                    <div className="pt-2">
                         {/* display errors to the user */}
                         {serverState.show && (
                             <Alert
@@ -504,7 +506,7 @@ export function TrackDeleteModal(props) {
                                 {serverState.message}
                             </Alert>
                         )}
-                    </>
+                    </div>
                 </Modal.Body>
 
                 <Modal.Footer>
