@@ -552,8 +552,6 @@ export function UserDeleteModal(props) {
                             error.response.data.message
                         );
                     }
-                    actions.setSubmitting(false);
-                    // set loading to false
                 } else if (error.request) {
                     // check if a request error
                     handleServerResponse(
@@ -561,8 +559,6 @@ export function UserDeleteModal(props) {
                         true,
                         "Error sending request to server"
                     );
-                    actions.setSubmitting(false);
-                    // set loading to false
                 } else {
                     // check if a browser error
                     handleServerResponse(
@@ -570,8 +566,6 @@ export function UserDeleteModal(props) {
                         true,
                         "Error in browser request"
                     );
-                    actions.setSubmitting(false);
-                    // set loading to false
                 }
             });
     };
