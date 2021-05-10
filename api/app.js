@@ -54,14 +54,11 @@ tempConnection.connect((err) => {
             timezone: "utc",
         });
 
-        connection.connect(function (err) {
-            if (err) throw err;
-            console.log("Connected to main DB!");
-            // make the db global
-            global.db = connection;
-            // check all the tables over
-            initsql.checkTables();
-        });
+        console.log("Connected to main DB!");
+        // make the db global
+        global.db = connection;
+        // check all the tables over
+        initsql.checkTables();
     });
 });
 
