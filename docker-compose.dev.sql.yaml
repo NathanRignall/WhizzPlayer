@@ -15,8 +15,7 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker sql
-
+        VERSION_CODE: Dev Docker SQL
     ports:
       - 3000
   back:
@@ -25,7 +24,7 @@ services:
       context: ./back
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker sql
+        VERSION_CODE: Dev Docker SQL
     volumes:
       - "./uploads/:/uploads"
     devices:
@@ -38,16 +37,16 @@ services:
       context: ./api
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker sql
+        VERSION_CODE: Dev Docker SQL
     depends_on:
       - db
     environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASS: password
-      SESSION_SECRET: secret
+      DATABASE_HOST: db
+      DATABASE_USER: root
+      DATABASE_PASS: password
     volumes:
       - "./uploads/:/uploads"
+      - "./config/default.json:/default.json"
     ports:
       - 4000
   proxy:
@@ -56,6 +55,6 @@ services:
       context: ./proxy
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker sql
+        VERSION_CODE: Dev Docker SQL
     ports:
       - 80:80
