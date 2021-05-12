@@ -6,6 +6,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
+      TZ: UTC
     volumes:
       - ./mysql:/var/lib/mysql
   web:
@@ -23,13 +24,13 @@ services:
     restart: always
     volumes:
       - "./uploads/:/uploads"
+      - "./config/default.json:/default.json"
     depends_on:
       - db
     environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASS: password
-      SESSION_SECRET: secret
+      DATABASE_HOST: db
+      DATABASE_USER: root
+      DATABASE_PASS: password
   proxy:
     image: nathanrignall/whizzplayer:proxy
     restart: always

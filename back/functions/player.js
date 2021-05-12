@@ -16,6 +16,7 @@ function Player(opts) {
         playing: false,
         json: {},
         file: "",
+        volume: 0,
     };
 
     this.play = function (json) {
@@ -53,15 +54,24 @@ function Player(opts) {
         this.status.playing = true;
         this.status.json = json;
         this.status.file = uploadPath + "/save/" + json.TrackID;
+        this.status.volume = json.Volume ? json.Volume : 99;
         // log the current satus
         logger.playback({
             action: "play",
             details: "Play song",
             status: this.status,
         });
+
         // check if the file exists
         if (fs.existsSync(this.status.file)) {
-            this.process = spawn("mpg123", [this.status.file], this.options);
+            // format volume factor
+            let volumeFactor = Math.round((32768 * this.status.volume) / 100);
+            // start process
+            this.process = spawn(
+                "mpg123",
+                ["-f", volumeFactor, this.status.file],
+                this.options
+            );
             // make sure the process started
             if (!this.process) {
                 this.status.playing = false;

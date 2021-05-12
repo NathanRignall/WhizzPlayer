@@ -7,7 +7,7 @@ services:
       context: ./web
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker
+        VERSION_CODE: Dev Docker
     ports:
       - 3000
   back:
@@ -16,7 +16,7 @@ services:
       context: ./back
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker
+        VERSION_CODE: Dev Docker
     volumes:
       - "./uploads/:/uploads"
     devices:
@@ -29,11 +29,12 @@ services:
       context: ./api
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker
+        VERSION_CODE: Dev Docker
     env_file:
       - ./api/.docker.env
     volumes:
       - "./uploads/:/uploads"
+      - "./config/default.json:/default.json"
     ports:
       - 4000
   proxy:
@@ -42,6 +43,6 @@ services:
       context: ./proxy
       dockerfile: ./Dockerfile
       args:
-        VERSION_CODE: dev docker
+        VERSION_CODE: Dev Docker
     ports:
       - 80:80

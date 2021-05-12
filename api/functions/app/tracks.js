@@ -12,7 +12,7 @@ const uploadDir = uploadPath + "/save/";
 
 exports.list = function (req, res, next) {
     // get the tracks info from the database
-    db.query("SELECT TrackID, TrackName, Created, Modified FROM Tracks", function (error, results, fields) {
+    db.query("SELECT TrackID, TrackName, TrackType, Created, Modified FROM Tracks", function (error, results, fields) {
         // check if successful
         if (!error) {
             // retun the correct vars
@@ -178,9 +178,10 @@ exports.create = function (req, res, next) {
     var json = req.body;
     // set the vars from post
     var TrackName = json.TrackName;
+    var TrackType = json.TrackType;
     var FileID = json.FileID;
     // check the fields are present
-    if (TrackName && FileID) {
+    if (TrackName && TrackType && FileID) {
         // check the display name is not funny
         if (checkCharacters(TrackName)) {
             // check the file exists
@@ -192,8 +193,9 @@ exports.create = function (req, res, next) {
                     if (!error) {
                         // make the sql record
                         db.query(
-                            "INSERT INTO Tracks SET TrackID = ?, TrackName = ?",
-                            [TrackID, validator.trim(TrackName)],
+                            "INSERT INTO Tracks SET TrackID = ?, TrackName = ?, TrackType = ?",
+                            [TrackID, validator.trim(TrackName), TrackType],
+
                             function (error, results, fields) {
                                 // check if sucessfull
                                 if (!error) {
@@ -262,14 +264,15 @@ exports.edit = function (req, res, next) {
     var json = req.body;
     // set the vars from post
     var TrackName = json.TrackName;
+    var TrackType = json.TrackType;
     // check the fields are present
-    if (TrackName) {
+    if (TrackName && TrackType) {
         // check the display name is not funny
         if (checkCharacters(TrackName)) {
             // edit the sql record
             db.query(
-                "UPDATE Tracks SET TrackName = ? WHERE TrackID = ?",
-                [validator.trim(TrackName), TrackID],
+                "UPDATE Tracks SET TrackName = ?, TrackType = ? WHERE TrackID = ?",
+                [validator.trim(TrackName), TrackType, TrackID],
                 function (error, results, fields) {
                     // check if sucessfull
                     if (!error) {
