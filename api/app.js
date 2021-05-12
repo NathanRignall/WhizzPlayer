@@ -71,6 +71,8 @@ tempConnection.connect((err) => {
     tempConnection.query("CREATE DATABASE IF NOT EXISTS " + dbUse, async (err, result) => {
         if (err) throw err;
 
+        tempConnection.destroy();
+
         // connect to actual db
         var connection = await mysql.createPool({
             connectionLimit: 10,
@@ -83,6 +85,7 @@ tempConnection.connect((err) => {
             timezone: "utc",
         });
 
+        console.log("Connected to main DB!");
         // make the db global
         global.db = connection;
         // check all the tables over

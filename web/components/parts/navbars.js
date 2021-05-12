@@ -24,10 +24,23 @@ export default function CoreNavbar(props) {
                     <Link href="/tracks">
                         <Nav.Link href="/tracks">Tracks</Nav.Link>
                     </Link>
+
+                    {props.info.Access == 10 ? (
+                        <NavDropdown
+                            title="Settings"
+                            id="collasible-nav-dropdown"
+                        >
+                            <Link href="/settings/users">
+                                <NavDropdown.Item href="/settings/users">
+                                    Users
+                                </NavDropdown.Item>
+                            </Link>
+                        </NavDropdown>
+                    ) : null}
                 </Nav>
 
                 <Nav>
-                    <Nav.Link href="/">{props.DisplayName}</Nav.Link>{" "}
+                    <Nav.Link href="/">{props.info.DisplayName}</Nav.Link>{" "}
                     <Link href="/logout">
                         <Button variant="outline-light">Logout</Button>
                     </Link>

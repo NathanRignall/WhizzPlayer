@@ -5,144 +5,26 @@ import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
 
 import { Formik, useField, useFormikContext } from "formik";
 import * as yup from "yup";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
 
 // axios request urls
-const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
-const CUES_URI = process.env.NEXT_PUBLIC_API_URL + "/app/cues";
+const USERS_URI = process.env.NEXT_PUBLIC_API_URL + "/settings/users";
 
-// form schema
-const schema = yup.object().shape({
-    CueName: yup.string().required(),
-    TrackID: yup.string().required(),
+// form schemas
+const schemaCreate = yup.object().shape({
+    email: yup.string().email().required(),
+    displayName: yup.string().required(),
+    password: yup.string().required(),
 });
 
-// track selector component
-const TrackSelector = (props) => {
-    // send details back to formik
-    const { setFieldValue } = useFormikContext();
+const schemaEdit = yup.object().shape({
+    email: yup.string().email().required(),
+    displayName: yup.string().required(),
+});
 
-    // hold the current status
-    const [isLoading, setIsLoading] = useState(false);
-    const [options, setOptions] = useState([]);
-    const [singleSelections, setSingleSelections] = useState([]);
-
-    useEffect(() => {
-        if (props.type == "edit") {
-            setSingleSelections([
-                {
-                    TrackName: props.DefaultTrackName,
-                    TrackID: props.DefaultTrackID,
-                },
-            ]);
-        }
-    }, []);
-
-    // if a single item is selected set the formik status
-    useEffect(() => {
-        if (singleSelections.length > 0) {
-            setFieldValue(props.name, singleSelections[0].TrackID);
-        }
-    }, [singleSelections]);
-
-    // main feild searcher
-    const handleSearch = (query) => {
-        // set loading state to true
-        setIsLoading(true);
-
-        // make the axios request for track search
-        axios
-            .get(`${SEARCH_URI}?search=${query}`)
-            .then((response) => {
-                // put the response into array
-                const options = response.data.payload.map((items) => ({
-                    TrackName: items.TrackName,
-                    TrackID: items.TrackID,
-                }));
-                // set the options state to this new array
-                setOptions(options);
-                // set loading false
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                // catch each type of axios error
-                if (error.response) {
-                    if (error.response.status == 400) {
-                        console.log("No results in track search");
-                    } else {
-                        console.log("Error with response in track search");
-                    }
-                } else if (error.request) {
-                    console.log("No response in track search");
-                } else {
-                    console.log("Axios error in track search");
-                }
-                // set options to itself
-                setOptions(options);
-                // set loading to false
-                setIsLoading(false);
-            });
-    };
-
-    const filterBy = () => true;
-
-    return (
-        <AsyncTypeahead
-            id={props.name}
-            name={props.name}
-            multiple={false}
-            filterBy={filterBy}
-            isLoading={isLoading}
-            labelKey="TrackName"
-            minLength={2}
-            onSearch={handleSearch}
-            options={options}
-            onChange={setSingleSelections}
-            selected={singleSelections}
-            placeholder="Enter Track Name..."
-            renderMenuItemChildren={(option, props) => (
-                <span>{option.TrackName}</span>
-            )}
-        />
-    );
-};
-
-// cue create date selector
-const DateSelector = ({ ...props }) => {
-    // send details back to formik
-    const { setFieldValue } = useFormikContext();
-
-    // hold the current status
-    const [field] = useField(props);
-
-    // custom button to control date picker
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-        <Button variant="light" type="button" onClick={onClick} ref={ref}>
-            {value ? value : "Set Date and Time"}
-        </Button>
-    ));
-
-    return (
-        <DatePicker
-            {...field}
-            {...props}
-            selected={field.value}
-            dateFormat="MM/dd/yyyy HH:mm:ss"
-            showTimeInput
-            todayButton="Today"
-            customInput={<ExampleCustomInput />}
-            onChange={(val) => {
-                setFieldValue(field.name, val);
-            }}
-        />
-    );
-};
-
-// full create cue modal
-export const CueCreateModal = (props) => {
+// full create user modal
+export const UserCreateModal = (props) => {
     // contain the state of the modal
     const [show, setShow] = useState(false);
 
@@ -162,22 +44,20 @@ export const CueCreateModal = (props) => {
         setServerState({ show, error, message });
     };
 
-    // handle a from submit to create cue
+    // handle a from submit to create user
     const handleOnSubmit = (values, actions) => {
-        // create the time object
-        const time = new Date(values.PlayTime);
-        time.setSeconds(0);
         // create the json object to post lcue
         const json = JSON.stringify({
-            CueName: values.CueName,
-            TrackID: values.TrackID,
-            PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
-            Enabled: values.Enabled,
+            Email: values.email,
+            DisplayName: values.displayName,
+            Password: values.password,
+            Access: values.access,
+            Enabled: values.enabled,
         });
 
-        // axios post create cue
+        // axios post create user
         axios
-            .post(CUES_URI, json, {
+            .post(USERS_URI, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -186,8 +66,8 @@ export const CueCreateModal = (props) => {
                 actions.setSubmitting(false);
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                // reload the cue list
-                mutate(CUES_URI);
+                // reload the user list
+                mutate(USERS_URI);
                 // close the modal
                 handleClose();
             })
@@ -239,7 +119,7 @@ export const CueCreateModal = (props) => {
     return (
         <>
             <Button variant="primary" onClick={handleShow}>
-                Create A Cue
+                Create User
             </Button>
 
             <Modal
@@ -251,12 +131,13 @@ export const CueCreateModal = (props) => {
                 keyboard={false}
             >
                 <Formik
-                    validationSchema={schema}
+                    validationSchema={schemaCreate}
                     initialValues={{
-                        CueName: "",
-                        TrackID: "",
-                        PlayTime: new Date(),
-                        Enabled: true,
+                        email: "",
+                        password: "",
+                        displayName: "",
+                        access: 0,
+                        enabled: true,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -269,65 +150,88 @@ export const CueCreateModal = (props) => {
                     }) => (
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header className="bg-success text-white">
-                                <Modal.Title>Create Cue</Modal.Title>
+                                <Modal.Title>Create User</Modal.Title>
                             </Modal.Header>
 
                             <Modal.Body>
-                                {/* cue name group */}
+                                {/* display name group */}
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
-                                        name="CueName"
-                                        placeholder="Enter CueName"
-                                        value={values.CueName}
+                                        name="displayName"
+                                        placeholder="Enter Display Name"
+                                        value={values.displayName}
                                         onChange={handleChange}
-                                        autoComplete="off"
+                                        isInvalid={errors.displayName}
+                                        autocomplete="nickname"
                                     />
 
-                                    {errors.CueName}
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.displayName}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
 
-                                {/* track selector */}
-                                <Form.Group controlId="validationFormik05">
-                                    <TrackSelector name="TrackID" />
-
-                                    {errors.TrackID}
-                                </Form.Group>
-
-                                {/* cue time group */}
+                                {/* email group */}
                                 <Form.Group controlId="validationFormik02">
-                                    <DateSelector name="PlayTime" />
-
-                                    {errors.PlayTime}
-                                </Form.Group>
-
-                                {/* enabled group */}
-                                <Form.Group controlId="validationFormik03">
-                                    <Form.Check
-                                        name="Enabled"
-                                        type="switch"
-                                        label="Enabled"
-                                        checked={values.Enabled}
-                                        value={values.Enabled}
+                                    <Form.Control
+                                        type="email"
+                                        name="email"
+                                        placeholder="Enter Email"
+                                        value={values.email}
                                         onChange={handleChange}
-                                        isInvalid={errors.Enabled}
+                                        isInvalid={errors.email}
+                                        autocomplete="current-password"
                                     />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.email}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
 
-                                <div className="pt-2">
-                                    {/* display errors to the user */}
-                                    {serverState.show && (
-                                        <Alert
-                                            variant={
-                                                !serverState.error
-                                                    ? "warning"
-                                                    : "danger"
-                                            }
-                                        >
-                                            {serverState.message}
-                                        </Alert>
-                                    )}
-                                </div>
+                                {/* password group */}
+                                <Form.Group controlId="validationFormik03">
+                                    <Form.Control
+                                        type="password"
+                                        name="password"
+                                        placeholder="Enter Password"
+                                        value={values.password}
+                                        onChange={handleChange}
+                                        isInvalid={errors.password}
+                                        autocomplete="new-password"
+                                    />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.password}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+
+                                {/* access group */}
+                                <Form.Group controlId="exampleForm.SelectCustom">
+                                    <Form.Control
+                                        as="select"
+                                        name="access"
+                                        value={values.access}
+                                        onChange={handleChange}
+                                        custom
+                                    >
+                                        <option value="0" label="View Only" />
+                                        <option value="5" label="Standard" />
+                                        <option value="10" label="Admin" />
+                                    </Form.Control>
+                                </Form.Group>
+
+                                {/* display errors to the user */}
+                                {serverState.show && (
+                                    <Alert
+                                        variant={
+                                            !serverState.error
+                                                ? "warning"
+                                                : "danger"
+                                        }
+                                    >
+                                        {serverState.message}
+                                    </Alert>
+                                )}
                             </Modal.Body>
 
                             <Modal.Footer>
@@ -364,8 +268,8 @@ export const CueCreateModal = (props) => {
     );
 };
 
-// full edit cue modal
-export function CueEditModal(props) {
+// full edit user modal
+export const UserEditModal = (props) => {
     // contain the state of the modal
     const [show, setShow] = useState(false);
 
@@ -385,22 +289,19 @@ export function CueEditModal(props) {
         setServerState({ show, error, message });
     };
 
-    // handle a from submit to create cue
+    // handle a from submit to edit user
     const handleOnSubmit = (values, actions) => {
-        // create the time object
-        const time = new Date(values.PlayTime);
-        time.setSeconds(0);
         // create the json object to post lcue
         const json = JSON.stringify({
-            CueName: values.CueName,
-            TrackID: values.TrackID,
-            PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
-            Enabled: values.Enabled,
+            Email: values.email,
+            DisplayName: values.displayName,
+            Access: values.access,
+            Enabled: values.enabled,
         });
 
-        // axios post edit cue
+        // axios post create user
         axios
-            .put(`${CUES_URI}/${props.info.CueID}`, json, {
+            .put(`${USERS_URI}/${props.info.UserID}`, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -409,8 +310,8 @@ export function CueEditModal(props) {
                 actions.setSubmitting(false);
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                // reload the cue list
-                mutate(CUES_URI);
+                // reload the user list
+                mutate(USERS_URI);
                 // close the modal
                 handleClose();
             })
@@ -461,8 +362,8 @@ export function CueEditModal(props) {
 
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>
-                Edit Cue
+            <Button variant="primary" size="sm" onClick={handleShow}>
+                Edit
             </Button>
 
             <Modal
@@ -474,12 +375,12 @@ export function CueEditModal(props) {
                 keyboard={false}
             >
                 <Formik
-                    validationSchema={schema}
+                    validationSchema={schemaEdit}
                     initialValues={{
-                        CueName: props.info.CueName,
-                        TrackID: "",
-                        PlayTime: new Date(props.info.PlayTime),
-                        Enabled: props.info.Enabled ? true : false,
+                        email: props.info.Email,
+                        displayName: props.info.DisplayName,
+                        access: props.info.Access,
+                        enabled: props.info.Enabled,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -492,72 +393,71 @@ export function CueEditModal(props) {
                     }) => (
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header className="bg-primary text-white">
-                                <Modal.Title>
-                                    Edit Cue: "{props.info.CueName}"
-                                </Modal.Title>
+                                <Modal.Title>Create User</Modal.Title>
                             </Modal.Header>
 
                             <Modal.Body>
+                                {/* display name group */}
                                 <Form.Group controlId="validationFormik01">
-                                    {/* cue name group */}
                                     <Form.Control
                                         type="text"
-                                        name="CueName"
-                                        placeholder="Enter CueName"
-                                        value={values.CueName}
+                                        name="displayName"
+                                        placeholder="Enter Display Name"
+                                        value={values.displayName}
                                         onChange={handleChange}
-                                        autoComplete="off"
+                                        isInvalid={errors.displayName}
+                                        autocomplete="nickname"
                                     />
 
-                                    {errors.CueName}
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.displayName}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
 
-                                {/* track selector */}
-                                <Form.Group controlId="validationFormik05">
-                                    <TrackSelector
-                                        name="TrackID"
-                                        type="edit"
-                                        DefaultTrackName={props.info.TrackName}
-                                        DefaultTrackID={props.info.TrackID}
-                                    />
-
-                                    {errors.TrackID}
-                                </Form.Group>
-
-                                {/* cue time group */}
+                                {/* email group */}
                                 <Form.Group controlId="validationFormik02">
-                                    <DateSelector name="PlayTime" />
-
-                                    {errors.PlayTime}
-                                </Form.Group>
-
-                                {/* repeats group */}
-                                <Form.Group controlId="validationFormik03">
-                                    <Form.Check
-                                        name="Enabled"
-                                        type="switch"
-                                        label="Enabled"
-                                        checked={values.Enabled}
-                                        value={values.Enabled}
+                                    <Form.Control
+                                        type="email"
+                                        name="email"
+                                        placeholder="Enter Email"
+                                        value={values.email}
                                         onChange={handleChange}
-                                        isInvalid={errors.Enabled}
+                                        isInvalid={errors.email}
+                                        autocomplete="current-password"
                                     />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.email}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
 
-                                <div className="pt-2">
-                                    {/* display errors to the user */}
-                                    {serverState.show && (
-                                        <Alert
-                                            variant={
-                                                !serverState.error
-                                                    ? "warning"
-                                                    : "danger"
-                                            }
-                                        >
-                                            {serverState.message}
-                                        </Alert>
-                                    )}
-                                </div>
+                                {/* access group */}
+                                <Form.Group controlId="exampleForm.SelectCustom">
+                                    <Form.Control
+                                        as="select"
+                                        name="access"
+                                        value={values.access}
+                                        onChange={handleChange}
+                                        custom
+                                    >
+                                        <option value="0" label="View Only" />
+                                        <option value="5" label="Standard" />
+                                        <option value="10" label="Admin" />
+                                    </Form.Control>
+                                </Form.Group>
+
+                                {/* display errors to the user */}
+                                {serverState.show && (
+                                    <Alert
+                                        variant={
+                                            !serverState.error
+                                                ? "warning"
+                                                : "danger"
+                                        }
+                                    >
+                                        {serverState.message}
+                                    </Alert>
+                                )}
                             </Modal.Body>
 
                             <Modal.Footer>
@@ -571,11 +471,7 @@ export function CueEditModal(props) {
 
                                 {/* Submit button*/}
                                 {isSubmitting ? (
-                                    <Button
-                                        type="submit"
-                                        variant="success"
-                                        disabled
-                                    >
+                                    <Button type="submit" disabled>
                                         <Spinner
                                             as="span"
                                             animation="border"
@@ -587,9 +483,7 @@ export function CueEditModal(props) {
                                         Loading...
                                     </Button>
                                 ) : (
-                                    <Button variant="success" type="submit">
-                                        Apply Changes
-                                    </Button>
+                                    <Button type="submit">Edit</Button>
                                 )}
                             </Modal.Footer>
                         </Form>
@@ -598,10 +492,10 @@ export function CueEditModal(props) {
             </Modal>
         </>
     );
-}
+};
 
-// full delete cue modal
-export function CueDeleteModal(props) {
+// full delete user modal
+export function UserDeleteModal(props) {
     // contain the state of the modal
     const [show, setShow] = useState(false);
 
@@ -621,19 +515,19 @@ export function CueDeleteModal(props) {
         setServerState({ show, error, message });
     };
 
-    // handle delete cue
+    // handle delete user
     const deleteCue = () => {
-        // axios delete cue
+        // axios delete user
         axios
-            .delete(`${CUES_URI}/${props.info.CueID}`, {
+            .delete(`${USERS_URI}/${props.info.UserID}`, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
             .then((response) => {
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                // reload the cue list
-                mutate(CUES_URI);
+                // reload the user list
+                mutate(USERS_URI);
                 // close the modal
                 handleClose();
             })
@@ -678,8 +572,8 @@ export function CueDeleteModal(props) {
 
     return (
         <>
-            <Button variant="danger" onClick={handleShow}>
-                Delete Cue
+            <Button variant="danger" size="sm" onClick={handleShow}>
+                Delete
             </Button>
 
             <Modal
@@ -695,9 +589,9 @@ export function CueDeleteModal(props) {
                 </Modal.Header>
 
                 <Modal.Body>
-                    Are you sure you would like to delete the cue "
-                    {props.info.CueName}"
-                    <div className="pt-2">
+                    Are you sure you would like to delete the user "
+                    {props.info.DisplayName}"
+                    <>
                         {/* display errors to the user */}
                         {serverState.show && (
                             <Alert
@@ -708,7 +602,7 @@ export function CueDeleteModal(props) {
                                 {serverState.message}
                             </Alert>
                         )}
-                    </div>
+                    </>
                 </Modal.Body>
 
                 <Modal.Footer>
