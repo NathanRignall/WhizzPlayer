@@ -54,7 +54,7 @@ function Player(opts) {
         this.status.playing = true;
         this.status.json = json;
         this.status.file = uploadPath + "/save/" + json.TrackID;
-        this.status.volume = json.Volume ? json.Volume : 100;
+        this.status.volume = json.Volume ? json.Volume : 99;
         // log the current satus
         logger.playback({
             action: "play",

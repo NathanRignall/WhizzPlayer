@@ -38,7 +38,7 @@ nconf.defaults({
         enabled: true,
         volume: {
             music: 70,
-            announcements: 100,
+            voice: 100,
         },
     },
     database: {
