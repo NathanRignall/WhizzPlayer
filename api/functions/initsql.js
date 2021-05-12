@@ -98,7 +98,7 @@ const checkTracksTable = async () => {
                     if (error) throw error;
                     conn.beginTransaction(function (error) {
                         conn.query(
-                            "CREATE TABLE Tracks (TrackID BIGINT NOT NULL UNIQUE,TrackName varchar(255) NOT NULL,Created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,Modified DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP,PRIMARY KEY (TrackID));",
+                            "CREATE TABLE Tracks (TrackID BIGINT NOT NULL UNIQUE,TrackName varchar(255) NOT NULL, TrackType varchar(255) DEFAULT 'music' NOT NULL, Created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,Modified DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP,PRIMARY KEY (TrackID));",
                             function (error, results, fields) {
                                 if (error) {
                                     return conn.rollback(function () {
