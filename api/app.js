@@ -42,7 +42,7 @@ nconf.defaults({
         },
     },
     database: {
-        db: "WhizzPlayer1",
+        db: "WhizzPlayerDB",
     },
     session: {
         secret: crypto.randomBytes(8).toString("hex"),
