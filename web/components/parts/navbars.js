@@ -17,6 +17,10 @@ export default function CoreNavbar(props) {
                         <Nav.Link href="/">Home</Nav.Link>
                     </Link>
 
+                    <Link href="/grids">
+                        <Nav.Link href="/grids">Grids</Nav.Link>
+                    </Link>
+
                     <Link href="/cues">
                         <Nav.Link href="/cues">Cues</Nav.Link>
                     </Link>
