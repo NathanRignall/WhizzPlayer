@@ -2,51 +2,19 @@
 var bcrypt = require("bcrypt");
 
 exports.setup = function (req, res, next) {
-    db.query("SELECT Data FROM Settings WHERE Feild = ?", ["Setup"], function (error, results, fields) {
-        // check if sucessfull
-        if (!error) {
-            // check the key was found
-            if (results.length == 1) {
-                // check the setup mode is true
-                if (results[0].Data == "true") {
-                    // retun the correct vars
-                    res.status(200).json({
-                        message: "true",
-                        reqid: res.locals.reqid,
-                    });
-                } else {
-                    res.status(200).json({
-                        message: "false",
-                        reqid: res.locals.reqid,
-                    });
-                }
-            } else {
-                // retun the correct vars
-                res.locals.errors.push({
-                    location: "/api/account/core.js/register-4",
-                    from: "mysql",
-                });
-                // retun the correct vars
-                res.status(500).json({
-                    message: "System not configured correctly",
-                    errors: res.locals.errors,
-                    reqid: res.locals.reqid,
-                });
-            }
-        } else {
-            // retun the correct vars
-            res.locals.errors.push({
-                location: "/api/account/core.js/register-5",
-                code: error.code,
-                from: "mysql",
-            });
-            res.status(500).json({
-                message: "Server error",
-                errors: res.locals.errors,
-                reqid: res.locals.reqid,
-            });
-        }
-    });
+    if (nconf.get("setup")) {
+        // retun the correct vars
+        res.status(200).json({
+            message: "true",
+            reqid: res.locals.reqid,
+        });
+    } else {
+        // retun the correct vars
+        res.status(200).json({
+            message: "false",
+            reqid: res.locals.reqid,
+        });
+    }
 };
 
 exports.register = function (req, res, next) {
@@ -65,133 +33,62 @@ exports.register = function (req, res, next) {
             // check if the password is strong
             if (validator.isStrongPassword(Password, { minSymbols: 0 })) {
                 // check the stystem is in setup mode
-                db.query("SELECT Data FROM Settings WHERE Feild = ?", ["Setup"], function (error, results, fields) {
-                    // check if sucessfull
-                    if (!error) {
-                        // check the key was found
-                        if (results.length == 1) {
-                            // check the setup mode is true
-                            if (results[0].Data == "true") {
-                                // hash the password
-                                var Hash = bcrypt.hashSync(Password, 10);
-                                // get a user id
-                                var UserID = idgen.genterateUserID();
-                                // create the user in the database
-                                db.beginTransaction(function (error) {
-                                    db.query(
-                                        "INSERT INTO Users SET UserID = ?, Email = ?, DisplayName = ?, Password = ?, Access = 10",
-                                        [UserID, validator.normalizeEmail(Email), validator.trim(DisplayName), Hash],
-                                        function (error, results, fields) {
-                                            if (error) {
-                                                return db.rollback(function () {
-                                                    if (error.code == "ER_DUP_ENTRY") {
-                                                        // retun the correct vars
-                                                        res.status(400).json({
-                                                            message: "Email already used in account",
-                                                            reqid: res.locals.reqid,
-                                                        });
-                                                    } else {
-                                                        // retun the correct vars
-                                                        res.locals.errors.push({
-                                                            location: "/api/account/core.js/register-1",
-                                                            code: error.code,
-                                                            from: "mysql",
-                                                        });
-                                                        res.status(500).json({
-                                                            message: "Server error",
-                                                            errors: res.locals.errors,
-                                                            reqid: res.locals.reqid,
-                                                        });
-                                                    }
-                                                });
-                                            }
+                if (nconf.get("setup")) {
+                    // hash the password
+                    var Hash = bcrypt.hashSync(Password, 10);
+                    // get a user id
+                    var UserID = idgen.genterateUserID();
+                    // insert user
+                    db.query(
+                        "INSERT INTO Users SET UserID = ?, Email = ?, DisplayName = ?, Password = ?, Access = 10",
+                        [UserID, validator.normalizeEmail(Email), validator.trim(DisplayName), Hash],
+                        function (error, results, fields) {
+                            if (!error) {
+                                // put in setup mode
+                                nconf.set("setup", false);
+                                nconf.save(configSave);
 
-                                            db.query(
-                                                "UPDATE Settings SET Data = ? WHERE Feild = ?",
-                                                ["false", "Setup"],
-                                                function (error, results, fields) {
-                                                    if (error) {
-                                                        return db.rollback(function () {
-                                                            // retun the correct vars
-                                                            res.locals.errors.push({
-                                                                location: "/api/account/core.js/register-2",
-                                                                code: error.code,
-                                                                from: "mysql",
-                                                            });
-                                                            res.status(500).json({
-                                                                message: "Server error",
-                                                                errors: res.locals.errors,
-                                                                reqid: res.locals.reqid,
-                                                            });
-                                                        });
-                                                    }
+                                // login the user
+                                req.session.UserID = UserID;
+                                req.session.Email = Email;
+                                req.session.DisplayName = DisplayName;
+                                req.session.Access = 1;
 
-                                                    db.commit(function (err) {
-                                                        if (err) {
-                                                            return db.rollback(function () {
-                                                                // retun the correct vars
-                                                                res.locals.errors.push({
-                                                                    location: "/api/account/core.js/register-3",
-                                                                    code: error.code,
-                                                                    from: "mysql",
-                                                                });
-                                                                res.status(500).json({
-                                                                    message: "Server error",
-                                                                    errors: res.locals.errors,
-                                                                    reqid: res.locals.reqid,
-                                                                });
-                                                            });
-                                                        }
-                                                        // login the user
-                                                        req.session.UserID = UserID;
-                                                        req.session.Email = Email;
-                                                        req.session.DisplayName = DisplayName;
-                                                        req.session.Access = 1;
-                                                        // retun the correct vars
-                                                        res.status(200).json({
-                                                            message: "okay",
-                                                            reqid: res.locals.reqid,
-                                                        });
-                                                    });
-                                                }
-                                            );
-                                        }
-                                    );
-                                });
-                            } else {
                                 // retun the correct vars
-                                res.status(400).json({
-                                    message: "System not in setup mode",
+                                res.status(200).json({
+                                    message: "okay",
                                     reqid: res.locals.reqid,
                                 });
+                            } else {
+                                if (error.code == "ER_DUP_ENTRY") {
+                                    // retun the correct vars
+                                    res.status(400).json({
+                                        message: "Email already used in account",
+                                        reqid: res.locals.reqid,
+                                    });
+                                } else {
+                                    // retun the correct vars
+                                    res.locals.errors.push({
+                                        location: "/api/account/core.js/register-1",
+                                        code: error.code,
+                                        from: "mysql",
+                                    });
+                                    res.status(500).json({
+                                        message: "Server error",
+                                        errors: res.locals.errors,
+                                        reqid: res.locals.reqid,
+                                    });
+                                }
                             }
-                        } else {
-                            // retun the correct vars
-                            res.locals.errors.push({
-                                location: "/api/account/core.js/register-4",
-                                from: "mysql",
-                            });
-                            // retun the correct vars
-                            res.status(500).json({
-                                message: "System not configured correctly",
-                                errors: res.locals.errors,
-                                reqid: res.locals.reqid,
-                            });
                         }
-                    } else {
-                        // retun the correct vars
-                        res.locals.errors.push({
-                            location: "/api/account/core.js/register-5",
-                            code: error.code,
-                            from: "mysql",
-                        });
-                        res.status(500).json({
-                            message: "Server error",
-                            errors: res.locals.errors,
-                            reqid: res.locals.reqid,
-                        });
-                    }
-                });
+                    );
+                } else {
+                    // retun the correct vars
+                    res.status(200).json({
+                        message: "false",
+                        reqid: res.locals.reqid,
+                    });
+                }
             } else {
                 // retun the correct vars
                 res.status(400).json({

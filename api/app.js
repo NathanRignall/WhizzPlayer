@@ -1,6 +1,8 @@
 // import dependancies
 var express = require("express");
 var session = require("express-session");
+var nconf = require("nconf");
+var fs = require("fs");
 var mysql = require("mysql");
 var validator = require("validator");
 var crypto = require("crypto");
@@ -12,17 +14,46 @@ var idgen = require("./functions/idgen");
 var initsql = require("./functions/initsql");
 var auth = require("./middleware/auth");
 
+//setup config
+const configFile = process.env.NODE_ENV == "production" ? "/default.json" : "../config/default.json";
+const configSave = function (err) {
+    fs.readFile(configFile, function (err, data) {
+        logger.info({ save: JSON.parse(data.toString()) });
+    });
+};
+
 // make the some modules global
 global.idgen = idgen;
 global.auth = auth;
 global.logger = logger;
 global.serializeError = serializeError;
+global.nconf = nconf;
+global.configSave = configSave;
+
+// setup nconf
+nconf.env().file({ file: configFile });
+
+nconf.defaults({
+    playback: {
+        enabled: true,
+        volume: {
+            music: 70,
+            announcements: 100,
+        },
+    },
+    database: {
+        db: "WhizzPlayer1",
+    },
+    session: {
+        secret: crypto.randomBytes(8).toString("hex"),
+    },
+});
 
 // temp connect to the mysql server
 const tempConnection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
+    host: nconf.any("DATABASE_HOST", "database:host"),
+    user: nconf.any("DATABASE_USER", "database:user"),
+    password: nconf.any("DATABASE_PASS", "database:pass"),
     supportBigNumbers: true,
     bigNumberStrings: true,
     timezone: "utc",
@@ -33,7 +64,7 @@ tempConnection.connect((err) => {
     if (err) throw err;
 
     // setup the db name
-    const dbUse = process.env.DB_DB ? process.env.DB_DB : "WhizzPlayerDB";
+    const dbUse = nconf.any("DATABASE_DB", "database:db");
     console.log(dbUse);
 
     // create the databse if does not exists
@@ -41,11 +72,11 @@ tempConnection.connect((err) => {
         if (err) throw err;
 
         // connect to actual db
-        var connection = mysql.createPool({
+        var connection = await mysql.createPool({
             connectionLimit: 10,
-            host: process.env.DB_HOST,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASS,
+            host: nconf.any("DATABASE_HOST", "database:host"),
+            user: nconf.any("DATABASE_USER", "database:user"),
+            password: nconf.any("DATABASE_PASS", "database:pass"),
             database: dbUse,
             supportBigNumbers: true,
             bigNumberStrings: true,
@@ -119,7 +150,7 @@ app.use(cors(corsOptions));
 app.use(
     session({
         name: "session",
-        secret: process.env.SESSION_SECRET,
+        secret: nconf.any("SESSION_SECRET", "session:secret"),
         resave: false,
         saveUninitialized: true,
         cookie: {
