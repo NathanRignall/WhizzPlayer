@@ -202,9 +202,10 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
 
     // handle a from submit to create cue
     const handleOnSubmit = (values, actions) => {
-        // create the json object to post lcue
+        // create the json object to post track
         const json = JSON.stringify({
             TrackName: values.TrackName,
+            TrackType: values.TrackType,
             FileID: trackProgress.tempID,
         });
 
@@ -274,12 +275,15 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
             <Formik
                 validationSchema={schema}
                 onSubmit={handleOnSubmit}
-                initialValues={{ TrackName: trackProgress.tempName }}
+                initialValues={{
+                    TrackName: trackProgress.tempName,
+                    TrackType: "music",
+                }}
             >
                 {(props) => (
                     <Form noValidate onSubmit={props.handleSubmit}>
                         <Modal.Body>
-                            {/* cue name group */}
+                            {/* track name group */}
                             <Form.Group controlId="validationFormik01">
                                 <Form.Control
                                     type="text"
@@ -291,6 +295,20 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                                 />
 
                                 {props.errors.TrackName}
+                            </Form.Group>
+
+                            {/* track type group */}
+                            <Form.Group controlId="validationFormik02">
+                                <Form.Control
+                                    as="select"
+                                    name="TrackType"
+                                    value={props.values.TrackType}
+                                    onChange={props.handleChange}
+                                    custom
+                                >
+                                    <option value="music" label="Music" />
+                                    <option value="voice" label="Voice" />
+                                </Form.Control>
                             </Form.Group>
 
                             {/* display errors to the user */}

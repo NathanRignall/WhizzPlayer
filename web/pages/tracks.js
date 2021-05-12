@@ -11,14 +11,15 @@ import {
     TrackDeleteModal,
 } from "../components/custom/manageTracks";
 
-import { Card, Col, Row, Spinner, Button, Alert } from "react-bootstrap";
+import { Card, Col, Row, Spinner, Button, Alert, Badge } from "react-bootstrap";
 
 // card for displyaing info about a track
 const Track = (props) => (
     <>
         <Card>
             <Card.Header as="h4" className="bg-secondary text-white">
-                {props.info.TrackName}
+                {props.info.TrackName}{" "}
+                <Badge variant="info">{props.info.TrackType}</Badge>
             </Card.Header>
 
             <Card.Body>
