@@ -2,13 +2,11 @@ exports.checkTables = () => {
     checkSettingsTable();
 };
 
-const checkOtherTables = () => {
-    checkTracksTable();
-    checkCuesTable();
-    checkUsersTable();
+const checkOtherTables = async function () {
+    checkTracksTable().then(checkCuesTable()).then(checkUsersTable());
 };
 
-const checkSettingsTable = () => {
+const checkSettingsTable = async () => {
     // check the settings table is all okay and create/edit if not
     db.query("SHOW TABLES LIKE 'Settings'", function (error, results) {
         const SettingsTableVersion = "1";
@@ -41,8 +39,8 @@ const checkSettingsTable = () => {
                                             });
                                         }
                                         // okay
-                                        conn.commit(function (err) {
-                                            if (err) {
+                                        conn.commit(function (error) {
+                                            if (error) {
                                                 return conn.rollback(function () {
                                                     throw error;
                                                 });
@@ -73,10 +71,10 @@ const checkSettingsTable = () => {
                             } else {
                                 //TODO: upgrade version
                                 logger.info("Settings table wrong version" + SettingsTableVersion);
-                                throw error;
+                                throw "Wrong version settings ";
                             }
                         } else {
-                            throw error;
+                            throw "No key settings";
                         }
                     }
                 );
@@ -85,7 +83,7 @@ const checkSettingsTable = () => {
     });
 };
 
-const checkTracksTable = () => {
+const checkTracksTable = async () => {
     // check the tracks table is all okay and create/edit if not
     db.query("SHOW TABLES LIKE 'Tracks'", function (error, results) {
         const TracksTableVersion = "1.1";
@@ -131,8 +129,8 @@ const checkTracksTable = () => {
                                                         }
                                                     }
                                                     // okay
-                                                    conn.commit(function (err) {
-                                                        if (err) {
+                                                    conn.commit(function (error) {
+                                                        if (error) {
                                                             return conn.rollback(function () {
                                                                 throw error;
                                                             });
@@ -144,8 +142,8 @@ const checkTracksTable = () => {
                                             );
                                         } else {
                                             // okay
-                                            conn.commit(function (err) {
-                                                if (err) {
+                                            conn.commit(function (error) {
+                                                if (error) {
                                                     return conn.rollback(function () {
                                                         throw error;
                                                     });
@@ -210,8 +208,8 @@ const checkTracksTable = () => {
                                                                             }
                                                                         }
                                                                         // okay
-                                                                        conn.commit(function (err) {
-                                                                            if (err) {
+                                                                        conn.commit(function (error) {
+                                                                            if (error) {
                                                                                 return conn.rollback(function () {
                                                                                     throw error;
                                                                                 });
@@ -226,8 +224,8 @@ const checkTracksTable = () => {
                                                                 );
                                                             } else {
                                                                 // okay
-                                                                conn.commit(function (err) {
-                                                                    if (err) {
+                                                                conn.commit(function (error) {
+                                                                    if (error) {
                                                                         return conn.rollback(function () {
                                                                             throw error;
                                                                         });
@@ -247,11 +245,11 @@ const checkTracksTable = () => {
                                 } else {
                                     //no upgrade
                                     logger.info("No auto mysql db upgrade" + TracksTableVersion);
-                                    throw error;
+                                    throw "Wrong version tracks upgrade";
                                 }
                             }
                         } else {
-                            throw error;
+                            throw "Wrong version tracks";
                         }
                     }
                 );
@@ -260,7 +258,7 @@ const checkTracksTable = () => {
     });
 };
 
-const checkCuesTable = () => {
+const checkCuesTable = async () => {
     // check the cues table is all okay and create/edit if not
     db.query("SHOW TABLES LIKE 'Cues'", function (error, results) {
         const CuesTableVersion = "1";
@@ -306,8 +304,8 @@ const checkCuesTable = () => {
                                                         }
                                                     }
                                                     // okay
-                                                    conn.commit(function (err) {
-                                                        if (err) {
+                                                    conn.commit(function (error) {
+                                                        if (error) {
                                                             return conn.rollback(function () {
                                                                 throw error;
                                                             });
@@ -319,8 +317,8 @@ const checkCuesTable = () => {
                                             );
                                         } else {
                                             // okay
-                                            conn.commit(function (err) {
-                                                if (err) {
+                                            conn.commit(function (error) {
+                                                if (error) {
                                                     return conn.rollback(function () {
                                                         throw error;
                                                     });
@@ -350,10 +348,10 @@ const checkCuesTable = () => {
                             } else {
                                 //TODO: upgrade version
                                 logger.info("Cues table wrong version" + CuesTableVersion);
-                                throw error;
+                                throw "Wrong version cues upgrade";
                             }
                         } else {
-                            throw error;
+                            throw "Wrong version cues";
                         }
                     }
                 );
@@ -362,7 +360,7 @@ const checkCuesTable = () => {
     });
 };
 
-const checkUsersTable = () => {
+const checkUsersTable = async () => {
     // check the users table is all okay and create/edit if not
     db.query("SHOW TABLES LIKE 'Users'", function (error, results) {
         const UsersTableVersion = "1";
@@ -408,8 +406,8 @@ const checkUsersTable = () => {
                                                         }
                                                     }
                                                     // okay
-                                                    conn.commit(function (err) {
-                                                        if (err) {
+                                                    conn.commit(function (error) {
+                                                        if (error) {
                                                             return conn.rollback(function () {
                                                                 throw error;
                                                             });
@@ -424,8 +422,8 @@ const checkUsersTable = () => {
                                             );
                                         } else {
                                             // okay
-                                            conn.commit(function (err) {
-                                                if (err) {
+                                            conn.commit(function (error) {
+                                                if (error) {
                                                     return conn.rollback(function () {
                                                         throw error;
                                                     });
@@ -458,10 +456,10 @@ const checkUsersTable = () => {
                             } else {
                                 //TODO: upgrade version
                                 logger.info("Users table wrong version" + UsersTableVersion);
-                                throw error;
+                                throw "Wrong version users upgrade";
                             }
                         } else {
-                            throw error;
+                            throw "Wrong version users";
                         }
                     }
                 );
