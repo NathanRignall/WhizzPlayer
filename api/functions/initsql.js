@@ -88,7 +88,7 @@ const checkSettingsTable = () => {
 const checkTracksTable = () => {
     // check the tracks table is all okay and create/edit if not
     db.query("SHOW TABLES LIKE 'Tracks'", function (error, results) {
-        const TracksTableVersion = "1";
+        const TracksTableVersion = "1.1";
         // check if an error occured
         if (error) {
             throw error;
@@ -173,9 +173,82 @@ const checkTracksTable = () => {
                             if (results[0].Data == TracksTableVersion) {
                                 logger.info("Tracks table up to date V" + TracksTableVersion);
                             } else {
-                                //TODO: upgrade version
-                                logger.info("Tracks table wrong version" + TracksTableVersion);
-                                throw error;
+                                // upgrade the version
+                                if (results[0].Data == 1) {
+                                    db.getConnection(function (error, conn) {
+                                        if (error) throw error;
+                                        conn.beginTransaction(function (error) {
+                                            conn.query(
+                                                "ALTER TABLE Tracks ADD TrackType varchar(255) DEFAULT 'music' NOT NULL",
+                                                function (error, results, fields) {
+                                                    if (error) {
+                                                        return conn.rollback(function () {
+                                                            throw error;
+                                                        });
+                                                    }
+                                                    // okay
+                                                    conn.query(
+                                                        "INSERT INTO Settings SET Feild = ?, Data = ?",
+                                                        ["TracksTableVersion", TracksTableVersion],
+                                                        function (error, results, fields) {
+                                                            if (error) {
+                                                                if (error.code != "ER_DUP_ENTRY") {
+                                                                    return conn.rollback(function () {
+                                                                        throw error;
+                                                                    });
+                                                                }
+                                                                // okay but key already exists
+                                                                conn.query(
+                                                                    "UPDATE Settings SET Data = ? WHERE Feild = ?",
+                                                                    [TracksTableVersion, "TracksTableVersion"],
+                                                                    function (error, results, fields) {
+                                                                        if (error) {
+                                                                            if (error.code != "ER_DUP_ENTRY") {
+                                                                                return conn.rollback(function () {
+                                                                                    throw error;
+                                                                                });
+                                                                            }
+                                                                        }
+                                                                        // okay
+                                                                        conn.commit(function (err) {
+                                                                            if (err) {
+                                                                                return conn.rollback(function () {
+                                                                                    throw error;
+                                                                                });
+                                                                            }
+                                                                            // okay
+                                                                            logger.info(
+                                                                                "Updated Tracks Table A V" +
+                                                                                    TracksTableVersion
+                                                                            );
+                                                                        });
+                                                                    }
+                                                                );
+                                                            } else {
+                                                                // okay
+                                                                conn.commit(function (err) {
+                                                                    if (err) {
+                                                                        return conn.rollback(function () {
+                                                                            throw error;
+                                                                        });
+                                                                    }
+                                                                    // okay
+                                                                    logger.info(
+                                                                        "Updated Tracks Table V" + TracksTableVersion
+                                                                    );
+                                                                });
+                                                            }
+                                                        }
+                                                    );
+                                                }
+                                            );
+                                        });
+                                    });
+                                } else {
+                                    //no upgrade
+                                    logger.info("No auto mysql db upgrade" + TracksTableVersion);
+                                    throw error;
+                                }
                             }
                         } else {
                             throw error;
