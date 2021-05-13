@@ -87,10 +87,12 @@ const TrackList = () => {
 export default function Main() {
     return (
         <Layout title="Tracks">
-            <h1>Track List</h1>
+            <div class="d-flex">
+                <h1>Track List</h1>
 
-            <div>
-                <UploadTrackModal />{" "}
+                <div class="ml-auto my-auto">
+                    <UploadTrackModal />
+                </div>
             </div>
 
             <br />

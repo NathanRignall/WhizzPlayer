@@ -170,14 +170,15 @@ const CueList = (props) => {
 export default function Main() {
     return (
         <Layout title="Cues">
-            <h1>Cue List</h1>
+            <div class="d-flex">
+                <h1>Cue List</h1>
 
-            <div>
-                <CueCreateModal />{" "}
+                <div class="ml-auto my-auto">
+                    <CueCreateModal />
+                </div>
             </div>
 
             <br />
-
             <CueList />
         </Layout>
     );
