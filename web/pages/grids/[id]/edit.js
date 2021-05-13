@@ -3,12 +3,13 @@ import Layout from "../../../components/layouts/main";
 import useSWR from "swr";
 import React from "react";
 import { useRouter } from "next/router";
-import { useState, useEffect, forwardRef } from "react";
+import Link from "next/link";
 
 import { WidthProvider, Responsive } from "react-grid-layout";
 
 import { fetcher } from "../../../components/common/functions";
 import { ErrorDisplayer } from "../../../components/common/errors";
+import { GridItemCreateModal } from "../../../components/custom/manageGrids";
 
 import { Card, Button, Nav, Spinner } from "react-bootstrap";
 
@@ -35,7 +36,6 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
     render() {
         return (
             <div>
-                <button onClick={() => this.resetLayout()}>Reset Layout</button>
                 <ResponsiveReactGridLayout
                     className="layout"
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
@@ -77,6 +77,13 @@ function saveToLS(key, value) {
     }
 }
 
+const GridItem = (props) => (
+    <div className="wrap">
+        <h3>{props.info.GridItemName}</h3>
+        <Button variant="primary">Go somewhere 5</Button>
+    </div>
+);
+
 // main grid loader
 const Grid = (props) => {
     const { data, error } = useSWR(
@@ -104,6 +111,30 @@ const Grid = (props) => {
             <>
                 <ErrorDisplayer error={error} />
 
+                <div class="d-flex">
+                    <h1>{data.payload.grid.GridName}</h1>
+
+                    <div class="ml-auto my-auto">
+                        <GridItemCreateModal GridID={props.GridID} />{" "}
+                        <Link
+                            href={{
+                                pathname: "/grids/[id]/edit",
+                                query: { id: props.GridID },
+                            }}
+                        >
+                            <Button
+                                href={"/grids/" + props.GridID + "/edit"}
+                                variant="success"
+                            >
+                                Save Grid
+                            </Button>
+                        </Link>{" "}
+                        <Link href={"/grids"}>
+                            <Button href="/grids">All Grids</Button>
+                        </Link>
+                    </div>
+                </div>
+
                 <ResponsiveLocalStorageLayout>
                     {GridFormedList}
                 </ResponsiveLocalStorageLayout>
@@ -127,8 +158,7 @@ export default function Main() {
     const { id } = router.query;
 
     return (
-        <Layout title="Cues">
-            <h1>Grids</h1>
+        <Layout title="Grids">
             <Grid GridID={id} />
         </Layout>
     );

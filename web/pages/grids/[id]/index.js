@@ -4,14 +4,13 @@ import useSWR from "swr";
 import React from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { useState, useEffect, forwardRef } from "react";
 
 import { WidthProvider, Responsive } from "react-grid-layout";
 
 import { fetcher } from "../../../components/common/functions";
 import { ErrorDisplayer } from "../../../components/common/errors";
 
-import { Card, Button, Nav, Spinner } from "react-bootstrap";
+import { Card, Button, Nav, Spinner, Alert } from "react-bootstrap";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -54,6 +53,13 @@ function getFromLS(key) {
     return ls[key];
 }
 
+const GridItem = (props) => (
+    <div className="wrap">
+        <h3>{props.info.GridItemName}</h3>
+        <Button variant="primary">Go somewhere 5</Button>
+    </div>
+);
+
 // main grid loader
 const Grid = (props) => {
     const { data, error } = useSWR(
@@ -70,10 +76,7 @@ const Grid = (props) => {
                 key={item.GridItemID}
                 data-grid={{ w: 2, h: 2, x: 0, y: 0, minW: 2, minH: 2 }}
             >
-                <div className="wrap">
-                    <h3>{item.GridItemName}</h3>
-                    <Button variant="primary">Go somewhere 5</Button>
-                </div>
+                <GridItem info={item} />
             </div>
         ));
 
@@ -81,9 +84,40 @@ const Grid = (props) => {
             <>
                 <ErrorDisplayer error={error} />
 
-                <ResponsiveLocalStorageLayout>
-                    {GridFormedList}
-                </ResponsiveLocalStorageLayout>
+                <div class="d-flex">
+                    <h1>{data.payload.grid.GridName}</h1>
+
+                    <div class="ml-auto my-auto">
+                        <Link
+                            href={{
+                                pathname: "/grids/[id]/edit",
+                                query: { id: props.GridID },
+                            }}
+                        >
+                            <Button
+                                href={"/grids/" + props.GridID + "/edit"}
+                                variant="warning"
+                            >
+                                Edit Grid
+                            </Button>
+                        </Link>{" "}
+                        <Link href={"/grids"}>
+                            <Button href="/grids">All Grids</Button>
+                        </Link>
+                    </div>
+                </div>
+
+                <br />
+
+                {data.payload.items.length > 0 ? (
+                    <ResponsiveLocalStorageLayout>
+                        {GridFormedList}
+                    </ResponsiveLocalStorageLayout>
+                ) : (
+                    <Alert variant="warning">
+                        There are currently 0 items in this grid
+                    </Alert>
+                )}
             </>
         );
     } else {
@@ -104,18 +138,7 @@ export default function Main() {
     const { id } = router.query;
 
     return (
-        <Layout title="Cues">
-            <h1>Grids</h1>
-
-            <Link
-                href={{
-                    pathname: "/grids/[id]/edit",
-                    query: { id: id },
-                }}
-            >
-                Edit
-            </Link>
-
+        <Layout title="Grids">
             <Grid GridID={id} />
         </Layout>
     );
