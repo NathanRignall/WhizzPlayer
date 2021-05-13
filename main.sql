@@ -18,6 +18,47 @@ CREATE TABLE Cues (
     CONSTRAINT fk_Cues_Tracks_TrackID FOREIGN KEY (TrackID) REFERENCES Tracks(TrackID) ON DELETE CASCADE
 );
 
+CREATE TABLE Grids (
+	GridID BIGINT NOT NULL UNIQUE,
+	GridName varchar(255) NOT NULL,
+    Created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	Modified DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (GridID)
+);
+
+CREATE TABLE GridItems (
+	GridItemID BIGINT NOT NULL UNIQUE,
+	GridItemName varchar(255) NOT NULL,
+	GridItemColour varchar(255) NOT NULL,
+	GridItemLgW int(1),
+	GridItemLgH int(1),
+	GridItemLgX int(1),
+	GridItemLgY int(1),
+	GridItemMdW int(1),
+	GridItemMdH int(1),
+	GridItemMdX int(1),
+	GridItemMdY int(1),
+	GridItemSmW int(1),
+	GridItemSmH int(1),
+	GridItemSmX int(1),
+	GridItemSmY int(1),
+	GridItemXsW int(1),
+	GridItemXsH int(1),
+	GridItemXsX int(1),
+	GridItemXsY int(1),
+	GridItemXxsW int(1),
+	GridItemXxsH int(1),
+	GridItemXxsX int(1),
+	GridItemXxsY int(1),
+	TrackID BIGINT NOT NULL,
+	GridID BIGINT NOT NULL,
+    Created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	Modified DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (GridItemID),
+    CONSTRAINT fk_Grids_Grids_GridID FOREIGN KEY (GridID) REFERENCES Grids(GridID) ON DELETE CASCADE,
+	CONSTRAINT fk_Grids_Tracks_TrackID FOREIGN KEY (TrackID) REFERENCES Tracks(TrackID) ON DELETE CASCADE
+);
+
 CREATE TABLE Tracks (
 	TrackID BIGINT NOT NULL UNIQUE,
     TrackName varchar(255) NOT NULL,
