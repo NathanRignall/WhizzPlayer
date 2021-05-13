@@ -35,7 +35,10 @@ router.delete("/grids/:gridid", auth.edit(), grids.delete); // edit
 
 router.get("/grids/:gridid/items", auth.simple(), grids.itemsList); // view
 router.post("/grids/:gridid/items", auth.edit(), grids.itemsCreate); // edit
-router.put("/grids/:gridid/items/save", auth.edit(), grids.itemsSave); // edit
+router.put("/grids/:gridid/items/:itemid", auth.edit(), grids.itemsEdit); // edit
+router.delete("/grids/:gridid/items/:itemid", auth.edit(), grids.itemsDelete); // edit
+
+router.put("/grids/:gridid/layout", auth.edit(), grids.layout); // edit
 
 // cue routes
 router.get("/cues", auth.simple(), cues.list); // view
