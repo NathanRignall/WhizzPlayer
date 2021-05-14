@@ -106,7 +106,13 @@ class EditGrid extends React.PureComponent {
             })
             .then((response) => {
                 // set the server state to handle errors
-                handleServerResponse(false, false, response.data.message);
+                this.setState({
+                    serverStateLayout: {
+                        show: false,
+                        error: false,
+                        message: response.data.message,
+                    },
+                });
             })
             .catch((error) => {
                 // catch each type of axios error
