@@ -32,6 +32,7 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
                     w: 2,
                     h: 2,
                     name: item.GridItemName,
+                    colour: item.GridItemColour,
                 };
             }),
             newCounter: 0,
@@ -45,25 +46,22 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
     }
 
     createElement(el) {
-        const removeStyle = {
-            position: "absolute",
-            right: "2px",
-            top: 0,
-            cursor: "pointer",
+        let removeStyle = {
+            "background-color": el.colour,
         };
 
         const i = el.i;
         const name = el.name;
 
         return (
-            <div key={i} data-grid={el}>
-                <span className="text">{i}</span>
-
-                <div className="wrap">
-                    <h3>{name}</h3>
-                    <Button disabled variant="primary">
-                        Play
-                    </Button>
+            <div key={i} data-grid={el} style={removeStyle}>
+                <div class="d-flex h-100 align-items-center justify-content-center">
+                    <div>
+                        <h4>{name}</h4>
+                        <Button size="lg" variant="light">
+                            Instant Play
+                        </Button>
+                    </div>
                 </div>
             </div>
         );
@@ -81,6 +79,7 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
                         w: 2,
                         h: 2,
                         name: item.GridItemName,
+                        colour: item.GridItemColour,
                     };
                 }),
             });
@@ -96,19 +95,21 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
                     <div class="ml-auto my-auto">
                         <Link
                             href={{
-                                pathname: "/grids/[id]/test",
+                                pathname: "/grids/[id]/edit",
                                 query: { id: this.props.GridID },
                             }}
                         >
                             <Button
-                                href={"/grids/" + this.props.GridID + "/test"}
-                                variant="warning"
+                                href={"/grids/" + this.props.GridID + "/edit"}
+                                variant="primary"
                             >
                                 Edit Grid
                             </Button>
                         </Link>{" "}
                         <Link href={"/grids"}>
-                            <Button href="/grids">All Grids</Button>
+                            <Button variant="outline-primary" href="/grids">
+                                All Grids
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -140,17 +141,6 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
         );
     }
 }
-function getFromLS(key) {
-    let ls = {};
-    if (global.localStorage) {
-        try {
-            ls = JSON.parse(global.localStorage.getItem("rgl-8")) || {};
-        } catch (e) {
-            /*Ignore*/
-        }
-    }
-    return ls[key];
-}
 
 const GridItem = (props) => (
     <div className="wrap">
@@ -170,15 +160,6 @@ const Grid = (props) => {
     );
 
     if (data) {
-        const GridFormedList = data.payload.items.map((item) => (
-            <div
-                key={item.GridItemID}
-                data-grid={{ w: 2, h: 2, x: 0, y: 0, minW: 2, minH: 2 }}
-            >
-                <GridItem info={item} />
-            </div>
-        ));
-
         return (
             <>
                 <ErrorDisplayer error={error} />
@@ -188,9 +169,7 @@ const Grid = (props) => {
                         Items={data.payload.items}
                         Grid={data.payload.grid}
                         GridID={props.GridID}
-                    >
-                        {GridFormedList}
-                    </ResponsiveLocalStorageLayout>
+                    ></ResponsiveLocalStorageLayout>
                 ) : (
                     <Alert variant="warning">
                         There are currently 0 items in this grid

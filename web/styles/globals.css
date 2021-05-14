@@ -21,7 +21,6 @@ html {
     position: relative;
 }
 .react-grid-item {
-    background-color: #f8f9fa;
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 0.25rem;
     text-align: center;
