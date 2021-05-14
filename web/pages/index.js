@@ -69,7 +69,7 @@ const StatusHeader = () => {
                     Track scheduler system, create cues and upload audio files
                     to schedule audio playback
                 </p>
-                <HaltPlayModal />
+                <HaltPlayModal size="lg" />
             </Container>
         </Jumbotron>
     );

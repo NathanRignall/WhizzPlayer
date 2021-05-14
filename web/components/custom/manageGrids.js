@@ -12,11 +12,16 @@ import axios from "axios";
 
 // axios request urls
 const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
-const CUES_URI = process.env.NEXT_PUBLIC_API_URL + "/app/cues";
+const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/grids";
 
-// form schema
-const schema = yup.object().shape({
-    CueName: yup.string().required(),
+// form schemas
+const schemaGrid = yup.object().shape({
+    gridName: yup.string().required(),
+});
+
+const schemaGridItem = yup.object().shape({
+    GridItemName: yup.string().required(),
+    GridItemColour: yup.string().required(),
     TrackID: yup.string().required(),
 });
 
@@ -110,39 +115,8 @@ const TrackSelector = (props) => {
     );
 };
 
-// cue create date selector
-const DateSelector = ({ ...props }) => {
-    // send details back to formik
-    const { setFieldValue } = useFormikContext();
-
-    // hold the current status
-    const [field] = useField(props);
-
-    // custom button to control date picker
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-        <Button variant="light" type="button" onClick={onClick} ref={ref}>
-            {value ? value : "Set Date and Time"}
-        </Button>
-    ));
-
-    return (
-        <DatePicker
-            {...field}
-            {...props}
-            selected={field.value}
-            dateFormat="MM/dd/yyyy HH:mm:ss"
-            showTimeInput
-            todayButton="Today"
-            customInput={<ExampleCustomInput />}
-            onChange={(val) => {
-                setFieldValue(field.name, val);
-            }}
-        />
-    );
-};
-
-// full create cue modal
-export const CueCreateModal = (props) => {
+// full create grid modal
+export const GridCreateModal = (props) => {
     // contain the state of the modal
     const [show, setShow] = useState(false);
 
@@ -162,22 +136,16 @@ export const CueCreateModal = (props) => {
         setServerState({ show, error, message });
     };
 
-    // handle a from submit to create cue
+    // handle a from submit to create grid
     const handleOnSubmit = (values, actions) => {
-        // create the time object
-        const time = new Date(values.PlayTime);
-        time.setSeconds(0);
-        // create the json object to post lcue
+        // create the json object to post grid
         const json = JSON.stringify({
-            CueName: values.CueName,
-            TrackID: values.TrackID,
-            PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
-            Enabled: values.Enabled,
+            GridName: values.gridName,
         });
 
-        // axios post create cue
+        // axios post create user
         axios
-            .post(CUES_URI, json, {
+            .post(GRIDS_URI, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -186,8 +154,8 @@ export const CueCreateModal = (props) => {
                 actions.setSubmitting(false);
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                // reload the cue list
-                mutate(CUES_URI);
+                // reload the user list
+                mutate(GRIDS_URI);
                 // close the modal
                 handleClose();
             })
@@ -239,7 +207,7 @@ export const CueCreateModal = (props) => {
     return (
         <>
             <Button variant="primary" onClick={handleShow}>
-                Create Cue
+                Create Grid
             </Button>
 
             <Modal
@@ -251,12 +219,9 @@ export const CueCreateModal = (props) => {
                 keyboard={false}
             >
                 <Formik
-                    validationSchema={schema}
+                    validationSchema={schemaGrid}
                     initialValues={{
-                        CueName: "",
-                        TrackID: "",
-                        PlayTime: new Date(),
-                        Enabled: true,
+                        gridName: "",
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -269,17 +234,336 @@ export const CueCreateModal = (props) => {
                     }) => (
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header className="bg-success text-white">
-                                <Modal.Title>Create Cue</Modal.Title>
+                                <Modal.Title>Create Grid</Modal.Title>
                             </Modal.Header>
 
                             <Modal.Body>
-                                {/* cue name group */}
+                                {/* grid name group */}
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
-                                        name="CueName"
-                                        placeholder="Enter CueName"
-                                        value={values.CueName}
+                                        name="gridName"
+                                        placeholder="Enter Grid Name"
+                                        value={values.gridName}
+                                        onChange={handleChange}
+                                        isInvalid={errors.gridName}
+                                        autocomplete="nickname"
+                                    />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.displayName}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+
+                                {/* display errors to the user */}
+                                {serverState.show && (
+                                    <Alert
+                                        variant={
+                                            !serverState.error
+                                                ? "warning"
+                                                : "danger"
+                                        }
+                                    >
+                                        {serverState.message}
+                                    </Alert>
+                                )}
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                {/* Close Modal button*/}
+                                <Button
+                                    variant="secondary"
+                                    onClick={handleClose}
+                                >
+                                    Close
+                                </Button>
+
+                                {/* Submit button*/}
+                                {isSubmitting ? (
+                                    <Button type="submit" disabled>
+                                        <Spinner
+                                            as="span"
+                                            animation="border"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                            className="mr-2"
+                                        />
+                                        Loading...
+                                    </Button>
+                                ) : (
+                                    <Button type="submit">Create</Button>
+                                )}
+                            </Modal.Footer>
+                        </Form>
+                    )}
+                </Formik>
+            </Modal>
+        </>
+    );
+};
+
+// full delete grid modal
+export function GridDeleteModal(props) {
+    // contain the state of the modal
+    const [show, setShow] = useState(false);
+
+    // set the state of the modal
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    // satus of the form requests
+    const [serverState, setServerState] = useState({
+        show: false,
+        error: false,
+        message: "none",
+    });
+
+    // set the server state from a response
+    const handleServerResponse = (show, error, message) => {
+        setServerState({ show, error, message });
+    };
+
+    // handle delete grid
+    const deleteGrid = () => {
+        // axios delete grid
+        axios
+            .delete(`${GRIDS_URI}/${props.GridID}`, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
+            .then((response) => {
+                // set the server state to handle errors
+                handleServerResponse(false, false, response.data.message);
+                // reload the grid list
+                mutate(GRIDS_URI);
+                // close the modal
+                handleClose();
+            })
+            .catch(function (error) {
+                // catch each type of axios error
+                if (error.response) {
+                    if (error.response.status == 500) {
+                        // check if a server error
+                        handleServerResponse(
+                            true,
+                            true,
+                            error.response.data.message
+                        );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
+                    } else {
+                        // check if a user error
+                        handleServerResponse(
+                            true,
+                            false,
+                            error.response.data.message
+                        );
+                    }
+                } else if (error.request) {
+                    // check if a request error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error sending request to server"
+                    );
+                } else {
+                    // check if a browser error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error in browser request"
+                    );
+                }
+            });
+    };
+
+    return (
+        <>
+            <Button variant="danger" onClick={handleShow}>
+                Delete Grid
+            </Button>
+
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                size="md"
+                centered={true}
+                keyboard={false}
+            >
+                <Modal.Header className="bg-danger text-white">
+                    <Modal.Title>Are you sure?</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    Are you sure you would like to delete the grid "
+                    {props.info.GridName}"
+                    <div className="pt-2">
+                        {/* display errors to the user */}
+                        {serverState.show && (
+                            <Alert
+                                variant={
+                                    !serverState.error ? "warning" : "danger"
+                                }
+                            >
+                                {serverState.message}
+                            </Alert>
+                        )}
+                    </div>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    {/* Close Modal button*/}
+                    <Button variant="secondary" onClick={handleClose}>
+                        Cancel
+                    </Button>
+
+                    {/* Delete button*/}
+                    <Button variant="danger" onClick={deleteGrid}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </>
+    );
+}
+
+// full create grid item modal
+export const GridItemCreateModal = (props) => {
+    // contain the state of the modal
+    const [show, setShow] = useState(false);
+
+    // set the state of the modal
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    // satus of the form requests
+    const [serverState, setServerState] = useState({
+        show: false,
+        error: false,
+        message: "none",
+    });
+
+    // set the server state from a response
+    const handleServerResponse = (show, error, message) => {
+        setServerState({ show, error, message });
+    };
+
+    // handle a from submit to create grid item
+    const handleOnSubmit = (values, actions) => {
+        // create the json object to post lcue
+        const json = JSON.stringify({
+            GridItemName: values.GridItemName,
+            GridItemColour: values.GridItemColour,
+            TrackID: values.TrackID,
+        });
+
+        // axios post create cue
+        axios
+            .post(`${GRIDS_URI}/${props.GridID}/items`, json, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
+            .then((response) => {
+                // set loading to false
+                actions.setSubmitting(false);
+                // set the server state to handle errors
+                handleServerResponse(false, false, response.data.message);
+                // reload the cue list
+                mutate(`${GRIDS_URI}/${props.GridID}/items`);
+                // close the modal
+                handleClose();
+            })
+            .catch(function (error) {
+                // catch each type of axios error
+                if (error.response) {
+                    if (error.response.status == 500) {
+                        // check if a server error
+                        handleServerResponse(
+                            true,
+                            true,
+                            error.response.data.message
+                        );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
+                    } else {
+                        // check if a user error
+                        handleServerResponse(
+                            true,
+                            false,
+                            error.response.data.message
+                        );
+                    }
+                    actions.setSubmitting(false);
+                    // set loading to false
+                } else if (error.request) {
+                    // check if a request error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error sending request to server"
+                    );
+                    actions.setSubmitting(false);
+                    // set loading to false
+                } else {
+                    // check if a browser error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error in browser request"
+                    );
+                    actions.setSubmitting(false);
+                    // set loading to false
+                }
+            });
+    };
+
+    return (
+        <>
+            <Button variant="primary" onClick={handleShow}>
+                Add Grid Item
+            </Button>
+
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                size="lg"
+                centered={true}
+                keyboard={false}
+            >
+                <Formik
+                    validationSchema={schemaGridItem}
+                    initialValues={{
+                        GridItemName: "",
+                        GridItemColour: "#fefefe",
+                        TrackID: "",
+                    }}
+                    onSubmit={handleOnSubmit}
+                >
+                    {({
+                        handleSubmit,
+                        handleChange,
+                        values,
+                        errors,
+                        isSubmitting,
+                    }) => (
+                        <Form noValidate onSubmit={handleSubmit}>
+                            <Modal.Header className="bg-success text-white">
+                                <Modal.Title>Create Grid Item</Modal.Title>
+                            </Modal.Header>
+
+                            <Modal.Body>
+                                {/* grid name group */}
+                                <Form.Group controlId="validationFormik01">
+                                    <Form.Control
+                                        type="text"
+                                        name="GridItemName"
+                                        placeholder="Enter Grid Item Name"
+                                        value={values.GridItemName}
                                         onChange={handleChange}
                                         autoComplete="off"
                                     />
@@ -288,30 +572,36 @@ export const CueCreateModal = (props) => {
                                 </Form.Group>
 
                                 {/* track selector */}
-                                <Form.Group controlId="validationFormik05">
+                                <Form.Group controlId="validationFormik02">
                                     <TrackSelector name="TrackID" />
 
                                     {errors.TrackID}
                                 </Form.Group>
 
-                                {/* cue time group */}
-                                <Form.Group controlId="validationFormik02">
-                                    <DateSelector name="PlayTime" />
-
-                                    {errors.PlayTime}
-                                </Form.Group>
-
-                                {/* enabled group */}
+                                {/* colour group */}
                                 <Form.Group controlId="validationFormik03">
-                                    <Form.Check
-                                        name="Enabled"
-                                        type="switch"
-                                        label="Enabled"
-                                        checked={values.Enabled}
-                                        value={values.Enabled}
+                                    <Form.Control
+                                        as="select"
+                                        name="GridItemColour"
+                                        value={values.GridItemColour}
                                         onChange={handleChange}
-                                        isInvalid={errors.Enabled}
-                                    />
+                                        custom
+                                    >
+                                        <option value="#fefefe" label="Light" />
+                                        <option value="#d6d8d9" label="Dark" />
+                                        <option value="#f8d7da" label="Red" />
+                                        <option
+                                            value="#fff3cd"
+                                            label="Yellow"
+                                        />
+                                        <option value="#d4edda" label="Green" />
+                                        <option value="#d1ecf1" label="Cyan" />
+                                        <option value="#cce5ff" label="Blue" />
+                                        <option
+                                            value="#d8d8f8"
+                                            label="Purple"
+                                        />
+                                    </Form.Control>
                                 </Form.Group>
 
                                 <div className="pt-2">
@@ -364,244 +654,8 @@ export const CueCreateModal = (props) => {
     );
 };
 
-// full edit cue modal
-export function CueEditModal(props) {
-    // contain the state of the modal
-    const [show, setShow] = useState(false);
-
-    // set the state of the modal
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-    // satus of the form requests
-    const [serverState, setServerState] = useState({
-        show: false,
-        error: false,
-        message: "none",
-    });
-
-    // set the server state from a response
-    const handleServerResponse = (show, error, message) => {
-        setServerState({ show, error, message });
-    };
-
-    // handle a from submit to create cue
-    const handleOnSubmit = (values, actions) => {
-        // create the time object
-        const time = new Date(values.PlayTime);
-        time.setSeconds(0);
-        // create the json object to post lcue
-        const json = JSON.stringify({
-            CueName: values.CueName,
-            TrackID: values.TrackID,
-            PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
-            Enabled: values.Enabled,
-        });
-
-        // axios post edit cue
-        axios
-            .put(`${CUES_URI}/${props.info.CueID}`, json, {
-                withCredentials: true,
-                headers: { "Content-Type": "application/json" },
-            })
-            .then((response) => {
-                // set loading to false
-                actions.setSubmitting(false);
-                // set the server state to handle errors
-                handleServerResponse(false, false, response.data.message);
-                // reload the cue list
-                mutate(CUES_URI);
-                // close the modal
-                handleClose();
-            })
-            .catch(function (error) {
-                // catch each type of axios error
-                if (error.response) {
-                    if (error.response.status == 500) {
-                        // check if a server error
-                        handleServerResponse(
-                            true,
-                            true,
-                            error.response.data.message
-                        );
-                    } else if (error.response.status == 502) {
-                        // check if api is offline
-                        handleServerResponse(true, true, "Error fetching api");
-                    } else {
-                        // check if a user error
-                        handleServerResponse(
-                            true,
-                            false,
-                            error.response.data.message
-                        );
-                    }
-                    actions.setSubmitting(false);
-                    // set loading to false
-                } else if (error.request) {
-                    // check if a request error
-                    handleServerResponse(
-                        true,
-                        true,
-                        "Error sending request to server"
-                    );
-                    actions.setSubmitting(false);
-                    // set loading to false
-                } else {
-                    // check if a browser error
-                    handleServerResponse(
-                        true,
-                        true,
-                        "Error in browser request"
-                    );
-                    actions.setSubmitting(false);
-                    // set loading to false
-                }
-            });
-    };
-
-    return (
-        <>
-            <Button variant="primary" onClick={handleShow}>
-                Edit Cue
-            </Button>
-
-            <Modal
-                show={show}
-                onHide={handleClose}
-                backdrop="static"
-                size="lg"
-                centered={true}
-                keyboard={false}
-            >
-                <Formik
-                    validationSchema={schema}
-                    initialValues={{
-                        CueName: props.info.CueName,
-                        TrackID: "",
-                        PlayTime: new Date(props.info.PlayTime),
-                        Enabled: props.info.Enabled ? true : false,
-                    }}
-                    onSubmit={handleOnSubmit}
-                >
-                    {({
-                        handleSubmit,
-                        handleChange,
-                        values,
-                        errors,
-                        isSubmitting,
-                    }) => (
-                        <Form noValidate onSubmit={handleSubmit}>
-                            <Modal.Header className="bg-primary text-white">
-                                <Modal.Title>
-                                    Edit Cue: "{props.info.CueName}"
-                                </Modal.Title>
-                            </Modal.Header>
-
-                            <Modal.Body>
-                                <Form.Group controlId="validationFormik01">
-                                    {/* cue name group */}
-                                    <Form.Control
-                                        type="text"
-                                        name="CueName"
-                                        placeholder="Enter CueName"
-                                        value={values.CueName}
-                                        onChange={handleChange}
-                                        autoComplete="off"
-                                    />
-
-                                    {errors.CueName}
-                                </Form.Group>
-
-                                {/* track selector */}
-                                <Form.Group controlId="validationFormik05">
-                                    <TrackSelector
-                                        name="TrackID"
-                                        type="edit"
-                                        DefaultTrackName={props.info.TrackName}
-                                        DefaultTrackID={props.info.TrackID}
-                                    />
-
-                                    {errors.TrackID}
-                                </Form.Group>
-
-                                {/* cue time group */}
-                                <Form.Group controlId="validationFormik02">
-                                    <DateSelector name="PlayTime" />
-
-                                    {errors.PlayTime}
-                                </Form.Group>
-
-                                {/* repeats group */}
-                                <Form.Group controlId="validationFormik03">
-                                    <Form.Check
-                                        name="Enabled"
-                                        type="switch"
-                                        label="Enabled"
-                                        checked={values.Enabled}
-                                        value={values.Enabled}
-                                        onChange={handleChange}
-                                        isInvalid={errors.Enabled}
-                                    />
-                                </Form.Group>
-
-                                <div className="pt-2">
-                                    {/* display errors to the user */}
-                                    {serverState.show && (
-                                        <Alert
-                                            variant={
-                                                !serverState.error
-                                                    ? "warning"
-                                                    : "danger"
-                                            }
-                                        >
-                                            {serverState.message}
-                                        </Alert>
-                                    )}
-                                </div>
-                            </Modal.Body>
-
-                            <Modal.Footer>
-                                {/* Close Modal button*/}
-                                <Button
-                                    variant="secondary"
-                                    onClick={handleClose}
-                                >
-                                    Close
-                                </Button>
-
-                                {/* Submit button*/}
-                                {isSubmitting ? (
-                                    <Button
-                                        type="submit"
-                                        variant="success"
-                                        disabled
-                                    >
-                                        <Spinner
-                                            as="span"
-                                            animation="border"
-                                            size="sm"
-                                            role="status"
-                                            aria-hidden="true"
-                                            className="mr-2"
-                                        />
-                                        Loading...
-                                    </Button>
-                                ) : (
-                                    <Button variant="success" type="submit">
-                                        Apply Changes
-                                    </Button>
-                                )}
-                            </Modal.Footer>
-                        </Form>
-                    )}
-                </Formik>
-            </Modal>
-        </>
-    );
-}
-
-// full delete cue modal
-export function CueDeleteModal(props) {
+// full delete grid item modal
+export function GridItemDeleteModal(props) {
     // contain the state of the modal
     const [show, setShow] = useState(false);
 
@@ -625,15 +679,18 @@ export function CueDeleteModal(props) {
     const deleteCue = () => {
         // axios delete cue
         axios
-            .delete(`${CUES_URI}/${props.info.CueID}`, {
-                withCredentials: true,
-                headers: { "Content-Type": "application/json" },
-            })
+            .delete(
+                `${GRIDS_URI}/${props.GridID}/items/${props.info.GridItemID}`,
+                {
+                    withCredentials: true,
+                    headers: { "Content-Type": "application/json" },
+                }
+            )
             .then((response) => {
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
                 // reload the cue list
-                mutate(CUES_URI);
+                mutate(`${GRIDS_URI}/${props.GridID}/items`);
                 // close the modal
                 handleClose();
             })
@@ -679,7 +736,7 @@ export function CueDeleteModal(props) {
     return (
         <>
             <Button variant="danger" onClick={handleShow}>
-                Delete Cue
+                Delete Grid Item
             </Button>
 
             <Modal
@@ -695,8 +752,8 @@ export function CueDeleteModal(props) {
                 </Modal.Header>
 
                 <Modal.Body>
-                    Are you sure you would like to delete the cue "
-                    {props.info.CueName}"
+                    Are you sure you would like to delete the grid item "
+                    {props.info.GridItemName}"
                     <div className="pt-2">
                         {/* display errors to the user */}
                         {serverState.show && (

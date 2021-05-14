@@ -1,4 +1,5 @@
 import Layout from "../components/layouts/main";
+import { useAppContext } from "../components/context/state";
 
 import useSWR from "swr";
 
@@ -59,6 +60,9 @@ const CueInfoItem = (props) => (
 
 // whole large card for displaying all the information about a cue
 const Cue = (props) => {
+    // global app context
+    const context = useAppContext();
+
     const date = new Date(props.info.PlayTime);
     const dateString = date.toString();
     return (
@@ -71,16 +75,14 @@ const Cue = (props) => {
                             : "bg-secondary text-white"
                     }
                 >
-                    <h4>{props.info.CueName}</h4>
+                    <h4 className="d-inline">{props.info.CueName}</h4>
 
-                    <div>
-                        <Badge
-                            className="mb-2"
-                            variant={props.info.Enabled ? "light" : "dark"}
-                        >
-                            {props.info.Enabled ? "Enabled" : "Disabled"}
-                        </Badge>
-                    </div>
+                    <Badge
+                        className="ml-2"
+                        variant={props.info.Enabled ? "light" : "dark"}
+                    >
+                        {props.info.Enabled ? "Enabled" : "Disabled"}
+                    </Badge>
                 </Card.Header>
 
                 <Card.Body>
@@ -119,10 +121,12 @@ const Cue = (props) => {
 
                     <br />
 
-                    <div className="text-right">
-                        <CueEditModal info={props.info} />{" "}
-                        <CueDeleteModal info={props.info} />
-                    </div>
+                    {context.Access != 0 ? (
+                        <div className="text-right">
+                            <CueEditModal info={props.info} />{" "}
+                            <CueDeleteModal info={props.info} />
+                        </div>
+                    ) : null}
                 </Card.Body>
             </Card>
             <br />
@@ -166,18 +170,32 @@ const CueList = (props) => {
     }
 };
 
+const CreateCue = () => {
+    // global app context
+    const context = useAppContext();
+
+    return (
+        <>
+            {context.Access != 0 ? (
+                <div class="ml-auto my-auto">
+                    <CueCreateModal />
+                </div>
+            ) : null}
+        </>
+    );
+};
+
 // main app function
 export default function Main() {
     return (
         <Layout title="Cues">
-            <h1>Cue List</h1>
+            <div class="d-flex">
+                <h1>Cue List</h1>
 
-            <div>
-                <CueCreateModal />{" "}
+                <CreateCue />
             </div>
 
             <br />
-
             <CueList />
         </Layout>
     );

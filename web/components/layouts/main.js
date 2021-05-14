@@ -1,3 +1,5 @@
+import { AppWrapper } from "../context/state";
+
 import CoreHeader from "../parts/headers";
 import CoreNavbar from "../parts/navbars";
 import CoreFooter from "../parts/footers";
@@ -28,13 +30,15 @@ const Layout = (props) => {
             return <Loader />;
         } else {
             return (
-                <div>
-                    <CoreHeader title={props.title} />
-                    <CoreNavbar info={data.payload} />
-                    <br />
-                    <Container>{props.children}</Container>
-                    <CoreFooter />
-                </div>
+                <AppWrapper data={data.payload}>
+                    <div>
+                        <CoreHeader title={props.title} />
+                        <CoreNavbar />
+                        <br />
+                        <Container>{props.children}</Container>
+                        <CoreFooter />
+                    </div>
+                </AppWrapper>
             );
         }
     } else {

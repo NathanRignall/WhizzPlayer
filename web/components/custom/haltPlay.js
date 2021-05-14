@@ -90,7 +90,7 @@ export default function HaltPlayModal(props) {
 
     return (
         <>
-            <Button variant="danger" size="lg" onClick={handleShow}>
+            <Button variant="danger" size={props.size} onClick={handleShow}>
                 Halt Playback
             </Button>
 

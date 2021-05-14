@@ -1,8 +1,13 @@
+import { useAppContext } from "../context/state";
+
 import Link from "next/link";
 
 import { Navbar, Nav, NavDropdown, Button } from "react-bootstrap";
 
 export default function CoreNavbar(props) {
+    // global app context
+    const context = useAppContext();
+
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
             <Link href="/">
@@ -17,6 +22,10 @@ export default function CoreNavbar(props) {
                         <Nav.Link href="/">Home</Nav.Link>
                     </Link>
 
+                    <Link href="/grids">
+                        <Nav.Link href="/grids">Grids</Nav.Link>
+                    </Link>
+
                     <Link href="/cues">
                         <Nav.Link href="/cues">Cues</Nav.Link>
                     </Link>
@@ -25,7 +34,7 @@ export default function CoreNavbar(props) {
                         <Nav.Link href="/tracks">Tracks</Nav.Link>
                     </Link>
 
-                    {props.info.Access == 10 ? (
+                    {context.Access == 10 ? (
                         <NavDropdown
                             title="Settings"
                             id="collasible-nav-dropdown"
@@ -40,7 +49,7 @@ export default function CoreNavbar(props) {
                 </Nav>
 
                 <Nav>
-                    <Nav.Link href="/">{props.info.DisplayName}</Nav.Link>{" "}
+                    <Nav.Link href="/">{context.DisplayName}</Nav.Link>{" "}
                     <Link href="/logout">
                         <Button variant="outline-light">Logout</Button>
                     </Link>
