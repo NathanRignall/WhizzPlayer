@@ -442,7 +442,7 @@ exports.itemsDelete = function (req, res, next) {
 
 exports.layout = async function (req, res, next) {
     // get req params
-    var GridID = req.params.gridID;
+    var GridID = req.params.gridid;
     // get the info from json
     var json = req.body;
     // set the vars from post
@@ -450,37 +450,41 @@ exports.layout = async function (req, res, next) {
     // check the fields are present
     if (Layout) {
         // update the laylout
-        db.query("UPDATE Grids SET Layout = ? WHERE GridID = ?", [Layout, GridID], function (error, results, fields) {
-            // check if sucessfull
-            if (!error) {
-                // retun the correct vars
-                if (results.affectedRows > 0) {
+        db.query(
+            "UPDATE Grids SET Layout = ? WHERE GridID = ?",
+            [JSON.stringify(Layout), GridID],
+            function (error, results, fields) {
+                // check if sucessfull
+                if (!error) {
                     // retun the correct vars
-                    res.status(200).json({
-                        message: "okay",
-                        reqid: res.locals.reqid,
-                    });
+                    if (results.affectedRows > 0) {
+                        // retun the correct vars
+                        res.status(200).json({
+                            message: "okay",
+                            reqid: res.locals.reqid,
+                        });
+                    } else {
+                        // retun the correct vars
+                        res.status(400).json({
+                            message: "Grid not found",
+                            reqid: res.locals.reqid,
+                        });
+                    }
                 } else {
                     // retun the correct vars
-                    res.status(400).json({
-                        message: "Grid not found",
+                    res.locals.errors.push({
+                        location: "/api/account/grids.js/layout-1",
+                        code: error.code,
+                        from: "mysql",
+                    });
+                    res.status(500).json({
+                        message: "Server error",
+                        errors: res.locals.errors,
                         reqid: res.locals.reqid,
                     });
                 }
-            } else {
-                // retun the correct vars
-                res.locals.errors.push({
-                    location: "/api/account/grids.js/layout-1",
-                    code: error.code,
-                    from: "mysql",
-                });
-                res.status(500).json({
-                    message: "Server error",
-                    errors: res.locals.errors,
-                    reqid: res.locals.reqid,
-                });
             }
-        });
+        );
     } else {
         // retun the correct vars
         res.status(400).json({

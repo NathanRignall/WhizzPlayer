@@ -1,18 +1,25 @@
 import Layout from "../../../components/layouts/main";
 
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import React from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
 import { WidthProvider, Responsive } from "react-grid-layout";
 import _ from "lodash";
+import axios from "axios";
 
 import { fetcher } from "../../../components/common/functions";
-import { ErrorDisplayer } from "../../../components/common/errors";
-import { GridItemCreateModal } from "../../../components/custom/manageGrids";
+import { ErrorDisplayer, StickyError } from "../../../components/common/errors";
+import {
+    GridItemCreateModal,
+    GridItemDeleteModal,
+} from "../../../components/custom/manageGrids";
 
 import { Card, Button, Nav, Spinner } from "react-bootstrap";
+
+// axios request urls
+const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/grids";
 
 function getFromLS(key) {
     let ls = {};
@@ -55,11 +62,13 @@ class AddRemoveLayout extends React.PureComponent {
                 };
             }),
             newCounter: 0,
-            layouts: JSON.parse(JSON.stringify(getFromLS("layouts") || {})),
+            layouts: JSON.parse(props.Grid.Layout),
+            serverStateLayout: {
+                show: false,
+                error: false,
+                message: "none",
+            },
         };
-
-        this.onAddItem = this.onAddItem.bind(this);
-        this.onBreakpointChange = this.onBreakpointChange.bind(this);
     }
 
     componentDidUpdate(prevProps) {
@@ -85,8 +94,83 @@ class AddRemoveLayout extends React.PureComponent {
     }
 
     onLayoutChange(layout, layouts) {
-        saveToLS("layouts", layouts);
+        //saveToLS("layouts", layouts);
         this.setState({ layouts: layouts });
+        // create the json object to post layout
+        const json = JSON.stringify({
+            layout: layouts,
+        });
+        // axios put request to save layout
+        axios
+            .put(`${GRIDS_URI}/${this.props.GridID}/layout`, json, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
+            .then((response) => {
+                console.log("reload");
+                // set the server state to handle errors
+                this.setState({
+                    serverStateLayout: {
+                        show: false,
+                        error: false,
+                        message: response.data.message,
+                    },
+                });
+                // reload
+                mutate(`${GRIDS_URI}/${this.props.GridID}/items`);
+            })
+            .catch((error) => {
+                // catch each type of axios error
+                if (error.response) {
+                    if (error.response.status == 500) {
+                        // check if a server error
+                        this.setState({
+                            serverStateLayout: {
+                                show: true,
+                                error: true,
+                                message: error.response.data.message,
+                            },
+                        });
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        this.setState({
+                            serverStateLayout: {
+                                show: true,
+                                error: true,
+                                message: "Error fetching api",
+                            },
+                        });
+                    } else {
+                        // check if a user error
+                        this.setState({
+                            serverStateLayout: {
+                                show: true,
+                                error: false,
+                                message: error.response.data.message,
+                            },
+                        });
+                    }
+                } else if (error.request) {
+                    // check if a request error
+                    this.setState({
+                        serverStateLayout: {
+                            show: true,
+                            error: true,
+                            message: "Error sending request to server",
+                        },
+                    });
+                } else {
+                    // check if a browser error
+                    this.setState({
+                        serverStateLayout: {
+                            show: true,
+                            error: true,
+                            message: "Error in browser request",
+                        },
+                    });
+                    console.log(error);
+                }
+            });
     }
 
     createElement(el) {
@@ -111,46 +195,14 @@ class AddRemoveLayout extends React.PureComponent {
                     </Button>
                 </div>
 
-                <span
-                    className="remove"
-                    style={removeStyle}
-                    onClick={this.onRemoveItem.bind(this, i)}
-                >
-                    x
+                <span className="remove" style={removeStyle}>
+                    <GridItemDeleteModal
+                        GridID={this.props.GridID}
+                        info={{ GridItemID: i, GridItemName: name }}
+                    />
                 </span>
             </div>
         );
-    }
-
-    onAddItem(id, name) {
-        /*eslint no-console: 0*/
-        console.log("adding" + id);
-        this.setState({
-            // Add a new item. It must have a unique key!
-            items: this.state.items.concat({
-                i: id,
-                x: (this.state.items.length * 2) % (this.state.cols || 12),
-                y: 0,
-                w: 2,
-                h: 2,
-                name: name,
-            }),
-            // Increment the counter to ensure key is always unique.
-            newCounter: this.state.newCounter + 1,
-        });
-    }
-
-    // We're using the cols coming back from this to calculate where to add new items.
-    onBreakpointChange(breakpoint, cols) {
-        this.setState({
-            breakpoint: breakpoint,
-            cols: cols,
-        });
-    }
-
-    onRemoveItem(i) {
-        console.log("removing", i);
-        this.setState({ items: _.reject(this.state.items, { i: i }) });
     }
 
     render() {
@@ -166,17 +218,15 @@ class AddRemoveLayout extends React.PureComponent {
                         />{" "}
                         <Link
                             href={{
-                                pathname: "/grids/[id]/edit",
+                                pathname: "/grids/[id]",
                                 query: { id: this.props.Grid.GridID },
                             }}
                         >
                             <Button
-                                href={
-                                    "/grids/" + this.props.Grid.GridID + "/edit"
-                                }
+                                href={"/grids/" + this.props.Grid.GridID}
                                 variant="success"
                             >
-                                Save Grid
+                                View Grid
                             </Button>
                         </Link>{" "}
                         <Link href={"/grids"}>
@@ -196,10 +246,21 @@ class AddRemoveLayout extends React.PureComponent {
                     onLayoutChange={(layout, layouts) =>
                         this.onLayoutChange(layout, layouts)
                     }
-                    onBreakpointChange={this.onBreakpointChange}
                 >
                     {_.map(this.state.items, (el) => this.createElement(el))}
                 </ResponsiveReactGridLayout>
+
+                {/* display errors to the user */}
+                {this.state.serverStateLayout.show && (
+                    <StickyError
+                        variant={
+                            !this.state.serverStateLayout.error
+                                ? "warning"
+                                : "danger"
+                        }
+                        text={this.state.serverStateLayout.message}
+                    />
+                )}
             </div>
         );
     }
@@ -227,6 +288,7 @@ const Grid = (props) => {
                 <AddRemoveLayout
                     Items={data.payload.items}
                     Grid={data.payload.grid}
+                    GridID={props.GridID}
                 ></AddRemoveLayout>
             </>
         );

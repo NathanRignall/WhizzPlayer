@@ -1,16 +1,21 @@
 import Layout from "../../../components/layouts/main";
 
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import React from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
 import { WidthProvider, Responsive } from "react-grid-layout";
+import _ from "lodash";
+import axios from "axios";
 
 import { fetcher } from "../../../components/common/functions";
-import { ErrorDisplayer } from "../../../components/common/errors";
+import { ErrorDisplayer, StickyError } from "../../../components/common/errors";
 
-import { Card, Button, Nav, Spinner, Alert } from "react-bootstrap";
+import { Card, Button, Nav, Spinner } from "react-bootstrap";
+
+// axios request urls
+const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/grids";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -19,13 +24,95 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
         super(props);
 
         this.state = {
-            layouts: JSON.parse(JSON.stringify(getFromLS("layouts") || {})),
+            items: props.Items.map(function (item, key, list) {
+                return {
+                    i: item.GridItemID.toString(),
+                    x: 0,
+                    y: 0,
+                    w: 2,
+                    h: 2,
+                    name: item.GridItemName,
+                };
+            }),
+            newCounter: 0,
+            layouts: JSON.parse(props.Grid.Layout),
+            serverStateLayout: {
+                show: false,
+                error: false,
+                message: "none",
+            },
         };
+    }
+
+    createElement(el) {
+        const removeStyle = {
+            position: "absolute",
+            right: "2px",
+            top: 0,
+            cursor: "pointer",
+        };
+
+        const i = el.i;
+        const name = el.name;
+
+        return (
+            <div key={i} data-grid={el}>
+                <span className="text">{i}</span>
+
+                <div className="wrap">
+                    <h3>{name}</h3>
+                    <Button disabled variant="primary">
+                        Play
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.Items !== this.props.Items) {
+            console.log("updated items map");
+            this.setState({
+                items: this.props.Items.map(function (item, key, list) {
+                    return {
+                        i: item.GridItemID.toString(),
+                        x: 0,
+                        y: 0,
+                        w: 2,
+                        h: 2,
+                        name: item.GridItemName,
+                    };
+                }),
+            });
+        }
     }
 
     render() {
         return (
             <div>
+                <div class="d-flex">
+                    <h1>{this.props.Grid.GridName}</h1>
+
+                    <div class="ml-auto my-auto">
+                        <Link
+                            href={{
+                                pathname: "/grids/[id]/test",
+                                query: { id: this.props.GridID },
+                            }}
+                        >
+                            <Button
+                                href={"/grids/" + this.props.GridID + "/test"}
+                                variant="warning"
+                            >
+                                Edit Grid
+                            </Button>
+                        </Link>{" "}
+                        <Link href={"/grids"}>
+                            <Button href="/grids">All Grids</Button>
+                        </Link>
+                    </div>
+                </div>
+
                 <ResponsiveReactGridLayout
                     className="layout"
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
@@ -35,8 +122,20 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
                     rowHeight={100}
                     layouts={this.state.layouts}
                 >
-                    {this.props.children}
+                    {_.map(this.state.items, (el) => this.createElement(el))}
                 </ResponsiveReactGridLayout>
+
+                {/* display errors to the user */}
+                {this.state.serverStateLayout.show && (
+                    <StickyError
+                        variant={
+                            !this.state.serverStateLayout.error
+                                ? "warning"
+                                : "danger"
+                        }
+                        text={this.state.serverStateLayout.message}
+                    />
+                )}
             </div>
         );
     }
@@ -84,33 +183,12 @@ const Grid = (props) => {
             <>
                 <ErrorDisplayer error={error} />
 
-                <div class="d-flex">
-                    <h1>{data.payload.grid.GridName}</h1>
-
-                    <div class="ml-auto my-auto">
-                        <Link
-                            href={{
-                                pathname: "/grids/[id]/edit",
-                                query: { id: props.GridID },
-                            }}
-                        >
-                            <Button
-                                href={"/grids/" + props.GridID + "/edit"}
-                                variant="warning"
-                            >
-                                Edit Grid
-                            </Button>
-                        </Link>{" "}
-                        <Link href={"/grids"}>
-                            <Button href="/grids">All Grids</Button>
-                        </Link>
-                    </div>
-                </div>
-
-                <br />
-
                 {data.payload.items.length > 0 ? (
-                    <ResponsiveLocalStorageLayout>
+                    <ResponsiveLocalStorageLayout
+                        Items={data.payload.items}
+                        Grid={data.payload.grid}
+                        GridID={props.GridID}
+                    >
                         {GridFormedList}
                     </ResponsiveLocalStorageLayout>
                 ) : (
