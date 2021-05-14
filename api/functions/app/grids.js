@@ -181,7 +181,7 @@ exports.edit = function (req, res, next) {
 
 exports.delete = function (req, res, next) {
     // get req parms
-    var GridID = req.params.gridID;
+    var GridID = req.params.gridid;
     // delete the grid from db
     db.query("DELETE FROM Grids WHERE GridID = ?", [GridID], function (error, results, fields) {
         // check if sucessfull

@@ -239,7 +239,7 @@ export const CueCreateModal = (props) => {
     return (
         <>
             <Button variant="primary" onClick={handleShow}>
-                Create A Cue
+                Create Cue
             </Button>
 
             <Modal

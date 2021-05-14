@@ -537,7 +537,7 @@ export const GridItemCreateModal = (props) => {
                     validationSchema={schemaGridItem}
                     initialValues={{
                         GridItemName: "",
-                        GridItemColour: "red",
+                        GridItemColour: "#fefefe",
                         TrackID: "",
                     }}
                     onSubmit={handleOnSubmit}
@@ -570,10 +570,36 @@ export const GridItemCreateModal = (props) => {
                                 </Form.Group>
 
                                 {/* track selector */}
-                                <Form.Group controlId="validationFormik05">
+                                <Form.Group controlId="validationFormik02">
                                     <TrackSelector name="TrackID" />
 
                                     {errors.TrackID}
+                                </Form.Group>
+
+                                {/* colour group */}
+                                <Form.Group controlId="validationFormik03">
+                                    <Form.Control
+                                        as="select"
+                                        name="GridItemColour"
+                                        value={values.GridItemColour}
+                                        onChange={handleChange}
+                                        custom
+                                    >
+                                        <option value="#fefefe" label="Light" />
+                                        <option value="#d6d8d9" label="Dark" />
+                                        <option value="#f8d7da" label="Red" />
+                                        <option
+                                            value="#fff3cd"
+                                            label="Yellow"
+                                        />
+                                        <option value="#d4edda" label="Green" />
+                                        <option value="#d1ecf1" label="Cyan" />
+                                        <option value="#cce5ff" label="Blue" />
+                                        <option
+                                            value="#d8d8f8"
+                                            label="Purple"
+                                        />
+                                    </Form.Control>
                                 </Form.Group>
 
                                 <div className="pt-2">

@@ -11,15 +11,17 @@ import axios from "axios";
 
 import { fetcher } from "../../../components/common/functions";
 import { ErrorDisplayer, StickyError } from "../../../components/common/errors";
+import { GridDeleteModal } from "../../../components/custom/manageGrids";
+import HaltPlayModal from "../../../components/custom/haltPlay";
 
-import { Card, Button, Nav, Spinner } from "react-bootstrap";
+import { Alert, Button, Spinner } from "react-bootstrap";
 
 // axios request urls
-const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/grids";
+const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
-class ResponsiveLocalStorageLayout extends React.PureComponent {
+class EditGrid extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -33,9 +35,9 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
                     h: 2,
                     name: item.GridItemName,
                     colour: item.GridItemColour,
+                    trackID: item.TrackID,
                 };
             }),
-            newCounter: 0,
             layouts: JSON.parse(props.Grid.Layout),
             serverStateLayout: {
                 show: false,
@@ -45,31 +47,8 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
         };
     }
 
-    createElement(el) {
-        let removeStyle = {
-            "background-color": el.colour,
-        };
-
-        const i = el.i;
-        const name = el.name;
-
-        return (
-            <div key={i} data-grid={el} style={removeStyle}>
-                <div class="d-flex h-100 align-items-center justify-content-center">
-                    <div>
-                        <h4>{name}</h4>
-                        <Button size="lg" variant="light">
-                            Instant Play
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     componentDidUpdate(prevProps) {
         if (prevProps.Items !== this.props.Items) {
-            console.log("updated items map");
             this.setState({
                 items: this.props.Items.map(function (item, key, list) {
                     return {
@@ -80,19 +59,112 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
                         h: 2,
                         name: item.GridItemName,
                         colour: item.GridItemColour,
+                        trackID: item.TrackID,
                     };
                 }),
             });
         }
     }
 
+    createElement(el) {
+        let removeStyle = {
+            backgroundColor: el.colour,
+        };
+
+        const i = el.i;
+        const name = el.name;
+        const trackID = el.trackID;
+
+        return (
+            <div key={i} data-grid={el} style={removeStyle}>
+                <div class="d-flex h-100 align-items-center justify-content-center">
+                    <div>
+                        <h4>{name}</h4>
+                        <Button
+                            size="lg"
+                            onClick={this.instantPlay.bind(this, trackID)}
+                            variant="light"
+                        >
+                            Instant Play
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    instantPlay(TrackID) {
+        axios
+            .get(`${PLAY_URI}/${TrackID}`, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
+            .then((response) => {
+                // set the server state to handle errors
+                handleServerResponse(false, false, response.data.message);
+            })
+            .catch((error) => {
+                // catch each type of axios error
+                if (error.response) {
+                    if (error.response.status == 500) {
+                        // check if a server error
+                        this.setState({
+                            serverStateLayout: {
+                                show: true,
+                                error: true,
+                                message: error.response.data.message,
+                            },
+                        });
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        this.setState({
+                            serverStateLayout: {
+                                show: true,
+                                error: true,
+                                message: "Error fetching api",
+                            },
+                        });
+                    } else {
+                        // check if a user error
+                        this.setState({
+                            serverStateLayout: {
+                                show: true,
+                                error: false,
+                                message: error.response.data.message,
+                            },
+                        });
+                    }
+                } else if (error.request) {
+                    // check if a request error
+                    this.setState({
+                        serverStateLayout: {
+                            show: true,
+                            error: true,
+                            message: "Error sending request to server",
+                        },
+                    });
+                } else {
+                    // check if a browser error
+                    this.setState({
+                        serverStateLayout: {
+                            show: true,
+                            error: true,
+                            message: "Error in browser request",
+                        },
+                    });
+                    console.log(error);
+                }
+            });
+    }
+
     render() {
         return (
             <div>
-                <div class="d-flex">
+                <div class="d-flex flex-lg-row flex-column">
                     <h1>{this.props.Grid.GridName}</h1>
 
-                    <div class="ml-auto my-auto">
+                    <div className="ml-lg-auto my-auto">
+                        <HaltPlayModal size="md" />{" "}
                         <Link
                             href={{
                                 pathname: "/grids/[id]/edit",
@@ -142,13 +214,6 @@ class ResponsiveLocalStorageLayout extends React.PureComponent {
     }
 }
 
-const GridItem = (props) => (
-    <div className="wrap">
-        <h3>{props.info.GridItemName}</h3>
-        <Button variant="primary">Go somewhere 5</Button>
-    </div>
-);
-
 // main grid loader
 const Grid = (props) => {
     const { data, error } = useSWR(
@@ -164,23 +229,18 @@ const Grid = (props) => {
             <>
                 <ErrorDisplayer error={error} />
 
-                {data.payload.items.length > 0 ? (
-                    <ResponsiveLocalStorageLayout
-                        Items={data.payload.items}
-                        Grid={data.payload.grid}
-                        GridID={props.GridID}
-                    ></ResponsiveLocalStorageLayout>
-                ) : (
-                    <Alert variant="warning">
-                        There are currently 0 items in this grid
-                    </Alert>
-                )}
+                <EditGrid
+                    Items={data.payload.items}
+                    Grid={data.payload.grid}
+                    GridID={props.GridID}
+                ></EditGrid>
             </>
         );
     } else {
         return (
             <>
                 <ErrorDisplayer error={error} />
+
                 <div className="text-center">
                     <Spinner animation="border" />
                 </div>
@@ -194,9 +254,19 @@ export default function Main() {
     const router = useRouter();
     const { id } = router.query;
 
-    return (
-        <Layout title="Grids">
-            <Grid GridID={id} />
-        </Layout>
-    );
+    if (id) {
+        return (
+            <Layout title="Grids">
+                <Grid GridID={id} />
+            </Layout>
+        );
+    } else {
+        return (
+            <Layout title="Grids">
+                <div className="text-center">
+                    <Spinner animation="border" />
+                </div>
+            </Layout>
+        );
+    }
 }

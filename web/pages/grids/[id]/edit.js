@@ -24,7 +24,7 @@ const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/grids";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
-class AddRemoveLayout extends React.PureComponent {
+class ViewGrid extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -37,9 +37,10 @@ class AddRemoveLayout extends React.PureComponent {
                     w: 2,
                     h: 2,
                     name: item.GridItemName,
+                    colour: item.GridItemColour,
+                    trackID: item.TrackID,
                 };
             }),
-            newCounter: 0,
             layouts: JSON.parse(props.Grid.Layout),
             serverStateLayout: {
                 show: false,
@@ -51,7 +52,6 @@ class AddRemoveLayout extends React.PureComponent {
 
     componentDidUpdate(prevProps) {
         if (prevProps.Items !== this.props.Items) {
-            console.log("updated items map");
             this.setState({
                 items: this.props.Items.map(function (item, key, list) {
                     return {
@@ -61,14 +61,44 @@ class AddRemoveLayout extends React.PureComponent {
                         w: 2,
                         h: 2,
                         name: item.GridItemName,
+                        colour: item.GridItemColour,
+                        trackID: item.TrackID,
                     };
                 }),
             });
         }
     }
 
-    resetLayout() {
-        this.setState({ layouts: {} });
+    createElement(el) {
+        const removeStyle = {
+            position: "absolute",
+            right: "2px",
+            top: 0,
+            cursor: "pointer",
+        };
+
+        const i = el.i;
+        const name = el.name;
+
+        return (
+            <div key={i} data-grid={el}>
+                <div class="my-auto">
+                    <div className="wrap">
+                        <h3>{name}</h3>
+                        <Button disabled variant="primary">
+                            Play
+                        </Button>
+                    </div>
+                </div>
+
+                <span className="remove" style={removeStyle}>
+                    <GridItemDeleteModal
+                        GridID={this.props.GridID}
+                        info={{ GridItemID: i, GridItemName: name }}
+                    />
+                </span>
+            </div>
+        );
     }
 
     onLayoutChange(layout, layouts) {
@@ -85,7 +115,6 @@ class AddRemoveLayout extends React.PureComponent {
                 headers: { "Content-Type": "application/json" },
             })
             .then((response) => {
-                console.log("reload");
                 // set the server state to handle errors
                 this.setState({
                     serverStateLayout: {
@@ -149,38 +178,6 @@ class AddRemoveLayout extends React.PureComponent {
                     console.log(error);
                 }
             });
-    }
-
-    createElement(el) {
-        const removeStyle = {
-            position: "absolute",
-            right: "2px",
-            top: 0,
-            cursor: "pointer",
-        };
-
-        const i = el.i;
-        const name = el.name;
-
-        return (
-            <div key={i} data-grid={el}>
-                <div class="my-auto">
-                    <div className="wrap">
-                        <h3>{name}</h3>
-                        <Button disabled variant="primary">
-                            Play
-                        </Button>
-                    </div>
-                </div>
-
-                <span className="remove" style={removeStyle}>
-                    <GridItemDeleteModal
-                        GridID={this.props.GridID}
-                        info={{ GridItemID: i, GridItemName: name }}
-                    />
-                </span>
-            </div>
-        );
     }
 
     render() {
@@ -265,11 +262,11 @@ const Grid = (props) => {
             <>
                 <ErrorDisplayer error={error} />
 
-                <AddRemoveLayout
+                <ViewGrid
                     Items={data.payload.items}
                     Grid={data.payload.grid}
                     GridID={props.GridID}
-                ></AddRemoveLayout>
+                ></ViewGrid>
             </>
         );
     } else {
