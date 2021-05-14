@@ -17,7 +17,7 @@ const GridNavigation = (props) => {
 
     if (data) {
         const GridNavItems = data.payload.map((item) => (
-            <div>
+            <div className="pb-2">
                 <Link
                     href={{
                         pathname: "/grids/[id]",
@@ -26,13 +26,13 @@ const GridNavigation = (props) => {
                 >
                     <Button
                         href={"/grids/" + item.GridID}
-                        variant="primary"
+                        variant="outline-primary"
+                        size="lg"
                         block
                     >
                         {item.GridName}
                     </Button>
                 </Link>
-                <br />
             </div>
         ));
 

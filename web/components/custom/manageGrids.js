@@ -345,7 +345,7 @@ export const GridItemCreateModal = (props) => {
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
                 // reload the cue list
-                mutate(GRIDS_URI);
+                mutate(`${GRIDS_URI}/${props.GridID}/items`);
                 // close the modal
                 handleClose();
             })
