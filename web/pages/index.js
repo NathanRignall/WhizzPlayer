@@ -225,7 +225,7 @@ const StatusArea = () => (
 // main app function
 export default function Main() {
     return (
-        <Layout title="Tracks">
+        <Layout title="Home">
             <StatusHeader />
 
             <StatusArea />

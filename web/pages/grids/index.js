@@ -11,7 +11,7 @@ import {
     GridDeleteModal,
 } from "../../components/custom/manageGrids";
 
-import { Card, Button, Nav, Spinner, Row, Col } from "react-bootstrap";
+import { Card, Button, Nav, Spinner, Row, Col, Alert } from "react-bootstrap";
 
 // card for displyaing info about a grid
 const Grid = (props) => {
@@ -90,7 +90,7 @@ const GridList = (props) => {
                     <Row>{GridsFormedList}</Row>
                 ) : (
                     <Alert variant="warning">
-                        There are currently 0 Cues in the system.
+                        There are currently 0 Grids in the system.
                     </Alert>
                 )}
             </>

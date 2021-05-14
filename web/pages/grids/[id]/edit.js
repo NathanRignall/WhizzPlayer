@@ -82,7 +82,7 @@ class ViewGrid extends React.PureComponent {
 
         return (
             <div key={i} data-grid={el}>
-                <div class="my-auto">
+                <div className="my-auto">
                     <h3>{name}</h3>
                     <Button disabled variant="primary">
                         Play
@@ -181,10 +181,10 @@ class ViewGrid extends React.PureComponent {
     render() {
         return (
             <div>
-                <div class="d-flex flex-lg-row flex-column">
+                <div className="d-flex flex-lg-row flex-column">
                     <h1>{this.props.Grid.GridName}</h1>
 
-                    <div class="ml-lg-auto my-auto">
+                    <div className="ml-lg-auto my-auto">
                         <GridItemCreateModal
                             AddItem={this.onAddItem}
                             GridID={this.props.Grid.GridID}

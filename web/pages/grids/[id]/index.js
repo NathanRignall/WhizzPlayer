@@ -77,10 +77,6 @@ class EditGrid extends React.PureComponent {
         };
     }
 
-    componentDidMount() {
-        console.log(this.context); // { name: 'Tania', loggedIn: true }
-    }
-
     componentDidUpdate(prevProps) {
         if (prevProps.Items !== this.props.Items) {
             this.setState({
@@ -111,7 +107,7 @@ class EditGrid extends React.PureComponent {
 
         return (
             <div key={i} data-grid={el} style={removeStyle}>
-                <div class="d-flex h-100 align-items-center justify-content-center">
+                <div className="d-flex h-100 align-items-center justify-content-center">
                     <div>
                         <h4>{name}</h4>
                         <Button
@@ -202,10 +198,10 @@ class EditGrid extends React.PureComponent {
     render() {
         return (
             <div>
-                <div class="d-flex flex-lg-row flex-column">
+                <div className="d-flex flex-lg-row flex-column">
                     <h1>{this.props.Grid.GridName}</h1>
 
-                    <div class="ml-lg-auto my-auto">
+                    <div className="ml-lg-auto my-auto">
                         <AppContext.Consumer>
                             {(context) =>
                                 context.Access != 0 ? (
