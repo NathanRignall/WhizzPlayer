@@ -3,7 +3,11 @@ exports.checkTables = () => {
 };
 
 const checkOtherTables = async function () {
-    checkTracksTable().then(checkCuesTable()).then(checkUsersTable());
+    checkTracksTable()
+        .then(checkCuesTable())
+        .then(checkUsersTable())
+        .then(checkGridsTable())
+        .then(checkGridsItemsTable());
 };
 
 const checkSettingsTable = async () => {
@@ -352,6 +356,213 @@ const checkCuesTable = async () => {
                             }
                         } else {
                             throw "Wrong version cues";
+                        }
+                    }
+                );
+            }
+        }
+    });
+};
+
+const checkGridsTable = async () => {
+    // check the grids table is all okay and create/edit if not
+    db.query("SHOW TABLES LIKE 'Grids'", function (error, results) {
+        const GridsTableVersion = "1";
+        // check if an error occured
+        if (error) {
+            throw error;
+        } else {
+            // check if the table exists
+            if (results.length == 0) {
+                // doesnt exist so time to create
+                db.getConnection(function (error, conn) {
+                    if (error) throw error;
+                    conn.beginTransaction(function (error) {
+                        conn.query(
+                            "CREATE TABLE Grids (GridID BIGINT NOT NULL UNIQUE, GridName varchar(255) NOT NULL, Layout varchar(10240) DEFAULT '{}', Created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, Modified DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (GridID))",
+
+                            function (error, results, fields) {
+                                if (error) {
+                                    return conn.rollback(function () {
+                                        throw error;
+                                    });
+                                }
+                                // okay
+                                conn.query(
+                                    "INSERT INTO Settings SET Feild = ?, Data = ?",
+                                    ["GridsTableVersion", GridsTableVersion],
+                                    function (error, results, fields) {
+                                        if (error) {
+                                            if (error.code != "ER_DUP_ENTRY") {
+                                                return conn.rollback(function () {
+                                                    throw error;
+                                                });
+                                            }
+                                            // okay but key already exists
+                                            conn.query(
+                                                "UPDATE Settings SET Data = ? WHERE Feild = ?",
+                                                [GridsTableVersion, "GridsTableVersion"],
+                                                function (error, results, fields) {
+                                                    if (error) {
+                                                        if (error.code != "ER_DUP_ENTRY") {
+                                                            return conn.rollback(function () {
+                                                                throw error;
+                                                            });
+                                                        }
+                                                    }
+                                                    // okay
+                                                    conn.commit(function (error) {
+                                                        if (error) {
+                                                            return conn.rollback(function () {
+                                                                throw error;
+                                                            });
+                                                        }
+                                                        // okay
+                                                        logger.info("Created Grids Table A V" + GridsTableVersion);
+                                                    });
+                                                }
+                                            );
+                                        } else {
+                                            // okay
+                                            conn.commit(function (error) {
+                                                if (error) {
+                                                    return conn.rollback(function () {
+                                                        throw error;
+                                                    });
+                                                }
+                                                // okay
+                                                logger.info("Created Grids Table V" + GridsTableVersion);
+                                            });
+                                        }
+                                    }
+                                );
+                            }
+                        );
+                    });
+                });
+            } else {
+                // table does exist no need to create, instead check version
+                db.query(
+                    "SELECT Data FROM Settings WHERE Feild = ?",
+                    ["GridsTableVersion"],
+                    function (error, results, fields) {
+                        if (error) throw error;
+                        // check the key was found
+                        if (results.length == 1) {
+                            // version matches
+                            if (results[0].Data == GridsTableVersion) {
+                                logger.info("Grids table up to date V" + GridsTableVersion);
+                            } else {
+                                //TODO: upgrade version
+                                logger.info("Grids table wrong version" + GridsTableVersion);
+                                throw "Wrong version grids upgrade";
+                            }
+                        } else {
+                            throw "Wrong version grids";
+                        }
+                    }
+                );
+            }
+        }
+    });
+};
+
+const checkGridsItemsTable = async () => {
+    // check the grids items table is all okay and create/edit if not
+    db.query("SHOW TABLES LIKE 'GridItems'", function (error, results) {
+        const GridsItemsTableVersion = "1";
+        // check if an error occured
+        if (error) {
+            throw error;
+        } else {
+            // check if the table exists
+            if (results.length == 0) {
+                // doesnt exist so time to create
+                db.getConnection(function (error, conn) {
+                    if (error) throw error;
+                    conn.beginTransaction(function (error) {
+                        conn.query(
+                            "CREATE TABLE GridItems (GridItemID BIGINT NOT NULL UNIQUE,GridItemName varchar(255) NOT NULL,GridItemColour varchar(255) NOT NULL,TrackID BIGINT NOT NULL,GridID BIGINT NOT NULL,Created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,Modified DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP,PRIMARY KEY (GridItemID),CONSTRAINT fk_Grids_Grids_GridID FOREIGN KEY (GridID) REFERENCES Grids(GridID) ON DELETE CASCADE,CONSTRAINT fk_Grids_Tracks_TrackID FOREIGN KEY (TrackID) REFERENCES Tracks(TrackID) ON DELETE CASCADE)",
+                            function (error, results, fields) {
+                                if (error) {
+                                    return conn.rollback(function () {
+                                        throw error;
+                                    });
+                                }
+                                // okay
+                                conn.query(
+                                    "INSERT INTO Settings SET Feild = ?, Data = ?",
+                                    ["GridsItemsTableVersion", GridsItemsTableVersion],
+                                    function (error, results, fields) {
+                                        if (error) {
+                                            if (error.code != "ER_DUP_ENTRY") {
+                                                return conn.rollback(function () {
+                                                    throw error;
+                                                });
+                                            }
+                                            // okay but key already exists
+                                            conn.query(
+                                                "UPDATE Settings SET Data = ? WHERE Feild = ?",
+                                                [GridsItemsTableVersion, "GridsItemsTableVersion"],
+                                                function (error, results, fields) {
+                                                    if (error) {
+                                                        if (error.code != "ER_DUP_ENTRY") {
+                                                            return conn.rollback(function () {
+                                                                throw error;
+                                                            });
+                                                        }
+                                                    }
+                                                    // okay
+                                                    conn.commit(function (error) {
+                                                        if (error) {
+                                                            return conn.rollback(function () {
+                                                                throw error;
+                                                            });
+                                                        }
+                                                        // okay
+                                                        logger.info(
+                                                            "Created Grid Item Table A V" + GridsItemsTableVersion
+                                                        );
+                                                    });
+                                                }
+                                            );
+                                        } else {
+                                            // okay
+                                            conn.commit(function (error) {
+                                                if (error) {
+                                                    return conn.rollback(function () {
+                                                        throw error;
+                                                    });
+                                                }
+                                                // okay
+                                                logger.info("Created Grid Items Table V" + GridsItemsTableVersion);
+                                            });
+                                        }
+                                    }
+                                );
+                            }
+                        );
+                    });
+                });
+            } else {
+                // table does exist no need to create, instead check version
+                db.query(
+                    "SELECT Data FROM Settings WHERE Feild = ?",
+                    ["GridsItemsTableVersion"],
+                    function (error, results, fields) {
+                        if (error) throw error;
+                        // check the key was found
+                        if (results.length == 1) {
+                            // version matches
+                            if (results[0].Data == GridsItemsTableVersion) {
+                                logger.info("Grid items table up to date V" + GridsItemsTableVersion);
+                            } else {
+                                //TODO: upgrade version
+                                logger.info("Grid items table wrong version" + GridsItemsTableVersion);
+                                throw "Wrong version grid items upgrade";
+                            }
+                        } else {
+                            throw "Wrong version grid items";
                         }
                     }
                 );
