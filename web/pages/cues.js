@@ -75,16 +75,14 @@ const Cue = (props) => {
                             : "bg-secondary text-white"
                     }
                 >
-                    <h4>{props.info.CueName}</h4>
+                    <h4 className="d-inline">{props.info.CueName}</h4>
 
-                    <div>
-                        <Badge
-                            className="mb-2"
-                            variant={props.info.Enabled ? "light" : "dark"}
-                        >
-                            {props.info.Enabled ? "Enabled" : "Disabled"}
-                        </Badge>
-                    </div>
+                    <Badge
+                        className="ml-2"
+                        variant={props.info.Enabled ? "light" : "dark"}
+                    >
+                        {props.info.Enabled ? "Enabled" : "Disabled"}
+                    </Badge>
                 </Card.Header>
 
                 <Card.Body>

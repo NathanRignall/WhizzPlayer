@@ -22,9 +22,16 @@ const Track = (props) => {
     return (
         <>
             <Card>
-                <Card.Header as="h4" className="bg-secondary text-white">
-                    {props.info.TrackName}{" "}
-                    <Badge variant="info">{props.info.TrackType}</Badge>
+                <Card.Header className="bg-secondary text-white">
+                    <h4 className="d-inline">{props.info.TrackName}</h4>
+                    <Badge
+                        className="ml-2"
+                        variant={
+                            props.info.TrackType == "music" ? "warning" : "info"
+                        }
+                    >
+                        {props.info.TrackType}
+                    </Badge>
                 </Card.Header>
 
                 <Card.Body>
