@@ -1,4 +1,5 @@
 import Layout from "../../components/layouts/main";
+import { useAppContext } from "../../components/context/state";
 
 import useSWR from "swr";
 import Link from "next/link";
@@ -60,16 +61,29 @@ const GridNavigation = (props) => {
     }
 };
 
-// main app function
-export default function Main() {
-    return (
-        <Layout title="Cues">
-            <div class="d-flex">
-                <h1>Grid List</h1>
+const CreateGrid = () => {
+    // global app context
+    const context = useAppContext();
 
+    return (
+        <>
+            {context.Access != 0 ? (
                 <div class="ml-auto my-auto">
                     <GridCreateModal />
                 </div>
+            ) : null}
+        </>
+    );
+};
+
+// main app function
+export default function Main() {
+    return (
+        <Layout title="Grids">
+            <div class="d-flex">
+                <h1>Grid List</h1>
+
+                <CreateGrid />
             </div>
 
             <br />

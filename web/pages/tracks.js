@@ -1,4 +1,5 @@
 import Layout from "../components/layouts/main";
+import { useAppContext } from "../components/context/state";
 
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -14,35 +15,42 @@ import {
 import { Card, Col, Row, Spinner, Button, Alert, Badge } from "react-bootstrap";
 
 // card for displyaing info about a track
-const Track = (props) => (
-    <>
-        <Card>
-            <Card.Header as="h4" className="bg-secondary text-white">
-                {props.info.TrackName}{" "}
-                <Badge variant="info">{props.info.TrackType}</Badge>
-            </Card.Header>
+const Track = (props) => {
+    // global app context
+    const context = useAppContext();
 
-            <Card.Body>
-                <div className="text-center">
-                    <audio controls>
-                        <source
-                            src={"/api/uploads/save/" + props.info.TrackID}
-                            type="audio/mpeg"
-                        />
-                        Your browser does not support the audio element.
-                    </audio>
-                </div>
+    return (
+        <>
+            <Card>
+                <Card.Header as="h4" className="bg-secondary text-white">
+                    {props.info.TrackName}{" "}
+                    <Badge variant="info">{props.info.TrackType}</Badge>
+                </Card.Header>
 
-                <br />
+                <Card.Body>
+                    <div className="text-center">
+                        <audio controls>
+                            <source
+                                src={"/api/uploads/save/" + props.info.TrackID}
+                                type="audio/mpeg"
+                            />
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
 
-                <div className="text-right">
-                    <TrackDeleteModal info={props.info} />
-                </div>
-            </Card.Body>
-        </Card>
-        <br />
-    </>
-);
+                    <br />
+
+                    {context.Access != 0 ? (
+                        <div className="text-right">
+                            <TrackDeleteModal info={props.info} />
+                        </div>
+                    ) : null}
+                </Card.Body>
+            </Card>
+            <br />
+        </>
+    );
+};
 
 // main track list loader
 const TrackList = () => {
@@ -83,6 +91,21 @@ const TrackList = () => {
     }
 };
 
+const UploadTrack = () => {
+    // global app context
+    const context = useAppContext();
+
+    return (
+        <>
+            {context.Access != 0 ? (
+                <div class="ml-auto my-auto">
+                    <UploadTrackModal />
+                </div>
+            ) : null}
+        </>
+    );
+};
+
 // main app function
 export default function Main() {
     return (
@@ -90,9 +113,7 @@ export default function Main() {
             <div class="d-flex">
                 <h1>Track List</h1>
 
-                <div class="ml-auto my-auto">
-                    <UploadTrackModal />
-                </div>
+                <UploadTrack />
             </div>
 
             <br />

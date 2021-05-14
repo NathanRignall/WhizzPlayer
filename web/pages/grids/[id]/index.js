@@ -1,4 +1,5 @@
 import Layout from "../../../components/layouts/main";
+import { AppContext } from "../../../components/context/state";
 
 import useSWR, { mutate } from "swr";
 import React from "react";
@@ -45,6 +46,10 @@ class EditGrid extends React.PureComponent {
                 message: "none",
             },
         };
+    }
+
+    componentDidMount() {
+        console.log(this.context); // { name: 'Tania', loggedIn: true }
     }
 
     componentDidUpdate(prevProps) {
@@ -165,19 +170,29 @@ class EditGrid extends React.PureComponent {
 
                     <div className="ml-lg-auto my-auto">
                         <HaltPlayModal size="md" />{" "}
-                        <Link
-                            href={{
-                                pathname: "/grids/[id]/edit",
-                                query: { id: this.props.GridID },
-                            }}
-                        >
-                            <Button
-                                href={"/grids/" + this.props.GridID + "/edit"}
-                                variant="primary"
-                            >
-                                Edit Grid
-                            </Button>
-                        </Link>{" "}
+                        <AppContext.Consumer>
+                            {(context) =>
+                                context.Access != 0 ? (
+                                    <Link
+                                        href={{
+                                            pathname: "/grids/[id]/edit",
+                                            query: { id: this.props.GridID },
+                                        }}
+                                    >
+                                        <Button
+                                            href={
+                                                "/grids/" +
+                                                this.props.GridID +
+                                                "/edit"
+                                            }
+                                            variant="primary"
+                                        >
+                                            Edit Grid
+                                        </Button>
+                                    </Link>
+                                ) : null
+                            }
+                        </AppContext.Consumer>
                         <Link href={"/grids"}>
                             <Button variant="outline-primary" href="/grids">
                                 All Grids
