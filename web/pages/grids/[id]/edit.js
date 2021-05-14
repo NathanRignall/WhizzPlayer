@@ -83,12 +83,10 @@ class ViewGrid extends React.PureComponent {
         return (
             <div key={i} data-grid={el}>
                 <div class="my-auto">
-                    <div className="wrap">
-                        <h3>{name}</h3>
-                        <Button disabled variant="primary">
-                            Play
-                        </Button>
-                    </div>
+                    <h3>{name}</h3>
+                    <Button disabled variant="primary">
+                        Play
+                    </Button>
                 </div>
 
                 <span className="remove" style={removeStyle}>

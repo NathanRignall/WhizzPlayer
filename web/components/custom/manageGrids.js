@@ -335,6 +335,8 @@ export function GridDeleteModal(props) {
             .then((response) => {
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
+                // reload the grid list
+                mutate(GRIDS_URI);
                 // close the modal
                 handleClose();
             })

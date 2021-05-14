@@ -15,13 +15,42 @@ import { ErrorDisplayer, StickyError } from "../../../components/common/errors";
 import { GridDeleteModal } from "../../../components/custom/manageGrids";
 import HaltPlayModal from "../../../components/custom/haltPlay";
 
-import { Alert, Button, Spinner } from "react-bootstrap";
+import { Alert, Button, Spinner, Badge, Card, Row, Col } from "react-bootstrap";
 
 // axios request urls
 const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play";
+const STATUS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/status";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
+// now playing
+const NowPlayingCard = () => {
+    const { data, error } = useSWR(
+        process.env.NEXT_PUBLIC_API_URL + "/app/status/playing",
+        fetcher,
+        { refreshInterval: 10000 }
+    );
+
+    if (data) {
+        if (data.payload.playing == true) {
+            return data.payload.json.TrackName;
+        } else {
+            return "Not Playing";
+        }
+    } else {
+        if (error) {
+            return (
+                <Badge variant="danger" header="Now Playing">
+                    <InlineErrorDisplayer error={error} />
+                </Badge>
+            );
+        } else {
+            return null;
+        }
+    }
+};
+
+// view grid
 class EditGrid extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -113,6 +142,8 @@ class EditGrid extends React.PureComponent {
                         message: response.data.message,
                     },
                 });
+                // mutate now playing
+                mutate(`${STATUS_URI}/playing`);
             })
             .catch((error) => {
                 // catch each type of axios error
@@ -174,8 +205,7 @@ class EditGrid extends React.PureComponent {
                 <div class="d-flex flex-lg-row flex-column">
                     <h1>{this.props.Grid.GridName}</h1>
 
-                    <div className="ml-lg-auto my-auto">
-                        <HaltPlayModal size="md" />{" "}
+                    <div class="ml-lg-auto my-auto">
                         <AppContext.Consumer>
                             {(context) =>
                                 context.Access != 0 ? (
@@ -198,7 +228,7 @@ class EditGrid extends React.PureComponent {
                                     </Link>
                                 ) : null
                             }
-                        </AppContext.Consumer>
+                        </AppContext.Consumer>{" "}
                         <Link href={"/grids"}>
                             <Button variant="outline-primary" href="/grids">
                                 All Grids
@@ -207,18 +237,33 @@ class EditGrid extends React.PureComponent {
                     </div>
                 </div>
 
+                <br />
+                <Card bg="light">
+                    <Card.Body className="text-center">
+                        <Row>
+                            <Col>
+                                <HaltPlayModal size="md" />
+                            </Col>
+                            <Col className="mb-0 h3">
+                                <NowPlayingCard />
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card>
+
+                <br />
                 <ResponsiveReactGridLayout
                     className="layout"
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                     compactType={null}
                     isDraggable={false}
                     isResizable={false}
+                    containerPadding={[0, 0]}
                     rowHeight={100}
                     layouts={this.state.layouts}
                 >
                     {_.map(this.state.items, (el) => this.createElement(el))}
                 </ResponsiveReactGridLayout>
-
                 {/* display errors to the user */}
                 {this.state.serverStateLayout.show && (
                     <StickyError
