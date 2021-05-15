@@ -1,4 +1,4 @@
-import Layout from "../../components/layouts/main";
+import Layout from "../../components/layouts/unified";
 import { useAppContext } from "../../components/context/state";
 
 import useSWR from "swr";
@@ -114,7 +114,7 @@ const CreateGrid = () => {
     return (
         <>
             {context.Access != 0 ? (
-                <div class="ml-auto my-auto">
+                <div className="ml-auto my-auto">
                     <GridCreateModal />
                 </div>
             ) : null}
@@ -125,8 +125,8 @@ const CreateGrid = () => {
 // main app function
 export default function Main() {
     return (
-        <Layout title="Grids">
-            <div class="d-flex">
+        <Layout title="Grids" access={0}>
+            <div className="d-flex">
                 <h1>Grid List</h1>
 
                 <CreateGrid />

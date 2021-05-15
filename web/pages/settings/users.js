@@ -1,4 +1,4 @@
-import Layout from "../../components/layouts/settings";
+import Layout from "../../components/layouts/unified";
 
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -86,7 +86,7 @@ const UserList = () => {
 // main app function
 export default function Main() {
     return (
-        <Layout title="Settings - Users">
+        <Layout title="Settings" access={10}>
             <h1>
                 User List{" "}
                 <Badge className="ml-1" variant="warning">

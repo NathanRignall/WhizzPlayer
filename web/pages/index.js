@@ -1,4 +1,4 @@
-import Layout from "../components/layouts/main";
+import Layout from "../components/layouts/unified";
 
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -225,7 +225,7 @@ const StatusArea = () => (
 // main app function
 export default function Main() {
     return (
-        <Layout title="Home">
+        <Layout title="Home" access={0}>
             <StatusHeader />
 
             <StatusArea />

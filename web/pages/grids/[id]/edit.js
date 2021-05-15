@@ -1,4 +1,4 @@
-import Layout from "../../../components/layouts/main";
+import Layout from "../../../components/layouts/unified";
 
 import useSWR, { mutate } from "swr";
 import React from "react";
@@ -287,13 +287,13 @@ export default function Main() {
 
     if (id) {
         return (
-            <Layout title="Grids">
+            <Layout title="Grids" access={5}>
                 <Grid GridID={id} />
             </Layout>
         );
     } else {
         return (
-            <Layout title="Grids">
+            <Layout title="Grids" access={5}>
                 <div className="text-center">
                     <Spinner animation="border" />
                 </div>

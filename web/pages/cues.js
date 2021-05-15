@@ -1,4 +1,4 @@
-import Layout from "../components/layouts/main";
+import Layout from "../components/layouts/unified";
 import { useAppContext } from "../components/context/state";
 
 import useSWR from "swr";
@@ -177,7 +177,7 @@ const CreateCue = () => {
     return (
         <>
             {context.Access != 0 ? (
-                <div class="ml-auto my-auto">
+                <div className="ml-auto my-auto">
                     <CueCreateModal />
                 </div>
             ) : null}
@@ -188,8 +188,8 @@ const CreateCue = () => {
 // main app function
 export default function Main() {
     return (
-        <Layout title="Cues">
-            <div class="d-flex">
+        <Layout title="Cues" access={0}>
+            <div className="d-flex">
                 <h1>Cue List</h1>
 
                 <CreateCue />

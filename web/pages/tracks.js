@@ -1,4 +1,4 @@
-import Layout from "../components/layouts/main";
+import Layout from "../components/layouts/unified";
 import { useAppContext } from "../components/context/state";
 
 import { useState } from "react";
@@ -105,7 +105,7 @@ const UploadTrack = () => {
     return (
         <>
             {context.Access != 0 ? (
-                <div class="ml-auto my-auto">
+                <div className="ml-auto my-auto">
                     <UploadTrackModal />
                 </div>
             ) : null}
@@ -116,8 +116,8 @@ const UploadTrack = () => {
 // main app function
 export default function Main() {
     return (
-        <Layout title="Tracks">
-            <div class="d-flex">
+        <Layout title="Tracks" access={0}>
+            <div className="d-flex">
                 <h1>Track List</h1>
 
                 <UploadTrack />

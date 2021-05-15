@@ -1,4 +1,4 @@
-import Layout from "../../../components/layouts/main";
+import Layout from "../../../components/layouts/unified";
 import { AppContext } from "../../../components/context/state";
 
 import useSWR, { mutate } from "swr";
@@ -12,7 +12,6 @@ import axios from "axios";
 
 import { fetcher } from "../../../components/common/functions";
 import { ErrorDisplayer, StickyError } from "../../../components/common/errors";
-import { GridDeleteModal } from "../../../components/custom/manageGrids";
 import HaltPlayModal from "../../../components/custom/haltPlay";
 
 import { Alert, Button, Spinner, Badge, Card, Row, Col } from "react-bootstrap";
@@ -318,13 +317,13 @@ export default function Main() {
 
     if (id) {
         return (
-            <Layout title="Grids">
+            <Layout title="Grids" access={0}>
                 <Grid GridID={id} />
             </Layout>
         );
     } else {
         return (
-            <Layout title="Grids">
+            <Layout title="Grids" access={0}>
                 <div className="text-center">
                     <Spinner animation="border" />
                 </div>
