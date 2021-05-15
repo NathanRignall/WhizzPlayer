@@ -1,22 +1,14 @@
 import Layout from "../components/layouts/unified";
 
-import { useRouter } from "next/router";
-import Link from "next/link";
 import useSWR from "swr";
 
 import { fetcher } from "../components/common/functions";
-import {
-    ErrorDisplayer,
-    StickyError,
-    InlineErrorDisplayer,
-} from "../components/common/errors";
+import { StickyError, InlineErrorDisplayer } from "../components/common/errors";
 import InstantPlay from "../components/custom/instantPlay";
 import HaltPlayModal from "../components/custom/haltPlay";
 
 import {
     Jumbotron,
-    Col,
-    Row,
     Container,
     Badge,
     Card,
@@ -35,6 +27,10 @@ const SetupModeWarning = () => {
     );
 
     if (data) {
+        if (error) {
+            console.error(error);
+        }
+
         if (data.message == "true") {
             return (
                 <StickyError
@@ -59,16 +55,20 @@ const StatusHeader = () => {
         <Jumbotron>
             <Container>
                 <h1>Whizz Player</h1>
+
                 <Badge className="mb-2" variant="primary">
                     {process.env.NEXT_PUBLIC_VERSION}
                 </Badge>
+
                 <Badge className="ml-1 mb-2" variant="success">
                     By Nathan Rignall
                 </Badge>
+
                 <p>
-                    Track scheduler system, create cues and upload audio files
-                    to schedule audio playback
+                    Track scheduler system, create cues, manage grids and upload
+                    audio files to schedule audio playback
                 </p>
+
                 <HaltPlayModal size="lg" />
             </Container>
         </Jumbotron>
@@ -173,7 +173,7 @@ const StatsCard = () => {
                     </Badge>
                 </h5>
 
-                <h5 className="mb-0">{data.payload.time}</h5>
+                <h5 className="mb-0">{data.payload.time} (UTC)</h5>
             </StatusCard>
         );
     } else {

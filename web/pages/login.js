@@ -7,7 +7,7 @@ import { Jumbotron, Container, Badge } from "react-bootstrap";
 // main app function
 export default function Main() {
     return (
-        <Layout title="Home">
+        <Layout title="Login">
             <Jumbotron fluid>
                 <Container>
                     <h1>Whizz Player</h1>
@@ -18,8 +18,8 @@ export default function Main() {
                         By Nathan Rignall
                     </Badge>
                     <p>
-                        Track scheduler system, create cues and upload audio
-                        files to schedule audio playback
+                        Track scheduler system, create cues, manage grids and
+                        upload audio files to schedule audio playback
                     </p>
                 </Container>
             </Jumbotron>

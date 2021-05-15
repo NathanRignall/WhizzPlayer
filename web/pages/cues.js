@@ -149,6 +149,7 @@ const CueList = (props) => {
         return (
             <>
                 <ErrorDisplayer error={error} />
+
                 {data.payload.length > 0 ? (
                     CueFormedList
                 ) : (
@@ -162,6 +163,7 @@ const CueList = (props) => {
         return (
             <>
                 <ErrorDisplayer error={error} />
+
                 <div className="text-center">
                     <Spinner animation="border" />
                 </div>

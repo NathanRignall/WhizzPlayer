@@ -42,10 +42,13 @@ const RegisterArea = (props) => {
             return (
                 <>
                     <h2>Register Admin User</h2>
+
                     <p>
                         Please fill in your details to register an admin user.
                     </p>
+
                     <MainForm />
+
                     <ErrorDisplayer error={error} />
                 </>
             );
@@ -53,6 +56,7 @@ const RegisterArea = (props) => {
             return (
                 <>
                     <NotInSetup />
+
                     <ErrorDisplayer error={error} />
                 </>
             );
@@ -63,6 +67,7 @@ const RegisterArea = (props) => {
                 <div className="text-center">
                     <Spinner animation="border" />
                 </div>
+
                 <ErrorDisplayer error={error} />
             </>
         );
@@ -76,15 +81,18 @@ export default function Main() {
             <Jumbotron fluid className="bg-dark text-white">
                 <Container>
                     <h1>Whizz Player SETUP</h1>
+
                     <Badge className="mb-2" variant="primary">
                         {process.env.NEXT_PUBLIC_VERSION}
                     </Badge>
+
                     <Badge className="ml-1 mb-2" variant="success">
                         By Nathan Rignall
                     </Badge>
+
                     <p>
-                        Track scheduler system, create cues and upload audio
-                        files to schedule audio playback
+                        Track scheduler system, create cues, manage grids, and
+                        upload audio files to schedule audio playback
                     </p>
                 </Container>
             </Jumbotron>

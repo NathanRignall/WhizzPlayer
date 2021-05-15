@@ -67,7 +67,7 @@ const TrackList = () => {
     );
 
     if (data) {
-        const CueFormedList = data.payload.map((item) => (
+        const TracksFormedList = data.payload.map((item) => (
             <Col key={item.TrackID} xs={12} md={6}>
                 <Track info={item} />
             </Col>
@@ -78,7 +78,7 @@ const TrackList = () => {
                 <ErrorDisplayer error={error} />
 
                 {data.payload.length > 0 ? (
-                    <Row>{CueFormedList}</Row>
+                    <Row>{TracksFormedList}</Row>
                 ) : (
                     <Alert variant="warning">
                         There are currently 0 Tracks in the system.
@@ -92,6 +92,7 @@ const TrackList = () => {
                 <div className="text-center">
                     <Spinner animation="border" />
                 </div>
+
                 <ErrorDisplayer error={error} />
             </>
         );
@@ -124,6 +125,7 @@ export default function Main() {
             </div>
 
             <br />
+
             <TrackList />
         </Layout>
     );
