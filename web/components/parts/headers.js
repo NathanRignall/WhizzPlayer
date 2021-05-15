@@ -3,7 +3,7 @@ import Head from "next/head";
 export default function Header(props) {
     return (
         <Head>
-            <title>WhizzPlayer - {props.title}</title>
+            <title>Whizz Player - {props.title}</title>
             <link
                 rel="apple-touch-icon"
                 sizes="180x180"
