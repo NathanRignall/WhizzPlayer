@@ -349,13 +349,13 @@ exports.itemsEdit = function (req, res, next) {
     var GridItemColour = json.GridItemColour;
     var TrackID = json.TrackID;
     // check the fields are present
-    if (GridName) {
+    if ((GridItemName, GridItemColour, TrackID)) {
         // check the display name is not funny
-        if (checkCharacters(GridName)) {
+        if (checkCharacters(GridItemName)) {
             // update a grid in the database
             db.query(
-                "UPDATE Grids SET GridItemName = ?, GridItemColour = ?, TrackID = ?, WHERE GridItemID = ?",
-                [validator.trim(GridItemName), GridItemColour, TrackID, GridID],
+                "UPDATE GridItems SET GridItemName = ?, GridItemColour = ?, TrackID = ? WHERE GridItemID = ?",
+                [validator.trim(GridItemName), GridItemColour, TrackID, GridItemID],
                 function (error, results, fields) {
                     // check if sucessfull
                     if (!error) {

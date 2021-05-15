@@ -14,6 +14,7 @@ import { ErrorDisplayer, StickyError } from "../../../components/common/errors";
 import {
     GridDeleteModal,
     GridItemCreateModal,
+    GridItemEditModal,
     GridItemDeleteModal,
 } from "../../../components/custom/manageGrids";
 
@@ -39,6 +40,7 @@ class ViewGrid extends React.PureComponent {
                     name: item.GridItemName,
                     colour: item.GridItemColour,
                     trackID: item.TrackID,
+                    trackName: item.TrackName,
                 };
             }),
             layouts: JSON.parse(props.Grid.Layout),
@@ -63,6 +65,7 @@ class ViewGrid extends React.PureComponent {
                         name: item.GridItemName,
                         colour: item.GridItemColour,
                         trackID: item.TrackID,
+                        trackName: item.TrackName,
                     };
                 }),
             });
@@ -77,8 +80,18 @@ class ViewGrid extends React.PureComponent {
             cursor: "pointer",
         };
 
+        const editStyle = {
+            position: "absolute",
+            left: "2px",
+            top: 0,
+            cursor: "pointer",
+        };
+
         const i = el.i;
         const name = el.name;
+        const colour = el.colour;
+        const trackID = el.trackID;
+        const trackName = el.trackName;
 
         return (
             <div key={i} data-grid={el}>
@@ -93,6 +106,19 @@ class ViewGrid extends React.PureComponent {
                     <GridItemDeleteModal
                         GridID={this.props.GridID}
                         info={{ GridItemID: i, GridItemName: name }}
+                    />
+                </span>
+
+                <span className="edit" style={editStyle}>
+                    <GridItemEditModal
+                        GridID={this.props.GridID}
+                        info={{
+                            GridItemID: i,
+                            GridItemName: name,
+                            GridItemColour: colour,
+                            TrackID: trackID,
+                            TrackName: trackName,
+                        }}
                     />
                 </span>
             </div>
@@ -182,7 +208,12 @@ class ViewGrid extends React.PureComponent {
         return (
             <div>
                 <div className="d-flex flex-lg-row flex-column">
-                    <h1>{this.props.Grid.GridName}</h1>
+                    <h1>
+                        {this.props.Grid.GridName}
+                        <Badge className="ml-1" variant="warning">
+                            Beta
+                        </Badge>
+                    </h1>
 
                     <div className="ml-lg-auto my-auto">
                         <GridItemCreateModal
