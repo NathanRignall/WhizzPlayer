@@ -2,7 +2,12 @@ import { useAppContext } from "../context/state";
 
 import Link from "next/link";
 
-import { Navbar, Nav, NavDropdown, Button } from "react-bootstrap";
+import {
+    UpdateAccountInfoModal,
+    ResetAccountPasswordModal,
+} from "../custom/manageAccount";
+
+import { Navbar, Nav, NavDropdown, Dropdown, Badge } from "react-bootstrap";
 
 export default function CoreNavbar(props) {
     // global app context
@@ -49,10 +54,50 @@ export default function CoreNavbar(props) {
                 </Nav>
 
                 <Nav>
-                    <Nav.Link href="/">{context.DisplayName}</Nav.Link>{" "}
-                    <Link href="/logout">
-                        <Button variant="outline-light">Logout</Button>
-                    </Link>
+                    <Dropdown>
+                        <Dropdown.Toggle
+                            variant="outline-light"
+                            id="dropdown-basic"
+                            block
+                        >
+                            User Account
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu align="right" className="text-center">
+                            <Dropdown.Header className="pb-0 pt-1">
+                                <div>
+                                    <b>{context.DisplayName}</b>
+                                </div>
+                                <div>{context.Email}</div>
+                                <div>
+                                    {context.Access == 0 ? (
+                                        <Badge variant="success">
+                                            View Only
+                                        </Badge>
+                                    ) : null}
+                                    {context.Access == 5 ? (
+                                        <Badge variant="warning">Edit</Badge>
+                                    ) : null}
+                                    {context.Access == 10 ? (
+                                        <Badge variant="danger">Admin</Badge>
+                                    ) : null}
+                                </div>
+                            </Dropdown.Header>
+
+                            <Dropdown.Divider />
+
+                            <UpdateAccountInfoModal info={context} />
+                            <ResetAccountPasswordModal info={context} />
+
+                            <Dropdown.Divider />
+
+                            <Link href="/logout">
+                                <Dropdown.Item href="/logout">
+                                    Logout
+                                </Dropdown.Item>
+                            </Link>
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>

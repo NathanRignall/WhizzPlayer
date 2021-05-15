@@ -292,39 +292,76 @@ exports.password = function (req, res, next) {
     var json = req.body;
     // set the vars from post
     var Password = json.Password;
+    var NewPassword = json.NewPassword;
     // check the fields are present and valid
-    if (Password) {
+    if ((Password, NewPassword)) {
         // check if the password is strong
-        if (validator.isStrongPassword(Password, { minSymbols: 0 })) {
-            // hash the password
-            var Hash = bcrypt.hashSync(Password, 10);
-            // update the user password in the database
-            db.query(
-                "UPDATE Users SET Password = ? WHERE UserID = ?",
-                [Hash, UserID],
-                function (error, results, fields) {
-                    // check if sucessfull
-                    if (!error) {
-                        // retun the correct vars
-                        res.status(200).json({
-                            message: "okay",
-                            reqid: res.locals.reqid,
-                        });
+        if (validator.isStrongPassword(NewPassword, { minSymbols: 0 })) {
+            // get the user info from the database
+            db.query("SELECT Password FROM Users WHERE UserID = ?", [UserID], function (error, results, fields) {
+                // check if successful
+                if (!error) {
+                    // check if a user was found
+                    if (results.length == 1) {
+                        // check the password against database
+                        if (bcrypt.compareSync(Password, results[0].Password)) {
+                            // hash the password
+                            var Hash = bcrypt.hashSync(NewPassword, 10);
+                            // update the user password in the database
+                            db.query(
+                                "UPDATE Users SET Password = ? WHERE UserID = ?",
+                                [Hash, UserID],
+                                function (error, results, fields) {
+                                    // check if sucessfull
+                                    if (!error) {
+                                        // retun the correct vars
+                                        res.status(200).json({
+                                            message: "okay",
+                                            reqid: res.locals.reqid,
+                                        });
+                                    } else {
+                                        // retun the correct vars
+                                        res.locals.errors.push({
+                                            location: "/api/account/core.js/password-1",
+                                            code: error.code,
+                                            from: "mysql",
+                                        });
+                                        res.status(500).json({
+                                            message: "Server error",
+                                            errors: res.locals.errors,
+                                            reqid: res.locals.reqid,
+                                        });
+                                    }
+                                }
+                            );
+                        } else {
+                            // retun the correct vars
+                            res.status(401).json({
+                                message: "Incorrect Password",
+                                reqid: res.locals.reqid,
+                            });
+                        }
                     } else {
                         // retun the correct vars
-                        res.locals.errors.push({
-                            location: "/api/account/core.js/infoUpdate-1",
-                            code: error.code,
-                            from: "mysql",
-                        });
-                        res.status(500).json({
-                            message: "Server error",
-                            errors: res.locals.errors,
+                        res.status(401).json({
+                            message: "User does not exist",
                             reqid: res.locals.reqid,
                         });
                     }
+                } else {
+                    // retun the correct vars
+                    res.locals.errors.push({
+                        location: "/api/account/core.js/password-2",
+                        code: error.code,
+                        from: "mysql",
+                    });
+                    res.status(500).json({
+                        message: "Server error",
+                        errors: res.locals.errors,
+                        reqid: res.locals.reqid,
+                    });
                 }
-            );
+            });
         } else {
             // retun the correct vars
             res.status(400).json({
