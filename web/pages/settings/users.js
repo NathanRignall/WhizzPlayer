@@ -87,12 +87,7 @@ const UserList = () => {
 export default function Main() {
     return (
         <Layout title="Settings" access={10}>
-            <h1>
-                User List{" "}
-                <Badge className="ml-1" variant="warning">
-                    Beta
-                </Badge>
-            </h1>
+            <h1>User List </h1>
 
             <div>
                 <UserCreateModal />{" "}
