@@ -19,6 +19,11 @@ const schema = yup.object().shape({
 // main login form function
 export const MainForm = () => {
     const router = useRouter();
+    var { url } = router.query;
+
+    if (url == undefined) {
+        url = "/";
+    }
 
     // satus of the form requests
     const [serverState, setServerState] = useState({
@@ -48,7 +53,7 @@ export const MainForm = () => {
             })
             .then((response) => {
                 // redirect back to the login page
-                window.location.replace("/");
+                window.location.replace(url);
                 // set loading to false
                 actions.setSubmitting(false);
                 // set the server state to handle errors
