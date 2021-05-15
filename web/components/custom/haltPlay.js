@@ -33,11 +33,11 @@ export default function HaltPlayModal(props) {
         setServerState({ show, error, message });
     };
 
-    // handle delete cue
-    const deleteCue = () => {
-        // axios delete cue
+    // handle halt track
+    const haltTrack = () => {
+        // axios play track
         axios
-            .get(HALT_URI, {
+            .post(HALT_URI, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -84,6 +84,7 @@ export default function HaltPlayModal(props) {
                         true,
                         "Error in browser request"
                     );
+                    console.log(error);
                 }
             });
     };
@@ -128,8 +129,8 @@ export default function HaltPlayModal(props) {
                         Cancel
                     </Button>
 
-                    {/* Delete button*/}
-                    <Button variant="danger" onClick={deleteCue}>
+                    {/* Halt button*/}
+                    <Button variant="danger" onClick={haltTrack}>
                         Halt
                     </Button>
                 </Modal.Footer>

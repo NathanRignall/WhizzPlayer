@@ -106,11 +106,11 @@ export default function InstantPlay(props) {
         setServerState({ show, error, message });
     };
 
-    // handle a from submit to login
+    // handle a instantPlay
     const handleOnSubmit = (values, actions) => {
-        // axios get request to play song
+        // axios post request to play song
         axios
-            .get(`${PLAY_URI}/${values.TrackID}`, {
+            .post(`${PLAY_URI}/${values.TrackID}`, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -163,6 +163,7 @@ export default function InstantPlay(props) {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };

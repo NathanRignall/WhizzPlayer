@@ -124,7 +124,7 @@ class EditGrid extends React.PureComponent {
 
     instantPlay(TrackID) {
         axios
-            .get(`${PLAY_URI}/${TrackID}`, {
+            .post(`${PLAY_URI}/${TrackID}`, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })

@@ -23,8 +23,8 @@ router.get("/status/logs/back", auth.simple(), status.logsBack); // view
 router.get("/status/logs/playback", auth.simple(), status.logsPlayback); // view
 
 // play routes
-router.get("/play/halt", auth.simple(), play.halt); // view
-router.get("/play/:trackid", auth.simple(), play.track); // view
+router.post("/play/halt", auth.simple(), play.halt); // view
+router.post("/play/:trackid", auth.simple(), play.track); // view
 
 // grid routes
 router.get("/grids", auth.simple(), grids.list); // view
