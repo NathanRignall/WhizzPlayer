@@ -1,8 +1,9 @@
-import { useState, useEffect, forwardRef } from "react";
-import useSWR, { mutate } from "swr";
+import { useState } from "react";
+import { mutate } from "swr";
 
 import { Formik } from "formik";
 import * as yup from "yup";
+import axios from "axios";
 
 import {
     Form,
@@ -12,8 +13,6 @@ import {
     Alert,
     ProgressBar,
 } from "react-bootstrap";
-
-import axios from "axios";
 
 // axios request urls
 const TRACKS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks";
@@ -137,6 +136,7 @@ const UploadFile = ({ handleClose, setTempID }) => {
                     // reset progress and current file
                     setCurrentFile(undefined);
                     setProgress(0);
+                    console.log(error);
                 }
             });
         // reset progress and current file anyway
@@ -200,7 +200,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
         setServerState({ show, error, message });
     };
 
-    // handle a from submit to create cue
+    // handle a from submit to create track
     const handleOnSubmit = (values, actions) => {
         // create the json object to post track
         const json = JSON.stringify({
@@ -209,7 +209,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
             FileID: trackProgress.tempID,
         });
 
-        // axios post create cue
+        // axios post create track
         axios
             .post(TRACKS_URI, json, {
                 withCredentials: true,
@@ -220,10 +220,12 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                 actions.setSubmitting(false);
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                // reload the cue list
+                // reload the track list
                 mutate(TRACKS_URI);
                 // close the modal
                 handleClose();
+                // clear progress
+                clearProgress();
             })
             .catch(function (error) {
                 // catch each type of axios error
@@ -266,6 +268,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };
@@ -310,7 +313,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                                     <option value="voice" label="Voice" />
                                 </Form.Control>
                             </Form.Group>
-      
+
                             <div className="pt-2">
                                 {/* display errors to the user */}
                                 {serverState.show && (
@@ -350,7 +353,7 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                                     Loading...
                                 </Button>
                             ) : (
-                                <Button type="submit">Name</Button>
+                                <Button type="submit">Create</Button>
                             )}
                         </Modal.Footer>
                     </Form>
@@ -489,6 +492,7 @@ export function TrackDeleteModal(props) {
                         true,
                         "Error in browser request"
                     );
+                    console.log(error);
                 }
             });
     };

@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
-import { Form, Button, Spinner, Alert } from "react-bootstrap";
-
 import axios from "axios";
 import { Formik } from "formik";
 import * as yup from "yup";
+
+import { Form, Button, Spinner, Alert } from "react-bootstrap";
 
 // axios request urls
 const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/account/login";
@@ -84,7 +84,6 @@ export const MainForm = () => {
                     // set loading to false
                 } else if (error.request) {
                     // check if a request error
-                    console.error(error);
                     handleServerResponse(
                         true,
                         true,
@@ -94,7 +93,6 @@ export const MainForm = () => {
                     // set loading to false
                 } else {
                     // check if a browser error
-                    console.error(error);
                     handleServerResponse(
                         true,
                         true,
@@ -102,6 +100,7 @@ export const MainForm = () => {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };

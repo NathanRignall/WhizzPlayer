@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
-import { Form, Button, Spinner, Alert } from "react-bootstrap";
-
 import axios from "axios";
 import { Formik } from "formik";
 import * as yup from "yup";
+
+import { Form, Button, Spinner, Alert } from "react-bootstrap";
 
 // axios request urls
 const REGISTER_URI = process.env.NEXT_PUBLIC_API_URL + "/account/register";
@@ -99,6 +99,7 @@ export const MainForm = () => {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };

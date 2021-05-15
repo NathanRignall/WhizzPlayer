@@ -1,14 +1,12 @@
 import { useState, useEffect, forwardRef } from "react";
-import useSWR, { mutate } from "swr";
+import { mutate } from "swr";
 
-import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
-
-import { Formik, useField, useFormikContext } from "formik";
+import { Formik, useFormikContext } from "formik";
 import * as yup from "yup";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
+
+import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
 
 // axios request urls
 const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
@@ -55,9 +53,6 @@ const TrackSelector = (props) => {
 
     // main feild searcher
     const handleSearch = (query) => {
-        // set loading state to true
-        setIsLoading(true);
-
         // make the axios request for track search
         axios
             .get(`${SEARCH_URI}?search=${query}`)
@@ -69,8 +64,6 @@ const TrackSelector = (props) => {
                 }));
                 // set the options state to this new array
                 setOptions(options);
-                // set loading false
-                setIsLoading(false);
             })
             .catch((error) => {
                 // catch each type of axios error
@@ -87,8 +80,6 @@ const TrackSelector = (props) => {
                 }
                 // set options to itself
                 setOptions(options);
-                // set loading to false
-                setIsLoading(false);
             });
     };
 
@@ -143,7 +134,7 @@ export const GridCreateModal = (props) => {
             GridName: values.gridName,
         });
 
-        // axios post create user
+        // axios post create grid
         axios
             .post(GRIDS_URI, json, {
                 withCredentials: true,
@@ -154,7 +145,7 @@ export const GridCreateModal = (props) => {
                 actions.setSubmitting(false);
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                // reload the user list
+                // reload the grids list
                 mutate(GRIDS_URI);
                 // close the modal
                 handleClose();
@@ -200,6 +191,7 @@ export const GridCreateModal = (props) => {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };
@@ -247,7 +239,7 @@ export const GridCreateModal = (props) => {
                                         value={values.gridName}
                                         onChange={handleChange}
                                         isInvalid={errors.gridName}
-                                        autocomplete="nickname"
+                                        autoComplete="nickname"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
@@ -375,6 +367,7 @@ export function GridDeleteModal(props) {
                         true,
                         "Error in browser request"
                     );
+                    console.log(error);
                 }
             });
     };
@@ -453,14 +446,14 @@ export const GridItemCreateModal = (props) => {
 
     // handle a from submit to create grid item
     const handleOnSubmit = (values, actions) => {
-        // create the json object to post lcue
+        // create the json object to post grid item
         const json = JSON.stringify({
             GridItemName: values.GridItemName,
             GridItemColour: values.GridItemColour,
             TrackID: values.TrackID,
         });
 
-        // axios post create cue
+        // axios post create grid item
         axios
             .post(`${GRIDS_URI}/${props.GridID}/items`, json, {
                 withCredentials: true,
@@ -471,7 +464,7 @@ export const GridItemCreateModal = (props) => {
                 actions.setSubmitting(false);
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                // reload the cue list
+                // reload the grid item list
                 mutate(`${GRIDS_URI}/${props.GridID}/items`);
                 // close the modal
                 handleClose();
@@ -517,6 +510,7 @@ export const GridItemCreateModal = (props) => {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };
@@ -568,7 +562,7 @@ export const GridItemCreateModal = (props) => {
                                         autoComplete="off"
                                     />
 
-                                    {errors.CueName}
+                                    {errors.GridItemName}
                                 </Form.Group>
 
                                 {/* track selector */}
@@ -675,9 +669,9 @@ export function GridItemDeleteModal(props) {
         setServerState({ show, error, message });
     };
 
-    // handle delete cue
-    const deleteCue = () => {
-        // axios delete cue
+    // handle delete grid item
+    const deleteGridItem = () => {
+        // axios delete grid item
         axios
             .delete(
                 `${GRIDS_URI}/${props.GridID}/items/${props.info.GridItemID}`,
@@ -689,7 +683,7 @@ export function GridItemDeleteModal(props) {
             .then((response) => {
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
-                // reload the cue list
+                // reload the grid item list
                 mutate(`${GRIDS_URI}/${props.GridID}/items`);
                 // close the modal
                 handleClose();
@@ -729,6 +723,7 @@ export function GridItemDeleteModal(props) {
                         true,
                         "Error in browser request"
                     );
+                    console.log(error);
                 }
             });
     };
@@ -775,7 +770,7 @@ export function GridItemDeleteModal(props) {
                     </Button>
 
                     {/* Delete button*/}
-                    <Button variant="danger" onClick={deleteCue}>
+                    <Button variant="danger" onClick={deleteGridItem}>
                         Delete
                     </Button>
                 </Modal.Footer>

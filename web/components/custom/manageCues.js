@@ -1,7 +1,5 @@
 import { useState, useEffect, forwardRef } from "react";
-import useSWR, { mutate } from "swr";
-
-import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
+import { mutate } from "swr";
 
 import { Formik, useField, useFormikContext } from "formik";
 import * as yup from "yup";
@@ -9,6 +7,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
+
+import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
 
 // axios request urls
 const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
@@ -50,9 +50,6 @@ const TrackSelector = (props) => {
 
     // main feild searcher
     const handleSearch = (query) => {
-        // set loading state to true
-        setIsLoading(true);
-
         // make the axios request for track search
         axios
             .get(`${SEARCH_URI}?search=${query}`)
@@ -64,8 +61,6 @@ const TrackSelector = (props) => {
                 }));
                 // set the options state to this new array
                 setOptions(options);
-                // set loading false
-                setIsLoading(false);
             })
             .catch((error) => {
                 // catch each type of axios error
@@ -82,8 +77,6 @@ const TrackSelector = (props) => {
                 }
                 // set options to itself
                 setOptions(options);
-                // set loading to false
-                setIsLoading(false);
             });
     };
 
@@ -232,6 +225,7 @@ export const CueCreateModal = (props) => {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };
@@ -385,7 +379,7 @@ export function CueEditModal(props) {
         setServerState({ show, error, message });
     };
 
-    // handle a from submit to create cue
+    // handle a from submit to edit cue
     const handleOnSubmit = (values, actions) => {
         // create the time object
         const time = new Date(values.PlayTime);
@@ -455,6 +449,7 @@ export function CueEditModal(props) {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };

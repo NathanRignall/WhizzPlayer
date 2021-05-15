@@ -1,12 +1,11 @@
 import { useState, useEffect, forwardRef } from "react";
 import useSWR, { mutate } from "swr";
 
-import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
-
 import { Formik, useField, useFormikContext } from "formik";
 import * as yup from "yup";
-import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+
+import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
 
 // axios request urls
 const USERS_URI = process.env.NEXT_PUBLIC_API_URL + "/settings/users";
@@ -46,7 +45,7 @@ export const UserCreateModal = (props) => {
 
     // handle a from submit to create user
     const handleOnSubmit = (values, actions) => {
-        // create the json object to post lcue
+        // create the json object to post user
         const json = JSON.stringify({
             Email: values.email,
             DisplayName: values.displayName,
@@ -112,6 +111,7 @@ export const UserCreateModal = (props) => {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };
@@ -291,7 +291,7 @@ export const UserEditModal = (props) => {
 
     // handle a from submit to edit user
     const handleOnSubmit = (values, actions) => {
-        // create the json object to post lcue
+        // create the json object to post user
         const json = JSON.stringify({
             Email: values.email,
             DisplayName: values.displayName,
@@ -299,7 +299,7 @@ export const UserEditModal = (props) => {
             Enabled: values.enabled,
         });
 
-        // axios post create user
+        // axios post edit user
         axios
             .put(`${USERS_URI}/${props.info.UserID}`, json, {
                 withCredentials: true,
@@ -356,6 +356,7 @@ export const UserEditModal = (props) => {
                     );
                     actions.setSubmitting(false);
                     // set loading to false
+                    console.log(error);
                 }
             });
     };
@@ -516,7 +517,7 @@ export function UserDeleteModal(props) {
     };
 
     // handle delete user
-    const deleteCue = () => {
+    const deleteUser = () => {
         // axios delete user
         axios
             .delete(`${USERS_URI}/${props.info.UserID}`, {
@@ -612,7 +613,7 @@ export function UserDeleteModal(props) {
                     </Button>
 
                     {/* Delete button*/}
-                    <Button variant="danger" onClick={deleteCue}>
+                    <Button variant="danger" onClick={deleteUser}>
                         Delete
                     </Button>
                 </Modal.Footer>
