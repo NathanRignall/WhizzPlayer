@@ -20,16 +20,16 @@ function Player(opts) {
     };
 
     this.play = function (json) {
-        // first check if a song is playing on the system
+        // first check if a track is playing on the system
         if (this.status.playing == true) {
             logger.error({
-                details: "Song already playing",
+                details: "Track already playing",
                 json: json,
             });
             return {
                 success: false,
                 server: false,
-                message: "Song already playing",
+                message: "Track already playing",
             };
         }
         // next check if json was sent
@@ -58,7 +58,7 @@ function Player(opts) {
         // log the current satus
         logger.playback({
             action: "play",
-            details: "Play song",
+            details: "Play track",
             status: this.status,
         });
 
