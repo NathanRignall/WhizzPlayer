@@ -6,7 +6,8 @@ exports.checkTables = () => {
         .then(checkGridsItemsTable)
         .then(checkUsersTable)
         .catch((error) => {
-            throw error;
+            console.error(error);
+            process.exit();
         });
 };
 
