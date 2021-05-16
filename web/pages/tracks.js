@@ -9,6 +9,7 @@ import { fetcher } from "../components/common/functions";
 import { ErrorDisplayer } from "../components/common/errors";
 import {
     UploadTrackModal,
+    TrackEditModal,
     TrackDeleteModal,
 } from "../components/custom/manageTracks";
 
@@ -45,12 +46,15 @@ const Track = (props) => {
                         </audio>
                     </div>
 
-                    <br />
-
                     {context.Access != 0 ? (
-                        <div className="text-right">
-                            <TrackDeleteModal info={props.info} />
-                        </div>
+                        <>
+                            <br />
+
+                            <div className="text-right">
+                                <TrackEditModal info={props.info} />{" "}
+                                <TrackDeleteModal info={props.info} />
+                            </div>
+                        </>
                     ) : null}
                 </Card.Body>
             </Card>
