@@ -567,8 +567,8 @@ export function CueEditModal(props) {
                                 {/* Submit button*/}
                                 {isSubmitting ? (
                                     <Button
-                                        type="submit"
                                         variant="success"
+                                        type="submit"
                                         disabled
                                     >
                                         <Spinner

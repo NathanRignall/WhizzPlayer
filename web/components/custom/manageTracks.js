@@ -603,7 +603,11 @@ export const TrackEditModal = (props) => {
 
                                 {/* Submit button*/}
                                 {isSubmitting ? (
-                                    <Button type="submit" disabled>
+                                    <Button
+                                        variant="success"
+                                        type="submit"
+                                        disabled
+                                    >
                                         <Spinner
                                             as="span"
                                             animation="border"

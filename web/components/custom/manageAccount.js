@@ -205,7 +205,11 @@ export const UpdateAccountInfoModal = (props) => {
 
                                 {/* Submit button*/}
                                 {isSubmitting ? (
-                                    <Button type="submit" disabled>
+                                    <Button
+                                        variant="success"
+                                        type="submit"
+                                        disabled
+                                    >
                                         <Spinner
                                             as="span"
                                             animation="border"
@@ -413,7 +417,11 @@ export const ResetAccountPasswordModal = (props) => {
 
                                 {/* Submit button*/}
                                 {isSubmitting ? (
-                                    <Button type="submit" disabled>
+                                    <Button
+                                        variant="danger"
+                                        type="submit"
+                                        disabled
+                                    >
                                         <Spinner
                                             as="span"
                                             animation="border"
