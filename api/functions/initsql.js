@@ -14,7 +14,7 @@ exports.checkTables = () => {
 const checkOtherTables = async function () {};
 
 const checkSettingsTable = () => {
-    console.log("settings start");
+    logger.info("settings start");
     // return the promise
     return new Promise((resolve, reject) => {
         // check the settings table is all okay and create/edit if not
@@ -98,7 +98,7 @@ const checkSettingsTable = () => {
 };
 
 const checkTracksTable = () => {
-    console.log("tracks start");
+    logger.info("tracks start");
     // return the promise
     return new Promise((resolve, reject) => {
         // check the tracks table is all okay and create/edit if not
@@ -298,7 +298,7 @@ const checkTracksTable = () => {
 };
 
 const checkCuesTable = () => {
-    console.log("cues start");
+    logger.info("cues start");
     // return promise
     return new Promise((resolve, reject) => {
         // check the cues table is all okay and create/edit if not
@@ -413,7 +413,7 @@ const checkCuesTable = () => {
 };
 
 const checkGridsTable = () => {
-    console.log("grids start");
+    logger.info("grids start");
     // return promise
     return new Promise((resolve, reject) => {
         // check the grids table is all okay and create/edit if not
@@ -529,7 +529,7 @@ const checkGridsTable = () => {
 };
 
 const checkGridsItemsTable = () => {
-    console.log("grid items start");
+    logger.info("grid items start");
     // return the promise
     return new Promise((resolve, reject) => {
         // check the grids items table is all okay and create/edit if not
@@ -646,7 +646,7 @@ const checkGridsItemsTable = () => {
 };
 
 const checkUsersTable = async () => {
-    console.log("users start");
+    logger.info("users start");
     // return the promise
     return new Promise((resolve, reject) => {
         // check the users table is all okay and create/edit if not

@@ -65,7 +65,7 @@ tempConnection.connect((err) => {
 
     // setup the db name
     const dbUse = nconf.any("DATABASE_DB", "database:db");
-    console.log(dbUse);
+    logger.info(dbUse);
 
     // create the databse if does not exists
     tempConnection.query("CREATE DATABASE IF NOT EXISTS " + dbUse, async (err, result) => {
@@ -85,7 +85,7 @@ tempConnection.connect((err) => {
             timezone: "utc",
         });
 
-        console.log("Connected to main DB!");
+        logger.info("Connected to main DB!");
         // make the db global
         global.db = connection;
         // check all the tables over

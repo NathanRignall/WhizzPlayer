@@ -8,6 +8,8 @@ const urlHalt = process.env.BACKEND_URL + "/halt/";
 exports.track = function (req, res, next) {
     // get req parms
     var TrackID = req.params.trackid;
+    // get the user id from the existing session
+    UserID = req.session.UserID;
     // grab info about track from db
     db.query(
         "SELECT TrackID, TrackName, TrackType FROM Tracks WHERE TrackID = ?",
@@ -29,6 +31,7 @@ exports.track = function (req, res, next) {
                         }
                         // add the volume to results
                         results[0].Volume = volume;
+                        results[0].UserID = UserID;
                         // http call to backend
                         axios
                             .post(urlPlay, results[0])
