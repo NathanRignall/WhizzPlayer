@@ -12,29 +12,32 @@ const uploadDir = uploadPath + "/save/";
 
 exports.list = function (req, res, next) {
     // get the tracks info from the database
-    db.query("SELECT TrackID, TrackName, TrackType, Created, Modified FROM Tracks", function (error, results, fields) {
-        // check if successful
-        if (!error) {
-            // retun the correct vars
-            res.status(200).json({
-                payload: results,
-                message: "okay",
-                reqid: res.locals.reqid,
-            });
-        } else {
-            // retun the correct vars
-            res.locals.errors.push({
-                location: "/api/app/tracks.js/list-1",
-                code: error.code,
-                from: "mysql",
-            });
-            res.status(500).json({
-                message: "Server error",
-                errors: res.locals.errors,
-                reqid: res.locals.reqid,
-            });
+    db.query(
+        "SELECT TrackID, TrackName, TrackType, Created, Modified FROM Tracks ORDER BY TrackType DESC, TrackID ASC",
+        function (error, results, fields) {
+            // check if successful
+            if (!error) {
+                // retun the correct vars
+                res.status(200).json({
+                    payload: results,
+                    message: "okay",
+                    reqid: res.locals.reqid,
+                });
+            } else {
+                // retun the correct vars
+                res.locals.errors.push({
+                    location: "/api/app/tracks.js/list-1",
+                    code: error.code,
+                    from: "mysql",
+                });
+                res.status(500).json({
+                    message: "Server error",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
+            }
         }
-    });
+    );
 };
 
 exports.search = function (req, res, next) {
@@ -383,7 +386,7 @@ exports.delete = function (req, res, next) {
                 // retun the correct vars
                 res.status(400).json({
                     payload: results,
-                    message: "Track used in cues",
+                    message: "Track used in grid(s) or cue(s)",
                     reqid: res.locals.reqid,
                 });
             }
