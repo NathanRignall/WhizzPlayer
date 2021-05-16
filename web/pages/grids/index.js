@@ -44,23 +44,26 @@ const Grid = (props) => {
                     {context.Access != 0 ? (
                         <>
                             <br />
-                            <Link
-                                href={{
-                                    pathname: "/grids/[id]/edit",
-                                    query: { id: props.info.GridID },
-                                }}
-                            >
-                                <Button
-                                    href={"/grids/" + props.info.GridID}
-                                    variant="primary"
+
+                            <div className="text-right">
+                                <Link
+                                    href={{
+                                        pathname: "/grids/[id]/edit",
+                                        query: { id: props.info.GridID },
+                                    }}
                                 >
-                                    Edit Grid
-                                </Button>
-                            </Link>{" "}
-                            <GridDeleteModal
-                                GridID={props.info.GridID}
-                                info={{ GridName: props.info.GridName }}
-                            />
+                                    <Button
+                                        href={"/grids/" + props.info.GridID}
+                                        variant="primary"
+                                    >
+                                        Edit Grid
+                                    </Button>
+                                </Link>{" "}
+                                <GridDeleteModal
+                                    GridID={props.info.GridID}
+                                    info={{ GridName: props.info.GridName }}
+                                />
+                            </div>
                         </>
                     ) : null}
                 </Card.Body>

@@ -163,7 +163,7 @@ export const UserCreateModal = (props) => {
                                         value={values.displayName}
                                         onChange={handleChange}
                                         isInvalid={errors.displayName}
-                                        autocomplete="nickname"
+                                        autoComplete="nickname"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
@@ -180,7 +180,7 @@ export const UserCreateModal = (props) => {
                                         value={values.email}
                                         onChange={handleChange}
                                         isInvalid={errors.email}
-                                        autocomplete="current-password"
+                                        autoComplete="current-password"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
@@ -197,7 +197,7 @@ export const UserCreateModal = (props) => {
                                         value={values.password}
                                         onChange={handleChange}
                                         isInvalid={errors.password}
-                                        autocomplete="new-password"
+                                        autoComplete="new-password"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
@@ -394,7 +394,9 @@ export const UserEditModal = (props) => {
                     }) => (
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header className="bg-primary text-white">
-                                <Modal.Title>Create User</Modal.Title>
+                                <Modal.Title>
+                                    Edit User: "{props.info.DisplayName}"
+                                </Modal.Title>
                             </Modal.Header>
 
                             <Modal.Body>
@@ -407,7 +409,7 @@ export const UserEditModal = (props) => {
                                         value={values.displayName}
                                         onChange={handleChange}
                                         isInvalid={errors.displayName}
-                                        autocomplete="nickname"
+                                        autoComplete="nickname"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
@@ -424,7 +426,7 @@ export const UserEditModal = (props) => {
                                         value={values.email}
                                         onChange={handleChange}
                                         isInvalid={errors.email}
-                                        autocomplete="current-password"
+                                        autoComplete="current-password"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
@@ -484,7 +486,9 @@ export const UserEditModal = (props) => {
                                         Loading...
                                     </Button>
                                 ) : (
-                                    <Button type="submit">Edit</Button>
+                                    <Button variant="success" type="submit">
+                                        Apply Changes
+                                    </Button>
                                 )}
                             </Modal.Footer>
                         </Form>
