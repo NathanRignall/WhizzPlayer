@@ -775,7 +775,7 @@ export const GridItemEditModal = (props) => {
                         isSubmitting,
                     }) => (
                         <Form noValidate onSubmit={handleSubmit}>
-                            <Modal.Header className="bg-success text-white">
+                            <Modal.Header className="bg-primary text-white">
                                 <Modal.Title>
                                     Edit Grid Item: "{props.info.GridItemName}"
                                 </Modal.Title>

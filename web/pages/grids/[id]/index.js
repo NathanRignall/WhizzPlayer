@@ -11,7 +11,11 @@ import _ from "lodash";
 import axios from "axios";
 
 import { fetcher } from "../../../components/common/functions";
-import { ErrorDisplayer, StickyError } from "../../../components/common/errors";
+import {
+    ErrorDisplayer,
+    StickyError,
+    InlineErrorDisplayer,
+} from "../../../components/common/errors";
 import HaltPlayModal from "../../../components/custom/haltPlay";
 
 import { Alert, Button, Spinner, Badge, Card, Row, Col } from "react-bootstrap";
@@ -32,16 +36,20 @@ const NowPlayingCard = () => {
 
     if (data) {
         if (data.payload.playing == true) {
-            return data.payload.json.TrackName;
+            return (
+                <div className="text-danger h3">
+                    {data.payload.json.TrackName}
+                </div>
+            );
         } else {
-            return "Not Playing";
+            return <div className="h3">Not Playing</div>;
         }
     } else {
         if (error) {
             return (
-                <Badge variant="danger" header="Now Playing">
+                <div className="p">
                     <InlineErrorDisplayer error={error} />
-                </Badge>
+                </div>
             );
         } else {
             return null;
@@ -239,7 +247,7 @@ class EditGrid extends React.PureComponent {
                             <Col>
                                 <HaltPlayModal size="md" />
                             </Col>
-                            <Col className="mb-0 h3">
+                            <Col className="mb-0">
                                 <NowPlayingCard />
                             </Col>
                         </Row>
