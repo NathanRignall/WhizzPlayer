@@ -11,51 +11,16 @@ import _ from "lodash";
 import axios from "axios";
 
 import { fetcher } from "../../../components/common/functions";
-import {
-    ErrorDisplayer,
-    StickyError,
-    InlineErrorDisplayer,
-} from "../../../components/common/errors";
-import HaltPlayModal from "../../../components/custom/haltPlay";
+import { ErrorDisplayer, StickyError } from "../../../components/common/errors";
+import { GridInfoCard } from "../../../components/custom/manageGrids";
 
-import { Alert, Button, Spinner, Badge, Card, Row, Col } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 
-// axios request urls
+// request urls
 const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play";
 const STATUS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/status";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
-
-// now playing
-const NowPlayingCard = () => {
-    const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/app/status/playing",
-        fetcher,
-        { refreshInterval: 10000 }
-    );
-
-    if (data) {
-        if (data.payload.playing == true) {
-            return (
-                <div className="text-danger h3">
-                    {data.payload.json.TrackName}
-                </div>
-            );
-        } else {
-            return <div className="h3">Not Playing</div>;
-        }
-    } else {
-        if (error) {
-            return (
-                <div className="p">
-                    <InlineErrorDisplayer error={error} />
-                </div>
-            );
-        } else {
-            return null;
-        }
-    }
-};
 
 // view grid
 class EditGrid extends React.PureComponent {
@@ -73,6 +38,7 @@ class EditGrid extends React.PureComponent {
                     name: item.GridItemName,
                     colour: item.GridItemColour,
                     trackID: item.TrackID,
+                    trackName: item.TrackName,
                 };
             }),
             layouts: JSON.parse(props.Grid.Layout),
@@ -97,6 +63,7 @@ class EditGrid extends React.PureComponent {
                         name: item.GridItemName,
                         colour: item.GridItemColour,
                         trackID: item.TrackID,
+                        trackName: item.TrackName,
                     };
                 }),
             });
@@ -104,19 +71,21 @@ class EditGrid extends React.PureComponent {
     }
 
     createElement(el) {
-        let removeStyle = {
+        const itemStyle = {
             backgroundColor: el.colour,
         };
 
         const i = el.i;
         const name = el.name;
+        const colour = el.colour;
         const trackID = el.trackID;
+        const trackName = el.trackName;
 
         return (
-            <div key={i} data-grid={el} style={removeStyle}>
+            <div key={i} data-grid={el} style={itemStyle}>
                 <div className="d-flex h-100 align-items-center justify-content-center">
                     <div>
-                        <h4>{name}</h4>
+                        <h3>{name}</h3>
                         <Button
                             size="lg"
                             onClick={this.instantPlay.bind(this, trackID)}
@@ -241,18 +210,7 @@ class EditGrid extends React.PureComponent {
                 </div>
 
                 <br />
-                <Card bg="light">
-                    <Card.Body className="text-center">
-                        <Row>
-                            <Col>
-                                <HaltPlayModal size="md" />
-                            </Col>
-                            <Col className="mb-0">
-                                <NowPlayingCard />
-                            </Col>
-                        </Row>
-                    </Card.Body>
-                </Card>
+                <GridInfoCard />
 
                 <br />
                 <ResponsiveReactGridLayout
@@ -267,6 +225,7 @@ class EditGrid extends React.PureComponent {
                 >
                     {_.map(this.state.items, (el) => this.createElement(el))}
                 </ResponsiveReactGridLayout>
+
                 {/* display errors to the user */}
                 {this.state.serverStateLayout.show && (
                     <StickyError

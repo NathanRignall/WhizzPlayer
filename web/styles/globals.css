@@ -48,10 +48,8 @@ html {
 }
 
 .react-grid-item.react-grid-placeholder {
-    background: #17a2b8;
-    border: 1px solid rgba(0, 0, 0, 0.125);
+    border: 8px solid rgba(0, 123, 255);
     border-radius: 0.25rem;
-    opacity: 0.2;
     transition-duration: 400ms;
     z-index: 2;
     -webkit-user-select: none;

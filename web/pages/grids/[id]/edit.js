@@ -16,6 +16,7 @@ import {
     GridItemCreateModal,
     GridItemEditModal,
     GridItemDeleteModal,
+    GridInfoCard,
 } from "../../../components/custom/manageGrids";
 
 import { Badge, Button, Spinner } from "react-bootstrap";
@@ -49,7 +50,15 @@ class ViewGrid extends React.PureComponent {
                 error: false,
                 message: "none",
             },
+            editMode: true,
         };
+        this.editModeManual = this.editModeManual.bind(this);
+    }
+
+    editModeManual(mode) {
+        this.setState({
+            editMode: mode,
+        });
     }
 
     componentDidUpdate(prevProps) {
@@ -73,17 +82,21 @@ class ViewGrid extends React.PureComponent {
     }
 
     createElement(el) {
+        const itemStyle = {
+            backgroundColor: el.colour,
+        };
+
         const removeStyle = {
             position: "absolute",
-            right: "2px",
-            top: 0,
+            right: "5px",
+            top: "5px",
             cursor: "pointer",
         };
 
         const editStyle = {
             position: "absolute",
-            left: "2px",
-            top: 0,
+            left: "5px",
+            top: "5px",
             cursor: "pointer",
         };
 
@@ -94,18 +107,22 @@ class ViewGrid extends React.PureComponent {
         const trackName = el.trackName;
 
         return (
-            <div key={i} data-grid={el}>
-                <div className="my-auto">
-                    <h3>{name}</h3>
-                    <Button disabled variant="primary">
-                        Play
-                    </Button>
+            <div key={i} data-grid={el} style={itemStyle}>
+                <div className="d-flex h-100 align-items-center justify-content-center">
+                    <div>
+                        <h3>{name}</h3>
+
+                        <Button size="lg" variant="light" disabled>
+                            Instant Play
+                        </Button>
+                    </div>
                 </div>
 
                 <span className="remove" style={removeStyle}>
                     <GridItemDeleteModal
                         GridID={this.props.GridID}
                         info={{ GridItemID: i, GridItemName: name }}
+                        editModeManual={this.editModeManual}
                     />
                 </span>
 
@@ -119,6 +136,7 @@ class ViewGrid extends React.PureComponent {
                             TrackID: trackID,
                             TrackName: trackName,
                         }}
+                        editModeManual={this.editModeManual}
                     />
                 </span>
             </div>
@@ -208,12 +226,7 @@ class ViewGrid extends React.PureComponent {
         return (
             <div>
                 <div className="d-flex flex-lg-row flex-column">
-                    <h1>
-                        {this.props.Grid.GridName}
-                        <Badge className="ml-1" variant="warning">
-                            Beta
-                        </Badge>
-                    </h1>
+                    <h1>{this.props.Grid.GridName}</h1>
 
                     <div className="ml-lg-auto my-auto">
                         <GridItemCreateModal
@@ -245,12 +258,17 @@ class ViewGrid extends React.PureComponent {
                     </div>
                 </div>
 
+                <br />
+                <GridInfoCard />
+
+                <br />
                 <ResponsiveReactGridLayout
                     className="layout"
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                     compactType={null}
-                    isDraggable={true}
-                    isResizable={true}
+                    isDraggable={this.state.editMode}
+                    isResizable={this.state.editMode}
+                    containerPadding={[0, 0]}
                     rowHeight={100}
                     layouts={this.state.layouts}
                     onLayoutChange={(layout, layouts) =>

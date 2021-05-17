@@ -1,12 +1,25 @@
 import { useState, useEffect, forwardRef } from "react";
-import { mutate } from "swr";
+import useSWR, { mutate } from "swr";
 
 import { Formik, useFormikContext } from "formik";
 import * as yup from "yup";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
 
-import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
+import { fetcher } from "../common/functions";
+import { InlineErrorDisplayer } from "../common/errors";
+import HaltPlayModal from "../custom/haltPlay";
+
+import {
+    Form,
+    Button,
+    Spinner,
+    Modal,
+    Alert,
+    Card,
+    Row,
+    Col,
+} from "react-bootstrap";
 
 // axios request urls
 const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
@@ -654,8 +667,14 @@ export const GridItemEditModal = (props) => {
     const [show, setShow] = useState(false);
 
     // set the state of the modal
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = () => {
+        setShow(false);
+        props.editModeManual(true);
+    };
+    const handleShow = () => {
+        setShow(true);
+        props.editModeManual(false);
+    };
 
     // satus of the form requests
     const [serverState, setServerState] = useState({
@@ -746,8 +765,8 @@ export const GridItemEditModal = (props) => {
 
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>
-                Edit Grid Item
+            <Button variant="primary" size="sm" onClick={handleShow}>
+                Edit
             </Button>
 
             <Modal
@@ -896,8 +915,14 @@ export function GridItemDeleteModal(props) {
     const [show, setShow] = useState(false);
 
     // set the state of the modal
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = () => {
+        setShow(false);
+        props.editModeManual(true);
+    };
+    const handleShow = () => {
+        setShow(true);
+        props.editModeManual(false);
+    };
 
     // satus of the form requests
     const [serverState, setServerState] = useState({
@@ -972,8 +997,8 @@ export function GridItemDeleteModal(props) {
 
     return (
         <>
-            <Button variant="danger" onClick={handleShow}>
-                Delete Grid Item
+            <Button variant="danger" size="sm" onClick={handleShow}>
+                Delete
             </Button>
 
             <Modal
@@ -1020,3 +1045,49 @@ export function GridItemDeleteModal(props) {
         </>
     );
 }
+
+// now playing
+const NowPlayingCard = () => {
+    const { data, error } = useSWR(
+        process.env.NEXT_PUBLIC_API_URL + "/app/status/playing",
+        fetcher,
+        { refreshInterval: 10000 }
+    );
+
+    if (data) {
+        if (data.payload.playing == true) {
+            return (
+                <div className="text-danger h3">
+                    {data.payload.json.TrackName}
+                </div>
+            );
+        } else {
+            return <div className="h3">Not Playing</div>;
+        }
+    } else {
+        if (error) {
+            return (
+                <div className="p">
+                    <InlineErrorDisplayer error={error} />
+                </div>
+            );
+        } else {
+            return null;
+        }
+    }
+};
+
+export const GridInfoCard = () => (
+    <Card bg="light">
+        <Card.Body className="text-center">
+            <Row>
+                <Col>
+                    <HaltPlayModal size="md" />
+                </Col>
+                <Col className="mb-0">
+                    <NowPlayingCard />
+                </Col>
+            </Row>
+        </Card.Body>
+    </Card>
+);
