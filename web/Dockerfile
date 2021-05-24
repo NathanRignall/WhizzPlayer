@@ -1,4 +1,4 @@
-FROM node:14.16.1-buster
+FROM node:14.17.0-buster
 
 # pre env vars
 ENV NODE_ENV=production
