@@ -11,22 +11,22 @@
     "bcrypt": "^5.0.1",
     "biguint-format": "^1.0.2",
     "cors": "^2.8.5",
-    "debug": "^4.3.1",
+    "debug": "^4.3.2",
     "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "file-type": "^16.2.0",
+    "express-session": "^1.17.2",
+    "file-type": "^16.5.3",
     "flake-idgen": "^1.4.0",
     "morgan": "^1.10.0",
-    "multer": "^1.4.2",
+    "multer": "^1.4.3",
     "mysql": "^2.18.1",
-    "nconf": "^0.11.2",
-    "node-lame": "^1.2.2",
-    "serialize-error": "^8.0.1",
-    "validator": "^13.5.2",
+    "nconf": "^0.11.3",
+    "node-lame": "^1.3.2",
+    "serialize-error": "^8.1.0",
+    "validator": "^13.6.0",
     "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.2"
+    "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
-    "dotenv": "^8.2.0"
+    "dotenv": "^10.0.0"
   }
 }
