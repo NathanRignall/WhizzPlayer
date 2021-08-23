@@ -1,5 +1,5 @@
 // load the dependancies
-var bcrypt = require("bcrypt");
+var bcrypt = require("bcryptjs");
 
 exports.setup = function (req, res, next) {
     if (nconf.get("setup")) {

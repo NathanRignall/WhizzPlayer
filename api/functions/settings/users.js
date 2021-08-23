@@ -1,5 +1,5 @@
 // load the dependancies
-var bcrypt = require("bcrypt");
+var bcrypt = require("bcryptjs");
 
 exports.list = function (req, res, next) {
     // get the cues info from the database
