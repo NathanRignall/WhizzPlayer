@@ -1,4 +1,4 @@
-FROM node:14.16.1-buster
+FROM node:14-buster-slim
 
 # pre env vars
 ENV NODE_ENV=production
@@ -6,12 +6,13 @@ ENV NODE_ENV=production
 # update the system and install apps
 RUN apt-get update && apt-get install lame -y && apt-get clean
 
-# create the app dir
+# Create app directory
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-# install the dependencies
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
-RUN npm install --production --silent && mv node_modules ../
+# Installing dependencies
+COPY package*.json /usr/src/app/
+RUN npm install
 
 # args
 ARG VERSION_CODE
@@ -21,8 +22,8 @@ ENV PORT=4000
 ENV API_VERSION $VERSION_CODE
 ENV BACKEND_URL=http://back:5000
 
-# move the app to location
-COPY . .
+# Copying source files
+COPY . /usr/src/app
 
 # expose ports
 EXPOSE 4000
