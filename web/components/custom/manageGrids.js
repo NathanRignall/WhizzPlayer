@@ -1081,9 +1081,9 @@ export const GridInfoCard = () => (
     <Card bg="light">
         <Card.Body className="text-center">
             <Row>
-                {false ? <Col>
+                <Col>
                     <HaltPlayModal size="md" />
-                </Col> : null }
+                </Col> 
                 <Col className="mb-0">
                     <NowPlayingCard />
                 </Col>
