@@ -12,5 +12,5 @@ Program Compoents
 - [BACKEND](back)
 
 # Screenshots
-![Homepage](/docs/WhizzPlayerHome.png)
-![Cues](/docs/WhizzPlayerCues.png)
+![Homepage](/docs/WhizzPlayerHome.PNG)
+![Cues](/docs/WhizzPlayerCues.PNG)
