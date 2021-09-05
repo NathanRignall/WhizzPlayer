@@ -7,7 +7,7 @@
     "dev": "node -r dotenv/config ./bin/www --trace-uncaught"
   },
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.3",
     "bcryptjs": "^2.4.3",
     "biguint-format": "^1.0.2",
     "cors": "^2.8.5",
