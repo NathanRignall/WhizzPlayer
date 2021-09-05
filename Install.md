@@ -11,7 +11,7 @@ sudo raspi-config
 - Interface Option - SSH - Enable
 ## Set Volume
 alsamixer
-- set volume to 80
+- set volume to 80 (this is the highest volume I have found which causes no/little distortion)
 # Download Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
@@ -26,7 +26,14 @@ mkdir uploads/save<br>
 mkdir uploads/temp<br>
 # Set Up Docker Compose
 nano docker-compose.yaml
-- PASTE LATEST DOCKER COMPOSE PROD FROM GITHUB)
+- PASTE LATEST DOCKER COMPOSE PROD FROM GITHUB [HERE](docker-compose.prod.yaml)
 # Start Program
 sudo docker-compose up -d<br>
 <strong>Navigate to http://IPADDRESS/setup</strong>
+
+# Additional Configuration
+WhizzPlayer can be configured using the default.json file in the config folder. Be sure to restart the docker container after modifcations.
+
+# Update Containers
+sudo docker-compose pull<br>
+sudo docker-compose up -d<br>
