@@ -1,9 +1,9 @@
 {
-    "playback": {
-        "enabled": true,
-        "volume": {
-            "music": 60,
-            "voice": 100
-        }
+  "playback": {
+    "enabled": true,
+    "volume": {
+      "music": 60,
+      "voice": 100
     }
+  }
 }
