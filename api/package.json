@@ -22,7 +22,7 @@
     "nconf": "^0.11.3",
     "node-lame": "^1.3.2",
     "serialize-error": "^8.1.0",
-    "validator": "^13.6.0",
+    "validator": "^13.7.0",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.5"
   },
