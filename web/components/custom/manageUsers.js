@@ -46,13 +46,13 @@ export const UserCreateModal = (props) => {
     // handle a from submit to create user
     const handleOnSubmit = (values, actions) => {
         // create the json object to post user
-        const json = JSON.stringify({
+        const json = {
             Email: values.email,
             DisplayName: values.displayName,
             Password: values.password,
             Access: values.access,
             Enabled: values.enabled,
-        });
+        };
 
         // axios post create user
         axios
@@ -292,12 +292,12 @@ export const UserEditModal = (props) => {
     // handle a from submit to edit user
     const handleOnSubmit = (values, actions) => {
         // create the json object to post user
-        const json = JSON.stringify({
+        const json = {
             Email: values.email,
             DisplayName: values.displayName,
             Access: values.access,
             Enabled: values.enabled,
-        });
+        };
 
         // axios post edit user
         axios

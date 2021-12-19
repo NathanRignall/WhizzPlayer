@@ -161,12 +161,12 @@ export const CueCreateModal = (props) => {
         const time = new Date(values.PlayTime);
         time.setSeconds(0);
         // create the json object to post lcue
-        const json = JSON.stringify({
+        const json = {
             CueName: values.CueName,
             TrackID: values.TrackID,
             PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
             Enabled: values.Enabled,
-        });
+        };
 
         // axios post create cue
         axios
@@ -385,12 +385,12 @@ export function CueEditModal(props) {
         const time = new Date(values.PlayTime);
         time.setSeconds(0);
         // create the json object to post lcue
-        const json = JSON.stringify({
+        const json = {
             CueName: values.CueName,
             TrackID: values.TrackID,
             PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
             Enabled: values.Enabled,
-        });
+        };
 
         // axios post edit cue
         axios

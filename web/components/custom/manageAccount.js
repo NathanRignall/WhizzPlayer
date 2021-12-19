@@ -46,10 +46,10 @@ export const UpdateAccountInfoModal = (props) => {
     // handle a from submit to update info
     const handleOnSubmit = (values, actions) => {
         // create the json object to put info
-        const json = JSON.stringify({
+        const json = {
             Email: values.Email,
             DisplayName: values.DisplayName,
-        });
+        };
 
         // axios post create user
         axios
@@ -258,10 +258,10 @@ export const ResetAccountPasswordModal = (props) => {
     // handle a from submit to reset password
     const handleOnSubmit = (values, actions) => {
         // create the json object to post password
-        const json = JSON.stringify({
+        const json = {
             Password: values.Password,
             NewPassword: values.NewPassword,
-        });
+        };
 
         // axios post reset account password
         axios

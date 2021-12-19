@@ -203,11 +203,11 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
     // handle a from submit to create track
     const handleOnSubmit = (values, actions) => {
         // create the json object to post track
-        const json = JSON.stringify({
+        const json = {
             TrackName: values.TrackName,
             TrackType: values.TrackType,
             FileID: trackProgress.tempID,
-        });
+        };
 
         // axios post create track
         axios
@@ -444,10 +444,10 @@ export const TrackEditModal = (props) => {
     // handle a from submit to edit track
     const handleOnSubmit = (values, actions) => {
         // create the json object to post track
-        const json = JSON.stringify({
+        const json = {
             TrackName: values.TrackName,
             TrackType: values.TrackType,
-        });
+        };
 
         // axios post edit track
         axios

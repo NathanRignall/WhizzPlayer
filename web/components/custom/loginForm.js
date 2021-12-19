@@ -40,10 +40,10 @@ export const MainForm = () => {
     // handle a from submit to login
     const handleOnSubmit = (values, actions) => {
         // create the json object to post login
-        const json = JSON.stringify({
+        const json = {
             Email: values.email,
             Password: values.password,
-        });
+        };
 
         // axios post login request
         axios
