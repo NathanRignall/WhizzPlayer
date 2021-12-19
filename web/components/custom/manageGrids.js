@@ -143,9 +143,9 @@ export const GridCreateModal = (props) => {
     // handle a from submit to create grid
     const handleOnSubmit = (values, actions) => {
         // create the json object to post grid
-        const json = JSON.stringify({
+        const json = {
             GridName: values.gridName,
-        });
+        };
 
         // axios post create grid
         axios
@@ -460,11 +460,11 @@ export const GridItemCreateModal = (props) => {
     // handle a from submit to create grid item
     const handleOnSubmit = (values, actions) => {
         // create the json object to post grid item
-        const json = JSON.stringify({
+        const json = {
             GridItemName: values.GridItemName,
             GridItemColour: values.GridItemColour,
             TrackID: values.TrackID,
-        });
+        };
 
         // axios post create grid item
         axios
@@ -691,11 +691,11 @@ export const GridItemEditModal = (props) => {
     // handle a from submit to edit grid item
     const handleOnSubmit = (values, actions) => {
         // create the json object to post grid item
-        const json = JSON.stringify({
+        const json = {
             GridItemName: values.GridItemName,
             GridItemColour: values.GridItemColour,
             TrackID: values.TrackID,
-        });
+        };
 
         // axios post edit grid item
         axios
