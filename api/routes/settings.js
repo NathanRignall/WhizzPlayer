@@ -8,6 +8,7 @@ var network = require("../functions/settings/network");
 var power = require("../functions/settings/power");
 var system = require("../functions/settings/system");
 var users = require("../functions/settings/users");
+var playback = require("../functions/settings/playback");
 
 // middleware
 var auth = require("../middleware/auth");
@@ -33,6 +34,11 @@ router.get("/users", auth.admin(), users.list);
 router.post("/users", auth.admin(), users.create);
 router.put("/users/:userid", auth.admin(), users.edit);
 router.delete("/users/:userid", auth.admin(), users.delete);
+
+//playback
+router.get("/playback", auth.admin(), playback.info);
+router.put("/playback/volume/:volumeid", auth.admin(), playback.volumeSet);
+router.put("/playback/enabled", auth.admin(), playback.enabledSet);
 
 // export the router
 module.exports = router;
