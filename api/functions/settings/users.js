@@ -39,8 +39,6 @@ exports.create = function (req, res, next) {
     var Enabled = json.hasOwnProperty("Enabled") ? json.Enabled : true;
     // check the fields are present and valid
     if (Email && DisplayName && Password) {
-        // hash the password
-        var Hash = bcrypt.hashSync(Password, 10);
         // check the email is and email display name is not funny
         if (validator.isEmail(Email) && checkCharacters(DisplayName)) {
             // check if the password is strong
@@ -121,7 +119,7 @@ exports.edit = function (req, res, next) {
         // check the email is and email display name is not funny
         if (validator.isEmail(Email) && checkCharacters(DisplayName)) {
             // check if the password is strong
-            // create the user in the database
+            // update the user in the database
             db.query(
                 "UPDATE Users SET Email = ?, DisplayName = ?, Access = ?, Enabled = ? WHERE UserID = ?",
                 [validator.normalizeEmail(Email), validator.trim(DisplayName), Access, Enabled, UserID],
@@ -205,4 +203,72 @@ exports.delete = function (req, res, next) {
             });
         }
     });
+};
+
+// reset the password of a user on system given the userID
+exports.password = function (req, res, next) {
+    // get req parms
+    const UserID = req.params.userid;
+
+    // get the info from json
+    const json = req.body;
+
+    // set the vars from post
+    const Password = json.Password;
+
+    // check if the password is not empty
+    if (!Password) {
+        // retun the correct vars
+        return res.status(400).json({
+            message: "Missing password input value",
+            reqid: res.locals.reqid,
+        });
+    }
+
+    // check if the password is secure
+    if (!validator.isStrongPassword(Password, { minSymbols: 0 })) {
+        // retun the correct vars
+        return res.status(400).json({
+            message: "Password not secure",
+            reqid: res.locals.reqid,
+        });
+    }
+
+    // hash the password
+    const Hash = bcrypt.hashSync(Password, 10);
+
+    // update the user in the database
+    db.query(
+        "UPDATE Users SET Password = ? WHERE UserID = ?",
+        [Hash, UserID],
+        function (error, results, fields) {
+            if (!error) {
+                // retun the correct vars
+                if (results.affectedRows == 1) {
+                    // retun the correct vars
+                    res.status(200).json({
+                        message: "okay",
+                        reqid: res.locals.reqid,
+                    });
+                } else {
+                    // retun the correct vars
+                    res.status(400).json({
+                        message: "User not found",
+                        reqid: res.locals.reqid,
+                    });
+                }
+            } else {
+                res.locals.errors.push({
+                    location: "/api/settings/users.js/password-1",
+                    code: error.code,
+                    from: "mysql",
+                });
+                res.status(500).json({
+                    message: "Server error",
+                    errors: res.locals.errors,
+                    reqid: res.locals.reqid,
+                });
+            }
+        }
+    );
 };
