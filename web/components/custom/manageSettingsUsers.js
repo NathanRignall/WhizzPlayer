@@ -22,6 +22,10 @@ const schemaEdit = yup.object().shape({
     displayName: yup.string().required(),
 });
 
+const schemaPassword = yup.object().shape({
+    password: yup.string().required(),
+});
+
 // full create user modal
 export const UserCreateModal = (props) => {
     // contain the state of the modal
@@ -629,3 +633,200 @@ export function UserDeleteModal(props) {
         </>
     );
 }
+
+// full reset password user modal
+export const UserPasswordModal = (props) => {
+    // contain the state of the modal
+    const [show, setShow] = useState(false);
+
+    // set the state of the modal
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    // satus of the form requests
+    const [serverState, setServerState] = useState({
+        show: false,
+        error: false,
+        message: "none",
+    });
+
+    // set the server state from a response
+    const handleServerResponse = (show, error, message) => {
+        setServerState({ show, error, message });
+    };
+
+    // handle a from submit to edit user
+    const handleOnSubmit = (values, actions) => {
+        // create the json object to post user
+        const json = {
+            Password: values.password,
+        };
+
+        // axios put reset password
+        axios
+            .put(`${USERS_URI}/${props.info.UserID}/password`, json, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
+            .then((response) => {
+                // set loading to false
+                actions.setSubmitting(false);
+                // set the server state to handle errors
+                handleServerResponse(false, false, response.data.message);
+                // reload the user list
+                mutate(USERS_URI);
+                // close the modal
+                handleClose();
+            })
+            .catch(function (error) {
+                // catch each type of axios error
+                if (error.response) {
+                    if (error.response.status == 500) {
+                        // check if a server error
+                        handleServerResponse(
+                            true,
+                            true,
+                            error.response.data.message
+                        );
+                    } else if (error.response.status == 502) {
+                        // check if api is offline
+                        handleServerResponse(true, true, "Error fetching api");
+                    } else {
+                        // check if a user error
+                        handleServerResponse(
+                            true,
+                            false,
+                            error.response.data.message
+                        );
+                    }
+                    actions.setSubmitting(false);
+                    // set loading to false
+                } else if (error.request) {
+                    // check if a request error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error sending request to server"
+                    );
+                    actions.setSubmitting(false);
+                    // set loading to false
+                } else {
+                    // check if a browser error
+                    handleServerResponse(
+                        true,
+                        true,
+                        "Error in browser request"
+                    );
+                    actions.setSubmitting(false);
+                    // set loading to false
+                    console.log(error);
+                }
+            });
+    };
+
+    return (
+        <>
+            <Button variant="warning" size="sm" onClick={handleShow}>
+                Reset Password
+            </Button>
+
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                size="lg"
+                centered={true}
+                keyboard={false}
+            >
+                <Formik
+                    validationSchema={schemaPassword}
+                    initialValues={{
+                        password: "",
+                    }}
+                    onSubmit={handleOnSubmit}
+                >
+                    {({
+                        handleSubmit,
+                        handleChange,
+                        values,
+                        errors,
+                        isSubmitting,
+                    }) => (
+                        <Form noValidate onSubmit={handleSubmit}>
+                            <Modal.Header className="bg-warning text-black">
+                                <Modal.Title>
+                                    Reset Password: "{props.info.DisplayName}"
+                                </Modal.Title>
+                            </Modal.Header>
+
+                            <Modal.Body>
+                                {/* password group */}
+                                <Form.Group controlId="validationFormik03">
+                                    <Form.Control
+                                        type="password"
+                                        name="password"
+                                        placeholder="Enter Password"
+                                        value={values.password}
+                                        onChange={handleChange}
+                                        isInvalid={errors.password}
+                                        autoComplete="new-password"
+                                    />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.password}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+
+                                {/* display errors to the user */}
+                                {serverState.show && (
+                                    <Alert
+                                        variant={
+                                            !serverState.error
+                                                ? "warning"
+                                                : "danger"
+                                        }
+                                    >
+                                        {serverState.message}
+                                    </Alert>
+                                )}
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                {/* Close Modal button*/}
+                                <Button
+                                    variant="secondary"
+                                    onClick={handleClose}
+                                >
+                                    Close
+                                </Button>
+
+                                {/* Submit button*/}
+                                {isSubmitting ? (
+                                    <Button
+                                        variant="warning"
+                                        type="submit"
+                                        disabled
+                                    >
+                                        <Spinner
+                                            as="span"
+                                            animation="border"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                            className="mr-2"
+                                        />
+                                        Loading...
+                                    </Button>
+                                ) : (
+                                    <Button variant="warning" type="submit">
+                                        Change Password
+                                    </Button>
+                                )}
+                            </Modal.Footer>
+                        </Form>
+                    )}
+                </Formik>
+            </Modal>
+        </>
+    );
+};
