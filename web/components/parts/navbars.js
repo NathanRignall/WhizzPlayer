@@ -49,6 +49,12 @@ export default function CoreNavbar(props) {
                                     Users
                                 </NavDropdown.Item>
                             </Link>
+
+                            <Link href="/settings/playback">
+                                <NavDropdown.Item href="/settings/playback">
+                                    Playback
+                                </NavDropdown.Item>
+                            </Link>
                         </NavDropdown>
                     ) : null}
                 </Nav>
