@@ -33,6 +33,7 @@ router.get("/users", auth.admin(), users.list);
 router.post("/users", auth.admin(), users.create);
 router.put("/users/:userid", auth.admin(), users.edit);
 router.delete("/users/:userid", auth.admin(), users.delete);
+router.put("/users/:userid/password", auth.admin(), users.password);
 
 // export the router
 module.exports = router;

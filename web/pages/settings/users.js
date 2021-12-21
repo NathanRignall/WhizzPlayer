@@ -10,7 +10,8 @@ import {
     UserCreateModal,
     UserDeleteModal,
     UserEditModal,
-} from "../../components/custom/manageUsers";
+    UserPasswordModal,
+} from "../../components/custom/manageSettingsUsers";
 
 import { Card, Table, Spinner, Button, Alert, Badge } from "react-bootstrap";
 
@@ -30,7 +31,8 @@ const User = (props) => {
             <td>{access}</td>
             <td>
                 <UserEditModal info={props.info} />{" "}
-                <UserDeleteModal info={props.info} />
+                <UserDeleteModal info={props.info} />{" "}
+                <UserPasswordModal info={props.info} />
             </td>
         </tr>
     );
