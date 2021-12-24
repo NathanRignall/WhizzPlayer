@@ -19,7 +19,7 @@ const Layout = (props) => {
 
     // setup api connection
     const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/account/info",
+        process.env.NEXT_PUBLIC_API_URL + "/session",
         fetcher,
         {
             revalidateOnFocus: false,
@@ -37,7 +37,7 @@ const Layout = (props) => {
             return <Loader />;
         } else {
             // if data set the vars
-            const userAccess = data.payload.Access;
+            const userAccess = data.payload.access;
             const requestAcess = props.access;
 
             // check the user has the right access

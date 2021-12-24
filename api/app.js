@@ -3,15 +3,14 @@ var express = require("express");
 var session = require("express-session");
 var nconf = require("nconf");
 var fs = require("fs");
-var mysql = require("mysql");
 var validator = require("validator");
 var crypto = require("crypto");
 const cors = require("cors");
 const { serializeError } = require("serialize-error");
 var morgan = require("morgan");
+
 var logger = require("./functions/winston").logger;
 var idgen = require("./functions/idgen");
-var initsql = require("./functions/initsql");
 var auth = require("./middleware/auth");
 
 //setup config
@@ -49,49 +48,9 @@ nconf.defaults({
     },
 });
 
-// temp connect to the mysql server
-const tempConnection = mysql.createConnection({
-    host: nconf.any("DATABASE_HOST", "database:host"),
-    user: nconf.any("DATABASE_USER", "database:user"),
-    password: nconf.any("DATABASE_PASS", "database:pass"),
-    supportBigNumbers: true,
-    bigNumberStrings: true,
-    timezone: "utc",
-});
-
-// connect to mysql and create database and tables if not exists
-tempConnection.connect((err) => {
-    if (err) throw err;
-
-    // setup the db name
-    const dbUse = nconf.any("DATABASE_DB", "database:db");
-    logger.info(dbUse);
-
-    // create the databse if does not exists
-    tempConnection.query("CREATE DATABASE IF NOT EXISTS " + dbUse, async (err, result) => {
-        if (err) throw err;
-
-        tempConnection.destroy();
-
-        // connect to actual db
-        var connection = await mysql.createPool({
-            connectionLimit: 10,
-            host: nconf.any("DATABASE_HOST", "database:host"),
-            user: nconf.any("DATABASE_USER", "database:user"),
-            password: nconf.any("DATABASE_PASS", "database:pass"),
-            database: dbUse,
-            supportBigNumbers: true,
-            bigNumberStrings: true,
-            timezone: "utc",
-        });
-
-        logger.info("Connected to main DB!");
-        // make the db global
-        global.db = connection;
-        // check all the tables over
-        initsql.checkTables();
-    });
-});
+// setup the sequalize
+const db = require("./app/models");
+db.sequelize.sync();
 
 // setup global validators
 global.validator = validator;
@@ -102,10 +61,10 @@ global.checkCharacters = checkCharacters;
 
 // import the routes after globals
 var indexRouter = require("./routes/index");
-var accountRouter = require("./routes/account");
-var appRouter = require("./routes/app");
-var settingsRouter = require("./routes/settings");
-var backendRouter = require("./routes/backend");
+var sessionRouter = require("./app/routes/session.routes");
+var cueRouter = require("./app/routes/cue.routes");
+var trackRouter = require("./app/routes/track.routes");
+var playRouter = require("./app/routes/play.routes");
 
 // setup the app
 var app = express();
@@ -165,13 +124,13 @@ app.use(
 
 // finally load the routes
 app.use("/", indexRouter);
-app.use("/account", accountRouter);
-app.use("/app", appRouter);
-app.use("/settings", settingsRouter);
-app.use("/backend", backendRouter);
+app.use("/session", sessionRouter);
+app.use("/cue", cueRouter);
+app.use("/track", trackRouter);
+app.use("/play", playRouter);
 
 // last load static paths
-app.use("/uploads", auth.simple());
+//app.use("/uploads", auth.simple());
 if (process.env.NODE_ENV == "production") {
     app.use("/uploads", express.static("/uploads"));
 } else {

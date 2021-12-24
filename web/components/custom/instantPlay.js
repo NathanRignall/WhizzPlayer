@@ -11,9 +11,8 @@ import { StickyError } from "../common/errors";
 import { Form, Button, Spinner, Col } from "react-bootstrap";
 
 // axios request urls
-const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
-const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play";
-const STATUS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/status";
+const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/track/find";
+const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/play";
 
 // form schema
 const schema = yup.object().shape({
@@ -42,12 +41,12 @@ const TrackSelector = (props) => {
     const handleSearch = (query) => {
         // make the axios request for track search
         axios
-            .get(`${SEARCH_URI}?search=${query}`)
+            .get(`${SEARCH_URI}?find=${query}`)
             .then((response) => {
                 // put the response into array
                 const options = response.data.payload.map((items) => ({
-                    TrackName: items.TrackName,
-                    TrackID: items.TrackID,
+                    TrackName: items.name,
+                    TrackID: items.id,
                 }));
                 // set the options state to this new array
                 setOptions(options);
@@ -120,7 +119,7 @@ export default function InstantPlay(props) {
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
                 // mutate now playing
-                mutate(`${STATUS_URI}/playing`);
+                mutate(PLAY_URI);
             })
             .catch(function (error) {
                 // catch each type of axios error

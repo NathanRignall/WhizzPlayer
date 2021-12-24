@@ -8,18 +8,18 @@ import axios from "axios";
 import { Form, Button, Spinner, Modal, Alert, Dropdown } from "react-bootstrap";
 
 // axios request urls
-const ACCOUNT_URI = process.env.NEXT_PUBLIC_API_URL + "/account/info";
-const PASSWORD_URI = process.env.NEXT_PUBLIC_API_URL + "/account/password";
+const ACCOUNT_URI = process.env.NEXT_PUBLIC_API_URL + "/session";
+const PASSWORD_URI = process.env.NEXT_PUBLIC_API_URL + "/session/password";
 
 // form schemas
 const schemaEdit = yup.object().shape({
-    DisplayName: yup.string().required(),
-    Email: yup.string().email().required(),
+    name: yup.string().required(),
+    email: yup.string().email().required(),
 });
 
 const schemaPassword = yup.object().shape({
-    Password: yup.string().required(),
-    NewPassword: yup.string().required(),
+    password: yup.string().required(),
+    newPassword: yup.string().required(),
 });
 
 // full update account info modal
@@ -47,8 +47,8 @@ export const UpdateAccountInfoModal = (props) => {
     const handleOnSubmit = (values, actions) => {
         // create the json object to put info
         const json = {
-            Email: values.Email,
-            DisplayName: values.DisplayName,
+            email: values.email,
+            name: values.name,
         };
 
         // axios post create user
@@ -128,8 +128,8 @@ export const UpdateAccountInfoModal = (props) => {
                 <Formik
                     validationSchema={schemaEdit}
                     initialValues={{
-                        DisplayName: props.info.DisplayName,
-                        Email: props.info.Email,
+                        name: props.info.name,
+                        email: props.info.email,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -150,16 +150,16 @@ export const UpdateAccountInfoModal = (props) => {
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
-                                        name="DisplayName"
-                                        placeholder="Enter Display Name"
-                                        value={values.DisplayName}
+                                        name="name"
+                                        placeholder="Enter Name"
+                                        value={values.name}
                                         onChange={handleChange}
-                                        isInvalid={errors.DisplayName}
-                                        autocomplete="nickname"
+                                        isInvalid={errors.name}
+                                        autoComplete="nickname"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.DisplayName}
+                                        {errors.name}
                                     </Form.Control.Feedback>
                                 </Form.Group>
 
@@ -167,16 +167,16 @@ export const UpdateAccountInfoModal = (props) => {
                                 <Form.Group controlId="validationFormik02">
                                     <Form.Control
                                         type="email"
-                                        name="Email"
+                                        name="email"
                                         placeholder="Enter Email"
-                                        value={values.Email}
+                                        value={values.email}
                                         onChange={handleChange}
-                                        isInvalid={errors.Email}
-                                        autocomplete="current-password"
+                                        isInvalid={errors.email}
+                                        autoComplete="email"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.Email}
+                                        {errors.email}
                                     </Form.Control.Feedback>
                                 </Form.Group>
 
@@ -259,8 +259,8 @@ export const ResetAccountPasswordModal = (props) => {
     const handleOnSubmit = (values, actions) => {
         // create the json object to post password
         const json = {
-            Password: values.Password,
-            NewPassword: values.NewPassword,
+            password: values.password,
+            newPassword: values.newPassword,
         };
 
         // axios post reset account password
@@ -340,8 +340,8 @@ export const ResetAccountPasswordModal = (props) => {
                 <Formik
                     validationSchema={schemaPassword}
                     initialValues={{
-                        Password: "",
-                        NewPassword: "",
+                        password: "",
+                        newPassword: "",
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -362,16 +362,16 @@ export const ResetAccountPasswordModal = (props) => {
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Control
                                         type="password"
-                                        name="Password"
+                                        name="password"
                                         placeholder="Enter Current Password"
-                                        value={values.Password}
+                                        value={values.password}
                                         onChange={handleChange}
-                                        isInvalid={errors.Password}
+                                        isInvalid={errors.password}
                                         autoComplete="current-password"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.Password}
+                                        {errors.password}
                                     </Form.Control.Feedback>
                                 </Form.Group>
 
@@ -379,16 +379,16 @@ export const ResetAccountPasswordModal = (props) => {
                                 <Form.Group controlId="validationFormik02">
                                     <Form.Control
                                         type="password"
-                                        name="NewPassword"
+                                        name="newPassword"
                                         placeholder="Enter New Password"
-                                        value={values.NewPassword}
+                                        value={values.newPassword}
                                         onChange={handleChange}
-                                        isInvalid={errors.NewPassword}
+                                        isInvalid={errors.newPassword}
                                         autoComplete="new-password"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.NewPassword}
+                                        {errors.newPassword}
                                     </Form.Control.Feedback>
                                 </Form.Group>
 

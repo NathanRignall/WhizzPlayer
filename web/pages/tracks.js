@@ -24,29 +24,22 @@ const Track = (props) => {
         <>
             <Card>
                 <Card.Header className="bg-secondary text-white">
-                    <h4 className="d-inline">{props.info.TrackName}</h4>
-                    <Badge
-                        className="ml-2"
-                        variant={
-                            props.info.TrackType == "music" ? "warning" : "info"
-                        }
-                    >
-                        {props.info.TrackType}
-                    </Badge>
+                    <h4 className="d-inline">{props.info.name}</h4>
+                    
                 </Card.Header>
 
                 <Card.Body>
                     <div className="text-center">
                         <audio controls>
                             <source
-                                src={"/api/uploads/save/" + props.info.TrackID}
+                                src={"/api/uploads/save/" + props.info.id}
                                 type="audio/mpeg"
                             />
                             Your browser does not support the audio element.
                         </audio>
                     </div>
 
-                    {context.Access != 0 ? (
+                    {context.access != 0 ? (
                         <>
                             <br />
 
@@ -66,13 +59,13 @@ const Track = (props) => {
 // main track list loader
 const TrackList = () => {
     const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/app/tracks",
+        process.env.NEXT_PUBLIC_API_URL + "/track",
         fetcher
     );
 
     if (data) {
         const TracksFormedList = data.payload.map((item) => (
-            <Col key={item.TrackID} xs={12} md={6}>
+            <Col key={item.id} xs={12} md={6}>
                 <Track info={item} />
             </Col>
         ));
@@ -109,7 +102,7 @@ const UploadTrack = () => {
 
     return (
         <>
-            {context.Access != 0 ? (
+            {context.access != 0 ? (
                 <div className="ml-auto my-auto">
                     <UploadTrackModal />
                 </div>

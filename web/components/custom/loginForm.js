@@ -8,7 +8,7 @@ import * as yup from "yup";
 import { Form, Button, Spinner, Alert } from "react-bootstrap";
 
 // axios request urls
-const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/account/login";
+const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/session";
 
 // form schema
 const schema = yup.object().shape({
@@ -41,8 +41,8 @@ export const MainForm = () => {
     const handleOnSubmit = (values, actions) => {
         // create the json object to post login
         const json = {
-            Email: values.email,
-            Password: values.password,
+            email: values.email,
+            password: values.password,
         };
 
         // axios post login request

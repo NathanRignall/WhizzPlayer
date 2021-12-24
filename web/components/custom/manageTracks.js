@@ -15,12 +15,12 @@ import {
 } from "react-bootstrap";
 
 // axios request urls
-const TRACKS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks";
-const TRACKS_FILE_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/file";
+const TRACKS_URI = process.env.NEXT_PUBLIC_API_URL + "/track";
+const TRACKS_FILE_URI = process.env.NEXT_PUBLIC_API_URL + "/track/file";
 
 // form schema
 const schema = yup.object().shape({
-    TrackName: yup.string().required(),
+    name: yup.string().required(),
 });
 
 // axios request to uplaod the file to the server
@@ -204,9 +204,9 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
     const handleOnSubmit = (values, actions) => {
         // create the json object to post track
         const json = {
-            TrackName: values.TrackName,
-            TrackType: values.TrackType,
-            FileID: trackProgress.tempID,
+            name: values.name,
+            type: values.type,
+            fileId: trackProgress.tempID,
         };
 
         // axios post create track
@@ -279,8 +279,8 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                 validationSchema={schema}
                 onSubmit={handleOnSubmit}
                 initialValues={{
-                    TrackName: trackProgress.tempName,
-                    TrackType: "music",
+                    name: trackProgress.tempName,
+                    type: "music",
                 }}
             >
                 {(props) => (
@@ -290,22 +290,22 @@ const CreateTrack = ({ trackProgress, handleClose, clearProgress }) => {
                             <Form.Group controlId="validationFormik01">
                                 <Form.Control
                                     type="text"
-                                    name="TrackName"
-                                    placeholder="Enter TrackName"
-                                    value={props.values.TrackName}
+                                    name="name"
+                                    placeholder="Enter Name"
+                                    value={props.values.name}
                                     onChange={props.handleChange}
                                     autoComplete="off"
                                 />
 
-                                {props.errors.TrackName}
+                                {props.errors.name}
                             </Form.Group>
 
                             {/* track type group */}
                             <Form.Group controlId="validationFormik02">
                                 <Form.Control
                                     as="select"
-                                    name="TrackType"
-                                    value={props.values.TrackType}
+                                    name="type"
+                                    value={props.values.type}
                                     onChange={props.handleChange}
                                     custom
                                 >
@@ -445,13 +445,13 @@ export const TrackEditModal = (props) => {
     const handleOnSubmit = (values, actions) => {
         // create the json object to post track
         const json = {
-            TrackName: values.TrackName,
-            TrackType: values.TrackType,
+            name: values.name,
+            type: values.type,
         };
 
         // axios post edit track
         axios
-            .put(`${TRACKS_URI}/${props.info.TrackID}`, json, {
+            .put(`${TRACKS_URI}/${props.info.id}`, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -528,8 +528,8 @@ export const TrackEditModal = (props) => {
                 <Formik
                     validationSchema={schema}
                     initialValues={{
-                        TrackName: props.info.TrackName,
-                        TrackType: props.info.TrackType,
+                        name: props.info.name,
+                        type: props.info.type,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -543,7 +543,7 @@ export const TrackEditModal = (props) => {
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header className="bg-primary text-white">
                                 <Modal.Title>
-                                    Edit Track: "{props.info.TrackName}"
+                                    Edit Track: "{props.info.name}"
                                 </Modal.Title>
                             </Modal.Header>
 
@@ -552,22 +552,22 @@ export const TrackEditModal = (props) => {
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
-                                        name="TrackName"
-                                        placeholder="Enter TrackName"
-                                        value={values.TrackName}
+                                        name="name"
+                                        placeholder="Enter name"
+                                        value={values.name}
                                         onChange={handleChange}
                                         autoComplete="off"
                                     />
 
-                                    {errors.TrackName}
+                                    {errors.name}
                                 </Form.Group>
 
                                 {/* track type group */}
                                 <Form.Group controlId="validationFormik02">
                                     <Form.Control
                                         as="select"
-                                        name="TrackType"
-                                        value={values.TrackType}
+                                        name="type"
+                                        value={values.type}
                                         onChange={handleChange}
                                         custom
                                     >
@@ -657,7 +657,7 @@ export function TrackDeleteModal(props) {
     const deleteTrack = () => {
         // axios delete track
         axios
-            .delete(`${TRACKS_URI}/${props.info.TrackID}`, {
+            .delete(`${TRACKS_URI}/${props.info.id}`, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -729,7 +729,7 @@ export function TrackDeleteModal(props) {
 
                 <Modal.Body>
                     Are you sure you would like to delete the track "
-                    {props.info.TrackName}"
+                    {props.info.name}"
                     <div className="pt-2">
                         {/* display errors to the user */}
                         {serverState.show && (

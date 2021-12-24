@@ -39,7 +39,7 @@ export default function CoreNavbar(props) {
                         <Nav.Link href="/tracks">Tracks</Nav.Link>
                     </Link>
 
-                    {context.Access == 10 ? (
+                    {context.access == 10 ? (
                         <NavDropdown
                             title="Settings"
                             id="collasible-nav-dropdown"
@@ -66,19 +66,19 @@ export default function CoreNavbar(props) {
                         <Dropdown.Menu align="right" className="text-center">
                             <Dropdown.Header className="pb-0 pt-1">
                                 <div>
-                                    <b>{context.DisplayName}</b>
+                                    <b>{context.name}</b>
                                 </div>
-                                <div>{context.Email}</div>
+                                <div>{context.email}</div>
                                 <div>
-                                    {context.Access == 0 ? (
+                                    {context.access == 0 ? (
                                         <Badge variant="success">
                                             View Only
                                         </Badge>
                                     ) : null}
-                                    {context.Access == 5 ? (
+                                    {context.access == 5 ? (
                                         <Badge variant="warning">Edit</Badge>
                                     ) : null}
-                                    {context.Access == 10 ? (
+                                    {context.access == 10 ? (
                                         <Badge variant="danger">Admin</Badge>
                                     ) : null}
                                 </div>

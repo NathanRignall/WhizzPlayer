@@ -11,13 +11,13 @@ import axios from "axios";
 import { Form, Button, Spinner, Modal, Alert } from "react-bootstrap";
 
 // axios request urls
-const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
-const CUES_URI = process.env.NEXT_PUBLIC_API_URL + "/app/cues";
+const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/track/find";
+const CUES_URI = process.env.NEXT_PUBLIC_API_URL + "/cue";
 
 // form schema
 const schema = yup.object().shape({
-    CueName: yup.string().required(),
-    TrackID: yup.string().required(),
+    name: yup.string().required(),
+    trackId: yup.string().required(),
 });
 
 // track selector component
@@ -34,8 +34,8 @@ const TrackSelector = (props) => {
         if (props.type == "edit") {
             setSingleSelections([
                 {
-                    TrackName: props.DefaultTrackName,
-                    TrackID: props.DefaultTrackID,
+                    name: props.DefaultTrackName,
+                    id: props.DefaultTrackID,
                 },
             ]);
         }
@@ -44,7 +44,7 @@ const TrackSelector = (props) => {
     // if a single item is selected set the formik status
     useEffect(() => {
         if (singleSelections.length > 0) {
-            setFieldValue(props.name, singleSelections[0].TrackID);
+            setFieldValue(props.name, singleSelections[0].id);
         }
     }, [singleSelections]);
 
@@ -52,12 +52,12 @@ const TrackSelector = (props) => {
     const handleSearch = (query) => {
         // make the axios request for track search
         axios
-            .get(`${SEARCH_URI}?search=${query}`)
+            .get(`${SEARCH_URI}?find=${query}`)
             .then((response) => {
                 // put the response into array
                 const options = response.data.payload.map((items) => ({
-                    TrackName: items.TrackName,
-                    TrackID: items.TrackID,
+                    name: items.name,
+                    id: items.id,
                 }));
                 // set the options state to this new array
                 setOptions(options);
@@ -89,7 +89,7 @@ const TrackSelector = (props) => {
             multiple={false}
             filterBy={filterBy}
             isLoading={isLoading}
-            labelKey="TrackName"
+            labelKey="name"
             minLength={2}
             onSearch={handleSearch}
             options={options}
@@ -97,7 +97,7 @@ const TrackSelector = (props) => {
             selected={singleSelections}
             placeholder="Enter Track Name..."
             renderMenuItemChildren={(option, props) => (
-                <span>{option.TrackName}</span>
+                <span>{option.name}</span>
             )}
         />
     );
@@ -158,14 +158,15 @@ export const CueCreateModal = (props) => {
     // handle a from submit to create cue
     const handleOnSubmit = (values, actions) => {
         // create the time object
-        const time = new Date(values.PlayTime);
+        const time = new Date(values.time);
         time.setSeconds(0);
+
         // create the json object to post lcue
         const json = {
-            CueName: values.CueName,
-            TrackID: values.TrackID,
-            PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
-            Enabled: values.Enabled,
+            name: values.name,
+            trackId: values.trackId,
+            time: time.toISOString().slice(0, 19).replace("T", " "),
+            enabled: values.enabled,
         };
 
         // axios post create cue
@@ -247,10 +248,10 @@ export const CueCreateModal = (props) => {
                 <Formik
                     validationSchema={schema}
                     initialValues={{
-                        CueName: "",
-                        TrackID: "",
-                        PlayTime: new Date(),
-                        Enabled: true,
+                        name: "",
+                        trackId: "",
+                        time: new Date(),
+                        enabled: true,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -271,40 +272,40 @@ export const CueCreateModal = (props) => {
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
-                                        name="CueName"
-                                        placeholder="Enter CueName"
-                                        value={values.CueName}
+                                        name="name"
+                                        placeholder="Enter Name"
+                                        value={values.name}
                                         onChange={handleChange}
                                         autoComplete="off"
                                     />
 
-                                    {errors.CueName}
+                                    {errors.name}
                                 </Form.Group>
 
                                 {/* track selector */}
                                 <Form.Group controlId="validationFormik05">
-                                    <TrackSelector name="TrackID" />
+                                    <TrackSelector name="trackId" />
 
-                                    {errors.TrackID}
+                                    {errors.trackId}
                                 </Form.Group>
 
                                 {/* cue time group */}
                                 <Form.Group controlId="validationFormik02">
-                                    <DateSelector name="PlayTime" />
+                                    <DateSelector name="time" />
 
-                                    {errors.PlayTime}
+                                    {errors.time}
                                 </Form.Group>
 
                                 {/* enabled group */}
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Check
-                                        name="Enabled"
                                         type="switch"
+                                        name="enabled"
                                         label="Enabled"
-                                        checked={values.Enabled}
-                                        value={values.Enabled}
+                                        checked={values.enabled}
+                                        value={values.enabled}
                                         onChange={handleChange}
-                                        isInvalid={errors.Enabled}
+                                        isInvalid={errors.enabled}
                                     />
                                 </Form.Group>
 
@@ -382,19 +383,19 @@ export function CueEditModal(props) {
     // handle a from submit to edit cue
     const handleOnSubmit = (values, actions) => {
         // create the time object
-        const time = new Date(values.PlayTime);
+        const time = new Date(values.time);
         time.setSeconds(0);
         // create the json object to post lcue
         const json = {
-            CueName: values.CueName,
-            TrackID: values.TrackID,
-            PlayTime: time.toISOString().slice(0, 19).replace("T", " "),
-            Enabled: values.Enabled,
+            name: values.name,
+            trackId: values.trackId,
+            time: time.toISOString().slice(0, 19).replace("T", " "),
+            enabled: values.enabled,
         };
 
         // axios post edit cue
         axios
-            .put(`${CUES_URI}/${props.info.CueID}`, json, {
+            .put(`${CUES_URI}/${props.info.id}`, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -471,10 +472,10 @@ export function CueEditModal(props) {
                 <Formik
                     validationSchema={schema}
                     initialValues={{
-                        CueName: props.info.CueName,
-                        TrackID: "",
-                        PlayTime: new Date(props.info.PlayTime),
-                        Enabled: props.info.Enabled ? true : false,
+                        name: props.info.name,
+                        trackId: "",
+                        time: new Date(props.info.time),
+                        enabled: props.info.enabled ? true : false,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -488,7 +489,7 @@ export function CueEditModal(props) {
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header className="bg-primary text-white">
                                 <Modal.Title>
-                                    Edit Cue: "{props.info.CueName}"
+                                    Edit Cue: "{props.info.name}"
                                 </Modal.Title>
                             </Modal.Header>
 
@@ -497,45 +498,45 @@ export function CueEditModal(props) {
                                     {/* cue name group */}
                                     <Form.Control
                                         type="text"
-                                        name="CueName"
-                                        placeholder="Enter CueName"
-                                        value={values.CueName}
+                                        name="name"
+                                        placeholder="Enter Name"
+                                        value={values.name}
                                         onChange={handleChange}
                                         autoComplete="off"
                                     />
 
-                                    {errors.CueName}
+                                    {errors.name}
                                 </Form.Group>
 
                                 {/* track selector */}
                                 <Form.Group controlId="validationFormik05">
                                     <TrackSelector
-                                        name="TrackID"
+                                        name="trackId"
                                         type="edit"
-                                        DefaultTrackName={props.info.TrackName}
-                                        DefaultTrackID={props.info.TrackID}
+                                        DefaultTrackName={props.info.track.name}
+                                        DefaultTrackID={props.info.track.id}
                                     />
 
-                                    {errors.TrackID}
+                                    {errors.trackId}
                                 </Form.Group>
 
                                 {/* cue time group */}
                                 <Form.Group controlId="validationFormik02">
                                     <DateSelector name="PlayTime" />
 
-                                    {errors.PlayTime}
+                                    {errors.time}
                                 </Form.Group>
 
                                 {/* repeats group */}
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Check
-                                        name="Enabled"
                                         type="switch"
+                                        name="enabled"
                                         label="Enabled"
-                                        checked={values.Enabled}
-                                        value={values.Enabled}
+                                        checked={values.enabled}
+                                        value={values.enabled}
                                         onChange={handleChange}
-                                        isInvalid={errors.Enabled}
+                                        isInvalid={errors.enabled}
                                     />
                                 </Form.Group>
 
@@ -620,7 +621,7 @@ export function CueDeleteModal(props) {
     const deleteCue = () => {
         // axios delete cue
         axios
-            .delete(`${CUES_URI}/${props.info.CueID}`, {
+            .delete(`${CUES_URI}/${props.info.id}`, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -691,7 +692,7 @@ export function CueDeleteModal(props) {
 
                 <Modal.Body>
                     Are you sure you would like to delete the cue "
-                    {props.info.CueName}"
+                    {props.info.name}"
                     <div className="pt-2">
                         {/* display errors to the user */}
                         {serverState.show && (

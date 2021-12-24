@@ -31,19 +31,19 @@ const CueRepeatItem = (props) => (
 // used for the cue repeat days area (the grid)
 const CueRepeatGrid = (props) => (
     <ListGroup horizontal="lg">
-        <CueRepeatItem repeat={props.info.RepeatMonday}>Monday</CueRepeatItem>
-        <CueRepeatItem repeat={props.info.RepeatTuesday}>Tuesday</CueRepeatItem>
-        <CueRepeatItem repeat={props.info.RepeatWednesday}>
+        <CueRepeatItem repeat={props.info.repeatMonday}>Monday</CueRepeatItem>
+        <CueRepeatItem repeat={props.info.repeatTuesday}>Tuesday</CueRepeatItem>
+        <CueRepeatItem repeat={props.info.repeatWednesday}>
             Wednesday
         </CueRepeatItem>
-        <CueRepeatItem repeat={props.info.RepeatThursday}>
+        <CueRepeatItem repeat={props.info.repeatThursday}>
             Thursday
         </CueRepeatItem>
-        <CueRepeatItem repeat={props.info.RepeatFriday}>Friday</CueRepeatItem>
-        <CueRepeatItem repeat={props.info.RepeatSaturday}>
+        <CueRepeatItem repeat={props.info.repeatFriday}>Friday</CueRepeatItem>
+        <CueRepeatItem repeat={props.info.repeatSaturday}>
             Saturday
         </CueRepeatItem>
-        <CueRepeatItem repeat={props.info.RepeatSunday}>Sunday</CueRepeatItem>
+        <CueRepeatItem repeat={props.info.repeatSunday}>Sunday</CueRepeatItem>
     </ListGroup>
 );
 
@@ -63,25 +63,25 @@ const Cue = (props) => {
     // global app context
     const context = useAppContext();
 
-    const date = new Date(props.info.PlayTime);
+    const date = new Date(props.info.time);
     const dateString = date.toString();
     return (
         <>
             <Card>
                 <Card.Header
                     className={
-                        props.info.Enabled
+                        props.info.enabled
                             ? "bg-success text-white"
                             : "bg-secondary text-white"
                     }
                 >
-                    <h4 className="d-inline">{props.info.CueName}</h4>
+                    <h4 className="d-inline">{props.info.name}</h4>
 
                     <Badge
                         className="ml-2"
-                        variant={props.info.Enabled ? "light" : "dark"}
+                        variant={props.info.enabled ? "light" : "dark"}
                     >
-                        {props.info.Enabled ? "Enabled" : "Disabled"}
+                        {props.info.enabled ? "Enabled" : "Disabled"}
                     </Badge>
                 </Card.Header>
 
@@ -89,16 +89,16 @@ const Cue = (props) => {
                     <CardDeck>
                         <CueInfoItem
                             title="Track"
-                            text={props.info.TrackName}
+                            text={props.info.track.name}
                         />
                         <CueInfoItem title="Time" text={dateString} />
                         <CueInfoItem
                             title="Repeats"
-                            text={props.info.Repeats ? "Enabled" : "Disabled"}
+                            text={props.info.repeat ? "Enabled" : "Disabled"}
                         />
                     </CardDeck>
 
-                    {props.info.Repeats ? (
+                    {props.info.repeat ? (
                         <div className="text-center">
                             <br />
                             <CueRepeatGrid info={props.info} />
@@ -112,7 +112,7 @@ const Cue = (props) => {
                     <div className="text-center">
                         <audio controls>
                             <source
-                                src={"/api/uploads/save/" + props.info.TrackID}
+                                src={"/api/uploads/save/" + props.info.track.id}
                                 type="audio/mpeg"
                             />
                             Your browser does not support the audio element.
@@ -121,7 +121,7 @@ const Cue = (props) => {
 
                     <br />
 
-                    {context.Access != 0 ? (
+                    {context.access != 0 ? (
                         <div className="text-right">
                             <CueEditModal info={props.info} />{" "}
                             <CueDeleteModal info={props.info} />
@@ -137,13 +137,13 @@ const Cue = (props) => {
 // main cue list loader
 const CueList = (props) => {
     const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/app/cues",
+        process.env.NEXT_PUBLIC_API_URL + "/cue",
         fetcher
     );
 
     if (data) {
         const CueFormedList = data.payload.map((item) => (
-            <Cue key={item.CueID} info={item} />
+            <Cue key={item.id} info={item} />
         ));
 
         return (
@@ -178,7 +178,7 @@ const CreateCue = () => {
 
     return (
         <>
-            {context.Access != 0 ? (
+            {context.access != 0 ? (
                 <div className="ml-auto my-auto">
                     <CueCreateModal />
                 </div>

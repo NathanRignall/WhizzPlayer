@@ -16,10 +16,13 @@ import {
     CardDeck,
 } from "react-bootstrap";
 
+// axios request urls
+const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/play";
+
 // setup warning
 const SetupModeWarning = () => {
     const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/account/setup",
+        process.env.NEXT_PUBLIC_API_URL + "/session/setup",
         fetcher,
         {
             revalidateOnFocus: false,
@@ -95,17 +98,15 @@ const InstantPlayCard = () => (
 
 // now playing
 const NowPlayingCard = () => {
-    const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/app/status/playing",
-        fetcher,
-        { refreshInterval: 10000 }
-    );
+    const { data, error } = useSWR(PLAY_URI, fetcher, {
+        refreshInterval: 10000,
+    });
 
     if (data) {
         if (data.payload.playing == true) {
             return (
                 <StatusCard variant="warning" header="Now Playing">
-                    <h3>{data.payload.json.TrackName}</h3>
+                    <h3>{data.payload.json.name}</h3>
                 </StatusCard>
             );
         } else {
