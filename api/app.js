@@ -1,17 +1,15 @@
 // import dependancies
-var express = require("express");
-var session = require("express-session");
-var nconf = require("nconf");
-var fs = require("fs");
-var validator = require("validator");
-var crypto = require("crypto");
+const express = require("express");
+const session = require("express-session");
+const nconf = require("nconf");
+const fs = require("fs");
+const validator = require("validator");
+const crypto = require("crypto");
 const cors = require("cors");
 const { serializeError } = require("serialize-error");
-var morgan = require("morgan");
+const morgan = require("morgan");
 
-var logger = require("./functions/winston").logger;
-var idgen = require("./functions/idgen");
-var auth = require("./middleware/auth");
+const logger = require("./functions/winston").logger;
 
 //setup config
 const configFile = process.env.NODE_ENV == "production" ? "/default.json" : "../config/default.json";
@@ -22,8 +20,6 @@ const configSave = function (err) {
 };
 
 // make the some modules global
-global.idgen = idgen;
-global.auth = auth;
 global.logger = logger;
 global.serializeError = serializeError;
 global.nconf = nconf;
@@ -59,16 +55,19 @@ function checkCharacters(input) {
 }
 global.checkCharacters = checkCharacters;
 
+// import middleware
+const auth = require("./app/middleware/auth.middleware");
+
 // import the routes after globals
-var indexRouter = require("./routes/index");
-var sessionRouter = require("./app/routes/session.routes");
-var cueRouter = require("./app/routes/cue.routes");
-var trackRouter = require("./app/routes/track.routes");
-var playRouter = require("./app/routes/play.routes");
-var gridRouter = require("./app/routes/grid.routes");
+const sessionRouter = require("./app/routes/session.routes");
+const cueRouter = require("./app/routes/cue.routes");
+const trackRouter = require("./app/routes/track.routes");
+const playRouter = require("./app/routes/play.routes");
+const gridRouter = require("./app/routes/grid.routes");
+const systemRouter = require("./app/routes/system.routes");
 
 // setup the app
-var app = express();
+const app = express();
 
 // setup the middleware
 app.use(express.json());
@@ -124,15 +123,14 @@ app.use(
 );
 
 // finally load the routes
-app.use("/", indexRouter);
 app.use("/session", sessionRouter);
 app.use("/cue", cueRouter);
 app.use("/track", trackRouter);
 app.use("/play", playRouter);
 app.use("/grid", gridRouter);
+app.use("/system", systemRouter);
 
 // last load static paths
-//app.use("/uploads", auth.simple());
 if (process.env.NODE_ENV == "production") {
     app.use("/uploads", express.static("/uploads"));
 } else {

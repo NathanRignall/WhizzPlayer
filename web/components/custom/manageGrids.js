@@ -1049,9 +1049,7 @@ const NowPlayingCard = () => {
     if (data) {
         if (data.payload.playing == true) {
             return (
-                <div className="text-danger h3">
-                    {data.payload.json.TrackName}
-                </div>
+                <div className="text-danger h3">{data.payload.json.name}</div>
             );
         } else {
             return <div className="h3">Not Playing</div>;

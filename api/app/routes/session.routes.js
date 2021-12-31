@@ -12,14 +12,17 @@ router.get("/setup", session.setup);
 // register first user
 router.post("/register", session.register);
 
-
 // login user
 router.post("/", session.login);
-// session user info
-router.get("/", auth.simple(), session.info);
-// logged in user update
-router.put("/", auth.simple(), session.update);
 
+// session user info
+router.get("/", auth.simple(), session.info); // view
+
+// logged in user update
+router.put("/", auth.simple(), session.update); // view
+
+// session user info
+router.get("/", auth.simple(), session.info); // view
 
 // reset password of current user
 //router.post("/password", auth.simple(), session.password);

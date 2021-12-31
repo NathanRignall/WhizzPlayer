@@ -138,7 +138,7 @@ const NowPlayingCard = () => {
 // stats card
 const StatsCard = () => {
     const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/app/status",
+        process.env.NEXT_PUBLIC_API_URL + "/system",
         fetcher
     );
 

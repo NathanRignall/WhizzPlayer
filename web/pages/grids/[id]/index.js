@@ -18,7 +18,6 @@ import { Button, Spinner } from "react-bootstrap";
 
 // request urls
 const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/play";
-const STATUS_URI = process.env.NEXT_PUBLIC_API_URL + "/status";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -114,7 +113,7 @@ class EditGrid extends React.PureComponent {
                     },
                 });
                 // mutate now playing
-                mutate(`${STATUS_URI}/playing`);
+                mutate(PLAY_URI);
             })
             .catch((error) => {
                 // catch each type of axios error
