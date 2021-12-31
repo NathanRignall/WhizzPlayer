@@ -30,7 +30,7 @@ exports.play = function (req, res, next) {
 
                 // check if playback is enabled
                 if (playback.enabled) {
-                    // add the volume to results
+                    // create play object
                     const track = {
                         id: data.id,
                         name: data.name,
@@ -55,12 +55,20 @@ exports.play = function (req, res, next) {
                             if (error.response) {
                                 // catch error in response
                                 if (error.response.status == 400) {
+                                    // user error in backend
+
+                                    // retun the correct vars
                                     res.status(400).json({
                                         message: error.response.data.message,
                                         reqid: res.locals.reqid,
                                     });
                                 } else {
+                                    // server error in backend
+
+                                    // push the error to buffer
                                     res.locals.errors.push(error.response.data.errors);
+
+                                    // retun the correct vars
                                     res.status(500).json({
                                         message: "Server error",
                                         errors: res.locals.errors,
@@ -69,11 +77,14 @@ exports.play = function (req, res, next) {
                                 }
                             } else if (error.request) {
                                 // no response
+
+                                // push the error to buffer
                                 res.locals.errors.push({
-                                    location: "/api/app/play.js/track-1",
+                                    location: "play.controller.play.1",
                                     code: error.code,
                                     from: "axios",
                                 });
+                                // retun the correct vars
                                 res.status(500).json({
                                     message: "Server error",
                                     errors: res.locals.errors,
@@ -81,11 +92,15 @@ exports.play = function (req, res, next) {
                                 });
                             } else {
                                 // actual axios error
+
+                                // push the error to buffer
                                 res.locals.errors.push({
-                                    location: "/api/app/play.js/track-2",
+                                    location: "play.controller.play.2",
                                     code: error.code,
                                     from: "axios",
                                 });
+
+                                // retun the correct vars
                                 res.status(500).json({
                                     message: "Server error",
                                     errors: res.locals.errors,
@@ -111,9 +126,9 @@ exports.play = function (req, res, next) {
         .catch((error) => {
             // push the error to buffer
             res.locals.errors.push({
-                location: "cue.controller.track.1",
+                location: "play.controller.play.3",
                 code: error.code,
-                message: error.message || "Some error occurred while finding the track.",
+                message: error.message || "Some error occurred while finding the track",
                 from: "sequelize",
             });
 
@@ -141,12 +156,20 @@ exports.halt = function (req, res, next) {
             if (error.response) {
                 // catch error in response
                 if (error.response.status == 400) {
+                    // user error in backend
+
+                    // retun the correct vars
                     res.status(400).json({
                         message: error.response.data.message,
                         reqid: res.locals.reqid,
                     });
                 } else {
+                    // server error in backend
+
+                    // push the error to buffer
                     res.locals.errors.push(error.response.data.errors);
+
+                    // retun the correct vars
                     res.status(500).json({
                         message: "Server error",
                         errors: res.locals.errors,
@@ -155,11 +178,15 @@ exports.halt = function (req, res, next) {
                 }
             } else if (error.request) {
                 // no response
+
+                // push the error to buffer
                 res.locals.errors.push({
-                    location: "/api/app/play.js/halt-1",
+                    location: "play.controller.halt.1",
                     code: error.code,
                     from: "axios",
                 });
+
+                // retun the correct vars
                 res.status(500).json({
                     message: "Server error",
                     errors: res.locals.errors,
@@ -167,11 +194,15 @@ exports.halt = function (req, res, next) {
                 });
             } else {
                 // actual axios error
+
+                // push the error to buffer
                 res.locals.errors.push({
-                    location: "/api/app/play.js/halt-2",
+                    location: "play.controller.halt.2",
                     code: error.code,
                     from: "axios",
                 });
+
+                // retun the correct vars
                 res.status(500).json({
                     message: "Server error",
                     errors: res.locals.errors,
@@ -197,7 +228,9 @@ exports.status = function (req, res, next) {
             if (error.response) {
                 // catch error in response
                 if (error.response.status != 500) {
-                    // not a server error
+                    // user error in backend
+
+                    // retun the correct vars
                     res.status(400).json({
                         message: error.response.data.message,
                         reqid: res.locals.reqid,
@@ -205,6 +238,8 @@ exports.status = function (req, res, next) {
                 } else {
                     // server error
                     res.locals.errors.push(error.response.data.errors);
+
+                    // retun the correct vars
                     res.status(500).json({
                         message: "Server error",
                         errors: res.locals.errors,
@@ -213,11 +248,15 @@ exports.status = function (req, res, next) {
                 }
             } else if (error.request) {
                 // no response
+
+                // push the error to buffer
                 res.locals.errors.push({
-                    location: "/api/app/status.js/playing-1",
+                    location: "play.controller.status.1",
                     code: error.code,
                     from: "axios",
                 });
+
+                // retun the correct vars
                 res.status(500).json({
                     message: "Server error",
                     errors: res.locals.errors,
@@ -225,11 +264,15 @@ exports.status = function (req, res, next) {
                 });
             } else {
                 // actual axios error
+
+                // push the error to buffer
                 res.locals.errors.push({
-                    location: "/api/app/status.js/playing-2",
+                    location: "play.controller.status.2",
                     code: error.code,
                     from: "axios",
                 });
+
+                // retun the correct vars
                 res.status(500).json({
                     message: "Server error",
                     errors: res.locals.errors,

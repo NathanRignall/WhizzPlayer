@@ -65,6 +65,7 @@ var sessionRouter = require("./app/routes/session.routes");
 var cueRouter = require("./app/routes/cue.routes");
 var trackRouter = require("./app/routes/track.routes");
 var playRouter = require("./app/routes/play.routes");
+var gridRouter = require("./app/routes/grid.routes");
 
 // setup the app
 var app = express();
@@ -128,6 +129,7 @@ app.use("/session", sessionRouter);
 app.use("/cue", cueRouter);
 app.use("/track", trackRouter);
 app.use("/play", playRouter);
+app.use("/grid", gridRouter);
 
 // last load static paths
 //app.use("/uploads", auth.simple());

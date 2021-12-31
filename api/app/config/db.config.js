@@ -1,5 +1,5 @@
 module.exports = {
-    HOST: "192.168.100.154",
+    HOST: "10.0.15.253",
     USER: "WhizzPlayerDev",
     PASSWORD: "Pass1234",
     DB: "WhizzPlayerSEQ",

@@ -7,6 +7,7 @@ const Cue = db.cues;
 
 // get all cues from the database.
 exports.list = (req, res) => {
+    // get all cues from db
     Cue.findAll({ include: ["track"] })
         .then((data) => {
             // retun the correct vars
@@ -21,7 +22,7 @@ exports.list = (req, res) => {
             res.locals.errors.push({
                 location: "cue.controller.list.1",
                 code: error.code,
-                message: error.message || "Some error occurred while finding the cues.",
+                message: error.message || "Some error occurred while finding the cues",
                 from: "sequelize",
             });
 
@@ -34,6 +35,7 @@ exports.list = (req, res) => {
         });
 };
 
+// create a grid
 exports.create = function (req, res, next) {
     // get the info from json
     const json = req.body;
@@ -123,7 +125,7 @@ exports.create = function (req, res, next) {
             res.locals.errors.push({
                 location: "cue.controller.create.1",
                 code: error.code,
-                message: error.message || "Some error occurred while creating the cue.",
+                message: error.message || "Some error occurred while creating the cue",
                 from: "sequelize",
             });
 
@@ -141,7 +143,7 @@ exports.info = (req, res) => {
     // get req params
     const id = req.params.id;
 
-    // Find the specific cue
+    // Find the specific cue in db
     Cue.findByPk(id, { include: ["tracks"] })
         .then((data) => {
             if (data) {
@@ -164,7 +166,7 @@ exports.info = (req, res) => {
             res.locals.errors.push({
                 location: "cue.controller.info.1",
                 code: error.code,
-                message: error.message || "Some error occurred while finding the cue.",
+                message: error.message || "Some error occurred while finding the cue",
                 from: "sequelize",
             });
 
@@ -230,7 +232,7 @@ exports.edit = (req, res) => {
     if (!trackId) {
         // retun the correct vars
         return res.status(400).json({
-            message: "TrackID input value missing",
+            message: "TrackId input value missing",
             reqid: res.locals.reqid,
         });
     }
@@ -250,7 +252,7 @@ exports.edit = (req, res) => {
         trackId: trackId,
     };
 
-    // Find the specific cue
+    // Update the specific cue in the db
     Cue.update(cue, {
         where: {
             id: id,
@@ -271,12 +273,12 @@ exports.edit = (req, res) => {
                 });
             }
         })
-        .catch((err) => {
+        .catch((error) => {
             // push the error to buffer
             res.locals.errors.push({
                 location: "cue.controller.info.1",
                 code: error.code,
-                message: error.message || "Some error occurred while updating the cue.",
+                message: error.message || "Some error occurred while updating the cue",
                 from: "sequelize",
             });
 
@@ -294,7 +296,7 @@ exports.delete = (req, res) => {
     // get req params
     const id = req.params.id;
 
-    // Find the specific cue
+    // Delete the specific cue in db
     Cue.destroy({
         where: { id: id },
     })
@@ -313,12 +315,12 @@ exports.delete = (req, res) => {
                 });
             }
         })
-        .catch((err) => {
+        .catch((error) => {
             // push the error to buffer
             res.locals.errors.push({
                 location: "cue.controller.delete.1",
                 code: error.code,
-                message: error.message || "Some error occurred while deleting the cue.",
+                message: error.message || "Some error occurred while deleting the cue",
                 from: "sequelize",
             });
 

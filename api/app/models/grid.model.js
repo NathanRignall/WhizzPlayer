@@ -9,8 +9,8 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
         },
         layout: {
-            type: Sequelize.STRING,
-            allowNull: false,
+            type: Sequelize.STRING(10240),
+            allowNull: true,
             defaultValue: "{}",
         },
     });

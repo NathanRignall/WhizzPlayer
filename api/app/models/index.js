@@ -3,16 +3,16 @@ const dbConfig = require("../config/db.config.js");
 const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-  host: dbConfig.HOST,
-  dialect: dbConfig.dialect,
-  operatorsAliases: false,
+    host: dbConfig.HOST,
+    dialect: dbConfig.dialect,
+    operatorsAliases: false,
 
-  pool: {
-    max: dbConfig.pool.max,
-    min: dbConfig.pool.min,
-    acquire: dbConfig.pool.acquire,
-    idle: dbConfig.pool.idle
-  }
+    pool: {
+        max: dbConfig.pool.max,
+        min: dbConfig.pool.min,
+        acquire: dbConfig.pool.acquire,
+        idle: dbConfig.pool.idle,
+    },
 });
 
 const db = {};
@@ -31,15 +31,15 @@ db.volumes = require("./volume.model.js")(sequelize, Sequelize);
 // cue - track relationship
 db.tracks.hasMany(db.cues, { as: "cues" });
 db.cues.belongsTo(db.tracks, {
-  foreignKey: "trackId",
-  as: "track",
+    foreignKey: "trackId",
+    as: "track",
 });
 
 // gridItem - track relationship
 db.tracks.hasMany(db.gridItems, { as: "gridItems" });
 db.gridItems.belongsTo(db.tracks, {
-  foreignKey: "trackId",
-  as: "track",
+    foreignKey: "trackId",
+    as: "track",
 });
 
 // track - volume relationship
@@ -50,10 +50,10 @@ db.gridItems.belongsTo(db.tracks, {
 // });
 
 // grid - gridItems relationship
-db.grids.hasMany(db.gridItems, { as: "gridItems" });
-db.gridItems.belongsTo(db.tracks, {
-  foreignKey: "gridId",
-  as: "grid",
+db.grids.hasMany(db.gridItems, { as: "items" });
+db.gridItems.belongsTo(db.grids, {
+    foreignKey: "gridId",
+    as: "grid",
 });
 
 // export the whole db model formed

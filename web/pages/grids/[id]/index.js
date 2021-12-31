@@ -17,8 +17,8 @@ import { GridInfoCard } from "../../../components/custom/manageGrids";
 import { Button, Spinner } from "react-bootstrap";
 
 // request urls
-const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/app/play";
-const STATUS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/status";
+const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/play";
+const STATUS_URI = process.env.NEXT_PUBLIC_API_URL + "/status";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -28,20 +28,20 @@ class EditGrid extends React.PureComponent {
         super(props);
 
         this.state = {
-            items: props.Items.map(function (item, key, list) {
+            items: props.info.items.map(function (item, key, list) {
                 return {
-                    i: item.GridItemID.toString(),
+                    i: item.id,
                     x: 0,
                     y: 0,
                     w: 2,
                     h: 2,
-                    name: item.GridItemName,
-                    colour: item.GridItemColour,
-                    trackID: item.TrackID,
-                    trackName: item.TrackName,
+                    name: item.name,
+                    color: item.color,
+                    trackId: item.track.id,
+                    trackName: item.track.name,
                 };
             }),
-            layouts: JSON.parse(props.Grid.Layout),
+            layouts: props.info.layout,
             serverStateLayout: {
                 show: false,
                 error: false,
@@ -51,19 +51,19 @@ class EditGrid extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.Items !== this.props.Items) {
+        if (prevProps.info.items !== this.props.info.items) {
             this.setState({
-                items: this.props.Items.map(function (item, key, list) {
+                items: this.props.info.items.map(function (item, key, list) {
                     return {
-                        i: item.GridItemID.toString(),
+                        i: item.id,
                         x: 0,
                         y: 0,
                         w: 2,
                         h: 2,
-                        name: item.GridItemName,
-                        colour: item.GridItemColour,
-                        trackID: item.TrackID,
-                        trackName: item.TrackName,
+                        name: item.name,
+                        color: item.color,
+                        trackId: item.track.id,
+                        trackName: item.track.name,
                     };
                 }),
             });
@@ -71,15 +71,14 @@ class EditGrid extends React.PureComponent {
     }
 
     createElement(el) {
-        const itemStyle = {
-            backgroundColor: el.colour,
-        };
-
         const i = el.i;
         const name = el.name;
-        const colour = el.colour;
-        const trackID = el.trackID;
-        const trackName = el.trackName;
+        const color = el.color;
+        const trackId = el.trackId;
+
+        const itemStyle = {
+            backgroundColor: color,
+        };
 
         return (
             <div key={i} data-grid={el} style={itemStyle}>
@@ -88,7 +87,7 @@ class EditGrid extends React.PureComponent {
                         <h3>{name}</h3>
                         <Button
                             size="lg"
-                            onClick={this.instantPlay.bind(this, trackID)}
+                            onClick={this.instantPlay.bind(this, trackId)}
                             variant="light"
                         >
                             Instant Play
@@ -175,22 +174,22 @@ class EditGrid extends React.PureComponent {
         return (
             <div>
                 <div className="d-flex flex-lg-row flex-column">
-                    <h1>{this.props.Grid.GridName}</h1>
+                    <h1>{this.props.info.name}</h1>
 
                     <div className="ml-lg-auto my-auto">
                         <AppContext.Consumer>
                             {(context) =>
-                                context.Access != 0 ? (
+                                context.access != 0 ? (
                                     <Link
                                         href={{
                                             pathname: "/grids/[id]/edit",
-                                            query: { id: this.props.GridID },
+                                            query: { id: this.props.info.id },
                                         }}
                                     >
                                         <Button
                                             href={
                                                 "/grids/" +
-                                                this.props.GridID +
+                                                this.props.info.id +
                                                 "/edit"
                                             }
                                             variant="primary"
@@ -245,10 +244,7 @@ class EditGrid extends React.PureComponent {
 // main grid loader
 const Grid = (props) => {
     const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL +
-            "/app/grids/" +
-            props.GridID +
-            "/items",
+        process.env.NEXT_PUBLIC_API_URL + "/grid/" + props.id,
         fetcher
     );
 
@@ -257,11 +253,7 @@ const Grid = (props) => {
             <>
                 <ErrorDisplayer error={error} />
 
-                <EditGrid
-                    Items={data.payload.items}
-                    Grid={data.payload.grid}
-                    GridID={props.GridID}
-                ></EditGrid>
+                <EditGrid info={data.payload}></EditGrid>
             </>
         );
     } else {
@@ -285,7 +277,7 @@ export default function Main() {
     if (id) {
         return (
             <Layout title="Grids" access={0}>
-                <Grid GridID={id} />
+                <Grid id={id} />
             </Layout>
         );
     } else {

@@ -22,18 +22,19 @@ import {
 } from "react-bootstrap";
 
 // axios request urls
-const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/app/tracks/lookup";
-const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/grids";
+const SEARCH_URI = process.env.NEXT_PUBLIC_API_URL + "/track/find";
+const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/grid";
+const PLAY_URI = process.env.NEXT_PUBLIC_API_URL + "/play";
 
 // form schemas
 const schemaGrid = yup.object().shape({
-    gridName: yup.string().required(),
+    name: yup.string().required(),
 });
 
 const schemaGridItem = yup.object().shape({
-    GridItemName: yup.string().required(),
-    GridItemColour: yup.string().required(),
-    TrackID: yup.string().required(),
+    name: yup.string().required(),
+    color: yup.string().required(),
+    trackId: yup.string().required(),
 });
 
 // track selector component
@@ -50,8 +51,8 @@ const TrackSelector = (props) => {
         if (props.type == "edit") {
             setSingleSelections([
                 {
-                    TrackName: props.DefaultTrackName,
-                    TrackID: props.DefaultTrackID,
+                    name: props.DefaultTrackName,
+                    id: props.DefaultTrackID,
                 },
             ]);
         }
@@ -60,7 +61,7 @@ const TrackSelector = (props) => {
     // if a single item is selected set the formik status
     useEffect(() => {
         if (singleSelections.length > 0) {
-            setFieldValue(props.name, singleSelections[0].TrackID);
+            setFieldValue(props.name, singleSelections[0].id);
         }
     }, [singleSelections]);
 
@@ -68,12 +69,12 @@ const TrackSelector = (props) => {
     const handleSearch = (query) => {
         // make the axios request for track search
         axios
-            .get(`${SEARCH_URI}?search=${query}`)
+            .get(`${SEARCH_URI}?find=${query}`)
             .then((response) => {
                 // put the response into array
                 const options = response.data.payload.map((items) => ({
-                    TrackName: items.TrackName,
-                    TrackID: items.TrackID,
+                    name: items.name,
+                    id: items.id,
                 }));
                 // set the options state to this new array
                 setOptions(options);
@@ -105,7 +106,7 @@ const TrackSelector = (props) => {
             multiple={false}
             filterBy={filterBy}
             isLoading={isLoading}
-            labelKey="TrackName"
+            labelKey="name"
             minLength={2}
             onSearch={handleSearch}
             options={options}
@@ -113,7 +114,7 @@ const TrackSelector = (props) => {
             selected={singleSelections}
             placeholder="Enter Track Name..."
             renderMenuItemChildren={(option, props) => (
-                <span>{option.TrackName}</span>
+                <span>{option.name}</span>
             )}
         />
     );
@@ -144,7 +145,7 @@ export const GridCreateModal = (props) => {
     const handleOnSubmit = (values, actions) => {
         // create the json object to post grid
         const json = {
-            GridName: values.gridName,
+            name: values.name,
         };
 
         // axios post create grid
@@ -226,7 +227,7 @@ export const GridCreateModal = (props) => {
                 <Formik
                     validationSchema={schemaGrid}
                     initialValues={{
-                        gridName: "",
+                        name: "",
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -247,16 +248,16 @@ export const GridCreateModal = (props) => {
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
-                                        name="gridName"
+                                        name="name"
                                         placeholder="Enter Grid Name"
-                                        value={values.gridName}
+                                        value={values.name}
                                         onChange={handleChange}
-                                        isInvalid={errors.gridName}
+                                        isInvalid={errors.name}
                                         autoComplete="nickname"
                                     />
 
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.displayName}
+                                        {errors.name}
                                     </Form.Control.Feedback>
                                 </Form.Group>
 
@@ -333,7 +334,7 @@ export function GridDeleteModal(props) {
     const deleteGrid = () => {
         // axios delete grid
         axios
-            .delete(`${GRIDS_URI}/${props.GridID}`, {
+            .delete(`${GRIDS_URI}/${props.id}`, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -405,7 +406,7 @@ export function GridDeleteModal(props) {
 
                 <Modal.Body>
                     Are you sure you would like to delete the grid "
-                    {props.info.GridName}"
+                    {props.info.name}"
                     <div className="pt-2">
                         {/* display errors to the user */}
                         {serverState.show && (
@@ -461,14 +462,14 @@ export const GridItemCreateModal = (props) => {
     const handleOnSubmit = (values, actions) => {
         // create the json object to post grid item
         const json = {
-            GridItemName: values.GridItemName,
-            GridItemColour: values.GridItemColour,
-            TrackID: values.TrackID,
+            name: values.name,
+            color: values.color,
+            trackId: values.trackId,
         };
 
         // axios post create grid item
         axios
-            .post(`${GRIDS_URI}/${props.GridID}/items`, json, {
+            .post(`${GRIDS_URI}/${props.id}`, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -478,7 +479,7 @@ export const GridItemCreateModal = (props) => {
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
                 // reload the grid item list
-                mutate(`${GRIDS_URI}/${props.GridID}/items`);
+                mutate(`${GRIDS_URI}/${props.id}`);
                 // close the modal
                 handleClose();
             })
@@ -545,9 +546,9 @@ export const GridItemCreateModal = (props) => {
                 <Formik
                     validationSchema={schemaGridItem}
                     initialValues={{
-                        GridItemName: "",
-                        GridItemColour: "#fefefe",
-                        TrackID: "",
+                        name: "",
+                        color: "#fefefe",
+                        trackId: "",
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -564,33 +565,33 @@ export const GridItemCreateModal = (props) => {
                             </Modal.Header>
 
                             <Modal.Body>
-                                {/* grid name group */}
+                                {/* grid item name group */}
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
-                                        name="GridItemName"
+                                        name="name"
                                         placeholder="Enter Grid Item Name"
-                                        value={values.GridItemName}
+                                        value={values.name}
                                         onChange={handleChange}
                                         autoComplete="off"
                                     />
 
-                                    {errors.GridItemName}
+                                    {errors.name}
                                 </Form.Group>
 
                                 {/* track selector */}
                                 <Form.Group controlId="validationFormik02">
-                                    <TrackSelector name="TrackID" />
+                                    <TrackSelector name="trackId" />
 
-                                    {errors.TrackID}
+                                    {errors.trackId}
                                 </Form.Group>
 
                                 {/* colour group */}
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Control
                                         as="select"
-                                        name="GridItemColour"
-                                        value={values.GridItemColour}
+                                        name="color"
+                                        value={values.color}
                                         onChange={handleChange}
                                         custom
                                     >
@@ -692,28 +693,24 @@ export const GridItemEditModal = (props) => {
     const handleOnSubmit = (values, actions) => {
         // create the json object to post grid item
         const json = {
-            GridItemName: values.GridItemName,
-            GridItemColour: values.GridItemColour,
-            TrackID: values.TrackID,
+            name: values.name,
+            color: values.color,
+            trackId: values.trackId,
         };
 
         // axios post edit grid item
         axios
-            .put(
-                `${GRIDS_URI}/${props.GridID}/items/${props.info.GridItemID}`,
-                json,
-                {
-                    withCredentials: true,
-                    headers: { "Content-Type": "application/json" },
-                }
-            )
+            .put(`${GRIDS_URI}/${props.info.gridId}/${props.info.id}`, json, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
             .then((response) => {
                 // set loading to false
                 actions.setSubmitting(false);
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
                 // reload the grid item list
-                mutate(`${GRIDS_URI}/${props.GridID}/items`);
+                mutate(`${GRIDS_URI}/${props.info.gridId}`);
                 // close the modal
                 handleClose();
             })
@@ -780,9 +777,9 @@ export const GridItemEditModal = (props) => {
                 <Formik
                     validationSchema={schemaGridItem}
                     initialValues={{
-                        GridItemName: props.info.GridItemName,
-                        GridItemColour: props.info.GridItemColour,
-                        TrackID: "",
+                        name: props.info.name,
+                        color: props.info.color,
+                        trackId: props.info.track.id,
                     }}
                     onSubmit={handleOnSubmit}
                 >
@@ -796,7 +793,7 @@ export const GridItemEditModal = (props) => {
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header className="bg-primary text-white">
                                 <Modal.Title>
-                                    Edit Grid Item: "{props.info.GridItemName}"
+                                    Edit Grid Item: "{props.info.name}"
                                 </Modal.Title>
                             </Modal.Header>
 
@@ -805,14 +802,14 @@ export const GridItemEditModal = (props) => {
                                 <Form.Group controlId="validationFormik01">
                                     <Form.Control
                                         type="text"
-                                        name="GridItemName"
+                                        name="name"
                                         placeholder="Enter Grid Item Name"
-                                        value={values.GridItemName}
+                                        value={values.name}
                                         onChange={handleChange}
                                         autoComplete="off"
                                     />
 
-                                    {errors.GridItemName}
+                                    {errors.name}
                                 </Form.Group>
 
                                 {/* track selector */}
@@ -820,8 +817,8 @@ export const GridItemEditModal = (props) => {
                                     <TrackSelector
                                         name="TrackID"
                                         type="edit"
-                                        DefaultTrackName={props.info.TrackName}
-                                        DefaultTrackID={props.info.TrackID}
+                                        DefaultTrackName={props.info.track.name}
+                                        DefaultTrackID={props.info.track.id}
                                     />
 
                                     {errors.TrackID}
@@ -831,8 +828,8 @@ export const GridItemEditModal = (props) => {
                                 <Form.Group controlId="validationFormik03">
                                     <Form.Control
                                         as="select"
-                                        name="GridItemColour"
-                                        value={values.GridItemColour}
+                                        name="color"
+                                        value={values.color}
                                         onChange={handleChange}
                                         custom
                                     >
@@ -940,18 +937,15 @@ export function GridItemDeleteModal(props) {
     const deleteGridItem = () => {
         // axios delete grid item
         axios
-            .delete(
-                `${GRIDS_URI}/${props.GridID}/items/${props.info.GridItemID}`,
-                {
-                    withCredentials: true,
-                    headers: { "Content-Type": "application/json" },
-                }
-            )
+            .delete(`${GRIDS_URI}/${props.info.gridId}/${props.info.id}`, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            })
             .then((response) => {
                 // set the server state to handle errors
                 handleServerResponse(false, false, response.data.message);
                 // reload the grid item list
-                mutate(`${GRIDS_URI}/${props.GridID}/items`);
+                mutate(`${GRIDS_URI}/${props.info.gridId}`);
                 // close the modal
                 handleClose();
             })
@@ -1015,7 +1009,7 @@ export function GridItemDeleteModal(props) {
 
                 <Modal.Body>
                     Are you sure you would like to delete the grid item "
-                    {props.info.GridItemName}"
+                    {props.info.name}"
                     <div className="pt-2">
                         {/* display errors to the user */}
                         {serverState.show && (
@@ -1048,11 +1042,9 @@ export function GridItemDeleteModal(props) {
 
 // now playing
 const NowPlayingCard = () => {
-    const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/app/status/playing",
-        fetcher,
-        { refreshInterval: 10000 }
-    );
+    const { data, error } = useSWR(PLAY_URI, fetcher, {
+        refreshInterval: 10000,
+    });
 
     if (data) {
         if (data.payload.playing == true) {
@@ -1083,7 +1075,7 @@ export const GridInfoCard = () => (
             <Row>
                 <Col>
                     <HaltPlayModal size="md" />
-                </Col> 
+                </Col>
                 <Col className="mb-0">
                     <NowPlayingCard />
                 </Col>

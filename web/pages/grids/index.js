@@ -22,18 +22,18 @@ const Grid = (props) => {
         <>
             <Card>
                 <Card.Header as="h4" className="bg-primary text-white">
-                    {props.info.GridName}
+                    {props.info.name}
                 </Card.Header>
 
                 <Card.Body>
                     <Link
                         href={{
                             pathname: "/grids/[id]",
-                            query: { id: props.info.GridID },
+                            query: { id: props.info.id },
                         }}
                     >
                         <Button
-                            href={"/grids/" + props.info.GridID}
+                            href={"/grids/" + props.info.id}
                             variant="outline-primary"
                             block
                         >
@@ -49,19 +49,19 @@ const Grid = (props) => {
                                 <Link
                                     href={{
                                         pathname: "/grids/[id]/edit",
-                                        query: { id: props.info.GridID },
+                                        query: { id: props.info.id },
                                     }}
                                 >
                                     <Button
-                                        href={"/grids/" + props.info.GridID}
+                                        href={"/grids/" + props.info.id}
                                         variant="primary"
                                     >
                                         Edit Grid
                                     </Button>
                                 </Link>{" "}
                                 <GridDeleteModal
-                                    GridID={props.info.GridID}
-                                    info={{ GridName: props.info.GridName }}
+                                    GridID={props.info.id}
+                                    info={{ name: props.info.name }}
                                 />
                             </div>
                         </>
@@ -75,13 +75,13 @@ const Grid = (props) => {
 
 const GridList = (props) => {
     const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL + "/app/grids",
+        process.env.NEXT_PUBLIC_API_URL + "/grid",
         fetcher
     );
 
     if (data) {
         const GridsFormedList = data.payload.map((item) => (
-            <Col key={item.GridID} md={6} xl={4}>
+            <Col key={item.id} md={6} xl={4}>
                 <Grid info={item} />
             </Col>
         ));

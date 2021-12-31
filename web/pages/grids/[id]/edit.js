@@ -22,7 +22,7 @@ import {
 import { Badge, Button, Spinner } from "react-bootstrap";
 
 // axios request urls
-const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/app/grids";
+const GRIDS_URI = process.env.NEXT_PUBLIC_API_URL + "/grid";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -30,21 +30,23 @@ class ViewGrid extends React.PureComponent {
     constructor(props) {
         super(props);
 
+        console.log(props.items);
+
         this.state = {
-            items: props.Items.map(function (item, key, list) {
+            items: this.props.info.items.map(function (item, key, list) {
                 return {
-                    i: item.GridItemID.toString(),
+                    i: item.id,
                     x: 0,
                     y: 0,
                     w: 2,
                     h: 2,
-                    name: item.GridItemName,
-                    colour: item.GridItemColour,
-                    trackID: item.TrackID,
-                    trackName: item.TrackName,
+                    name: item.name,
+                    color: item.color,
+                    trackId: item.track.id,
+                    trackName: item.track.name,
                 };
             }),
-            layouts: JSON.parse(props.Grid.Layout),
+            layouts: props.info.layout,
             serverStateLayout: {
                 show: false,
                 error: false,
@@ -62,28 +64,32 @@ class ViewGrid extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.Items !== this.props.Items) {
+        if (prevProps.info.items !== this.props.info.items) {
             this.setState({
-                items: this.props.Items.map(function (item, key, list) {
+                items: this.props.info.items.map(function (item, key, list) {
                     return {
-                        i: item.GridItemID.toString(),
+                        id: item.id,
                         x: 0,
                         y: 0,
                         w: 2,
                         h: 2,
-                        name: item.GridItemName,
-                        colour: item.GridItemColour,
-                        trackID: item.TrackID,
-                        trackName: item.TrackName,
+                        name: item.name,
+                        color: item.color,
+                        track: item.track,
                     };
                 }),
             });
         }
     }
 
-    createElement(el) {
+    createElement(item) {
+        const id = item.id;
+        const name = item.name;
+        const color = item.color;
+        const track = item.track;
+
         const itemStyle = {
-            backgroundColor: el.colour,
+            backgroundColor: color,
         };
 
         const removeStyle = {
@@ -100,14 +106,8 @@ class ViewGrid extends React.PureComponent {
             cursor: "pointer",
         };
 
-        const i = el.i;
-        const name = el.name;
-        const colour = el.colour;
-        const trackID = el.trackID;
-        const trackName = el.trackName;
-
         return (
-            <div key={i} data-grid={el} style={itemStyle}>
+            <div key={id} data-grid={item} style={itemStyle}>
                 <div className="d-flex h-100 align-items-center justify-content-center">
                     <div>
                         <h3>{name}</h3>
@@ -120,21 +120,23 @@ class ViewGrid extends React.PureComponent {
 
                 <span className="remove" style={removeStyle}>
                     <GridItemDeleteModal
-                        GridID={this.props.GridID}
-                        info={{ GridItemID: i, GridItemName: name }}
+                        info={{
+                            id: id,
+                            name: name,
+                            gridId: this.props.info.id,
+                        }}
                         editModeManual={this.editModeManual}
                     />
                 </span>
 
                 <span className="edit" style={editStyle}>
                     <GridItemEditModal
-                        GridID={this.props.GridID}
                         info={{
-                            GridItemID: i,
-                            GridItemName: name,
-                            GridItemColour: colour,
-                            TrackID: trackID,
-                            TrackName: trackName,
+                            id: id,
+                            name: name,
+                            color: color,
+                            track: track,
+                            gridId: this.props.info.id,
                         }}
                         editModeManual={this.editModeManual}
                     />
@@ -144,15 +146,15 @@ class ViewGrid extends React.PureComponent {
     }
 
     onLayoutChange(layout, layouts) {
-        //saveToLS("layouts", layouts);
+        console.log(layouts);
         this.setState({ layouts: layouts });
         // create the json object to post layout
-        const json = JSON.stringify({
+        const json = {
             layout: layouts,
-        });
+        };
         // axios put request to save layout
         axios
-            .put(`${GRIDS_URI}/${this.props.GridID}/layout`, json, {
+            .put(`${GRIDS_URI}/${this.props.info.id}/layout`, json, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             })
@@ -166,7 +168,7 @@ class ViewGrid extends React.PureComponent {
                     },
                 });
                 // reload
-                mutate(`${GRIDS_URI}/${this.props.GridID}/items`);
+                mutate(`${GRIDS_URI}/${this.props.info.id}`);
             })
             .catch((error) => {
                 // catch each type of axios error
@@ -226,32 +228,29 @@ class ViewGrid extends React.PureComponent {
         return (
             <div>
                 <div className="d-flex flex-lg-row flex-column">
-                    <h1>{this.props.Grid.GridName}</h1>
+                    <h1>{this.props.info.name}</h1>
 
                     <div className="ml-lg-auto my-auto">
-                        <GridItemCreateModal
-                            AddItem={this.onAddItem}
-                            GridID={this.props.Grid.GridID}
-                        />{" "}
+                        <GridItemCreateModal id={this.props.info.id} />{" "}
                         <GridDeleteModal
-                            GridID={this.props.GridID}
-                            info={{ GridName: this.props.Grid.GridName }}
+                            id={this.props.info.id}
+                            info={{ name: this.props.info.name }}
                         />{" "}
                         <Link
                             href={{
                                 pathname: "/grids/[id]",
-                                query: { id: this.props.Grid.GridID },
+                                query: { id: this.props.info.id },
                             }}
                         >
                             <Button
-                                href={"/grids/" + this.props.Grid.GridID}
+                                href={"/grids/" + this.props.info.id}
                                 variant="success"
                             >
                                 Finish Editing
                             </Button>
                         </Link>{" "}
                         <Link href={"/grids"}>
-                            <Button variant="outline-primary" href="/grids">
+                            <Button variant="outline-primary" href="/grid">
                                 All Grids
                             </Button>
                         </Link>
@@ -275,7 +274,9 @@ class ViewGrid extends React.PureComponent {
                         this.onLayoutChange(layout, layouts)
                     }
                 >
-                    {_.map(this.state.items, (el) => this.createElement(el))}
+                    {_.map(this.state.items, (item) =>
+                        this.createElement(item)
+                    )}
                 </ResponsiveReactGridLayout>
 
                 {/* display errors to the user */}
@@ -296,24 +297,14 @@ class ViewGrid extends React.PureComponent {
 
 // main grid loader
 const Grid = (props) => {
-    const { data, error } = useSWR(
-        process.env.NEXT_PUBLIC_API_URL +
-            "/app/grids/" +
-            props.GridID +
-            "/items",
-        fetcher
-    );
+    const { data, error } = useSWR(`${GRIDS_URI}/${props.id}`, fetcher);
 
     if (data) {
         return (
             <>
                 <ErrorDisplayer error={error} />
 
-                <ViewGrid
-                    Items={data.payload.items}
-                    Grid={data.payload.grid}
-                    GridID={props.GridID}
-                ></ViewGrid>
+                <ViewGrid info={data.payload}></ViewGrid>
             </>
         );
     } else {
@@ -337,7 +328,7 @@ export default function Main() {
     if (id) {
         return (
             <Layout title="Grids" access={5}>
-                <Grid GridID={id} />
+                <Grid id={id} />
             </Layout>
         );
     } else {

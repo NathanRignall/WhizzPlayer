@@ -30,7 +30,7 @@ exports.list = (req, res) => {
             res.locals.errors.push({
                 location: "track.controller.list.1",
                 code: error.code,
-                message: error.message || "Some error occurred while finding the tracks.",
+                message: error.message || "Some error occurred while finding the tracks",
                 from: "sequelize",
             });
 
@@ -69,7 +69,7 @@ exports.find = (req, res) => {
             res.locals.errors.push({
                 location: "track.controller.find.1",
                 code: error.code,
-                message: error.message || "Some error occurred while finding the tracks.",
+                message: error.message || "Some error occurred while finding the tracks",
                 from: "sequelize",
             });
 

@@ -138,7 +138,7 @@ exports.register = function (req, res, next) {
             res.locals.errors.push({
                 location: "session.controller.register.1",
                 code: error.code,
-                message: error.message || "Some error occurred while creating the user.",
+                message: error.message || "Some error occurred while creating the user",
                 from: "sequelize",
             });
 
@@ -220,12 +220,12 @@ exports.login = function (req, res, next) {
                 });
             }
         })
-        .catch((err) => {
+        .catch((error) => {
             // push the error to buffer
             res.locals.errors.push({
                 location: "session.controller.login.1",
                 code: error.code,
-                message: err.message || "Some error occurred while finding the user.",
+                message: error.message || "Some error occurred while finding the user",
                 from: "sequelize",
             });
 
@@ -309,6 +309,7 @@ exports.update = function (req, res, next) {
         },
     })
         .then((number) => {
+            // check if update worked
             if (number == 1) {
                 // update the user info
                 req.session.user.email = email;
@@ -342,7 +343,7 @@ exports.update = function (req, res, next) {
             res.locals.errors.push({
                 location: "session.controller.update.2",
                 code: error.code,
-                message: error.message || "Some error occurred while updating the user.",
+                message: error.message || "Some error occurred while updating the user",
                 from: "sequelize",
             });
 
@@ -421,20 +422,37 @@ exports.password = function (req, res, next) {
                             id: userid,
                         },
                     })
-                        .then((data) => {
-                            // retun the correct vars
-                            res.status(200).json({
-                                payload: data,
-                                message: "okay",
-                                reqid: res.locals.reqid,
-                            });
+                        .then((number) => {
+                            // check if update worked
+                            if (number == 1) {
+                                // retun the correct vars
+                                res.status(200).json({
+                                    message: "okay",
+                                    reqid: res.locals.reqid,
+                                });
+                            } else {
+                                // push the error to buffer
+                                res.locals.errors.push({
+                                    location: "session.controller.password.1",
+                                    code: "no-update",
+                                    message: "User not found during update",
+                                    from: "manual",
+                                });
+
+                                // return the correct vars
+                                res.status(500).json({
+                                    message: "Server error",
+                                    errors: res.locals.errors,
+                                    reqid: res.locals.reqid,
+                                });
+                            }
                         })
                         .catch((error) => {
                             // push the error to buffer
                             res.locals.errors.push({
-                                location: "session.controller.password.1",
+                                location: "session.controller.password.2",
                                 code: error.code,
-                                message: error.message || "Some error occurred while updating the user.",
+                                message: error.message || "Some error occurred while updating the user",
                                 from: "sequelize",
                             });
 
@@ -463,9 +481,9 @@ exports.password = function (req, res, next) {
         .catch((err) => {
             // push the error to buffer
             res.locals.errors.push({
-                location: "session.controller.password.2",
+                location: "session.controller.password.3",
                 code: error.code,
-                message: err.message || "Some error occurred while finding the user.",
+                message: err.message || "Some error occurred while finding the user",
                 from: "sequelize",
             });
 
