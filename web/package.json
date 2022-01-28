@@ -17,7 +17,7 @@
     "formik": "^2.2.9",
     "install": "^0.13.0",
     "lodash": "^4.17.21",
-    "next": "^12.0.7",
+    "next": "^12.0.9",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-typeahead": "^5.2.0",
