@@ -10,7 +10,7 @@
     "axios": "^0.24.0",
     "cron": "^1.8.2",
     "debug": "^4.3.2",
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "morgan": "^1.10.0",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.5"
