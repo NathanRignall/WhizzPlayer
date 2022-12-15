@@ -12,7 +12,7 @@
     "biguint-format": "^1.0.2",
     "cors": "^2.8.5",
     "debug": "^4.3.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.2",
     "file-type": "^16.5.3",
     "flake-idgen": "^1.4.0",
